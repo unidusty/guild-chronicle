@@ -176,13 +176,13 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .char-key-traits { padding-top: 12px; border-top: 1px solid #2a322c; margin-top: auto; }
 .char-section-label { font-size: 9px; color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 8px; }
 
-/* 우측 정보 패널 — 패널 내에서 독립 스크롤 */
-.adv-info-panel { flex: 1; min-width: 0; padding: calc(12px * var(--ui-scale)); overflow-y: auto; }
-/* 카드 그리드: 6열 고정 — span으로 행별 분할 */
-.info-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: calc(10px * var(--ui-scale)); align-content: start; }
-.card-half  { grid-column: span 3; }
-.card-third { grid-column: span 2; }
-.card-full  { grid-column: 1 / -1; }
+/* 우측 정보 패널 — flex 열 + 독립 스크롤 */
+.adv-info-panel { flex: 1; min-width: 0; padding: calc(12px * var(--ui-scale)); overflow-y: auto; display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); }
+/* 행별 명시적 그리드 */
+.detail-row { display: grid; gap: calc(10px * var(--ui-scale)); }
+.detail-row-2    { grid-template-columns: 1fr 1fr; }
+.detail-row-3    { grid-template-columns: 1fr 1fr 1fr; }
+.detail-row-fill { flex: 1; min-height: 120px; grid-template-columns: 1fr; }
 
 /* 정보 카드 — 독립 박스 */
 .info-card { border: 1px solid #2a322c; background: #1a211b; padding: calc(14px * var(--ui-scale)) calc(15px * var(--ui-scale)); }
@@ -212,7 +212,8 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .adv-trait-list .trait-tag { padding: 5px 10px; font-size: 11px; }
 
 /* 최근 활동 */
-.activity-list { display: flex; flex-direction: column; gap: 14px; }
+.activity-card { display: flex; flex-direction: column; min-height: 0; }
+.activity-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
 .activity-item { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
 .activity-item time { font-size: 9px; color: #8b7650; letter-spacing: .04em; }
 .activity-item p { margin: 0; font-size: 11px; color: #8a9489; line-height: 1.55; }

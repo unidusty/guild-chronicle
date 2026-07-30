@@ -105,10 +105,10 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
 
       {/* ── 우측 정보 패널 ── */}
       <div className="adv-info-panel">
-        <div className="info-grid">
 
-          {/* ── Row 1: 기본 정보 | 능력치 ── */}
-          <div className="info-card card-half">
+        {/* ── Row 1: 기본 정보 | 능력치 ── */}
+        <div className="detail-row detail-row-2">
+          <div className="info-card">
             <p className="info-card-title">기본 정보</p>
             <div className="info-rows">
               <div className="info-row"><label>성별</label><span>{genderLabels[adv.gender]}</span></div>
@@ -118,7 +118,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          <div className="info-card card-half">
+          <div className="info-card">
             <p className="info-card-title">능력치</p>
             <div className="detail-stat-list">
               {(Object.keys(adv.stats) as Array<keyof Stats>).map((stat) => {
@@ -136,9 +136,11 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
               })}
             </div>
           </div>
+        </div>
 
-          {/* ── Row 2: 전투 능력 | 보유 기술 | 특성 ── */}
-          <div className="info-card card-third">
+        {/* ── Row 2: 전투 능력 | 보유 기술 | 특성 ── */}
+        <div className="detail-row detail-row-3">
+          <div className="info-card">
             <p className="info-card-title">전투 능력</p>
             <div className="combat-profile">
               {cls && (
@@ -164,7 +166,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          <div className="info-card card-third">
+          <div className="info-card">
             <p className="info-card-title">보유 기술</p>
             <p className="char-bio">{bio}</p>
             <div className="info-rows skill-info-rows">
@@ -174,7 +176,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          <div className="info-card card-third">
+          <div className="info-card">
             <p className="info-card-title">특성</p>
             <div className="trait-list adv-trait-list">
               {adv.traits.map((t) => (
@@ -183,9 +185,11 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
               {adv.traits.length === 0 && <span className="info-empty">없음</span>}
             </div>
           </div>
+        </div>
 
-          {/* ── Row 3: 최근 활동 ── */}
-          <div className="info-card card-full">
+        {/* ── Row 3: 최근 활동 ── */}
+        <div className="detail-row detail-row-fill">
+          <div className="info-card activity-card">
             <p className="info-card-title">최근 활동</p>
             {chronicle.length === 0 ? (
               <p className="info-empty">기록된 활동이 없습니다.</p>
@@ -200,8 +204,8 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
               </div>
             )}
           </div>
-
         </div>
+
       </div>
     </div>
   );
