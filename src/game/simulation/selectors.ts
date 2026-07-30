@@ -1,4 +1,4 @@
-import type { Adventurer, GameDate, GameState } from "../../types/game";
+import type { Adventurer, ChronicleEntry, EntityId, GameDate, GameState } from "../../types/game";
 import { adventurerStatusLabels, raceLabels, seasonLabels } from "../constants/labels";
 import { getPortraitPath } from "../assets/portraits";
 
@@ -71,6 +71,16 @@ export function getAdventurerLocationLabel(adventurer: Adventurer, state: GameSt
       return "파견 중";
     }
   }
+}
+
+export function getAdventurerChronicle(
+  state: GameState,
+  adventurerId: EntityId,
+  limit = 5,
+): ChronicleEntry[] {
+  return state.chronicle
+    .filter((entry) => entry.relatedEntityIds.includes(adventurerId))
+    .slice(0, limit);
 }
 
 export function getActiveQuestRows(state: GameState) {
