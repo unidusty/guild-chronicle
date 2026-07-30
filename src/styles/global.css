@@ -167,9 +167,15 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .detail-close:hover { color: #c8cec8; }
 
 /* 좌측 캐릭터 카드 — 배율에 비례 */
-.adv-char-card { width: calc(300px * var(--ui-scale)); flex-shrink: 0; display: flex; flex-direction: column; gap: calc(14px * var(--ui-scale)); padding: calc(20px * var(--ui-scale)) calc(16px * var(--ui-scale)); border-right: 1px solid #2a322c; background: #151c17; }
-/* 반신 초상화: 268×372px ≈ 13:18 비율 — 카드(300) - 패딩(32) = 268 */
-.portrait.bust { width: calc(268px * var(--ui-scale)); height: calc(372px * var(--ui-scale)); font-size: calc(64px * var(--ui-scale)); flex-shrink: 0; }
+.adv-char-card { width: calc(300px * var(--ui-scale)); flex-shrink: 0; display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); padding: calc(20px * var(--ui-scale)) calc(16px * var(--ui-scale)); border-right: 1px solid #2a322c; background: #151c17; }
+/* 반신 초상화: 268×372px 기준 — 공간 부족 시 초상화만 수축 (다른 항목 보호) */
+.portrait.bust { width: calc(268px * var(--ui-scale)); height: calc(372px * var(--ui-scale)); font-size: calc(64px * var(--ui-scale)); flex-shrink: 1; }
+/* 초상화 외 항목은 수축 금지 — 텍스트 항목 크기 보장 */
+.char-nameplate,
+.char-grades,
+.char-status-block,
+.char-belonging,
+.char-key-traits { flex-shrink: 0; }
 .char-nameplate { display: flex; flex-direction: column; gap: calc(7px * var(--ui-scale)); }
 .char-name { font-family: Georgia, serif; font-size: calc(30px * var(--ui-scale)); font-weight: 500; color: #e4e5df; margin: 0; }
 .char-class-meta { font-size: calc(16px * var(--ui-scale)); color: #a08c55; font-weight: 500; margin: 0; }
