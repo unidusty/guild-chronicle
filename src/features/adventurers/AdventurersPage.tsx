@@ -10,7 +10,7 @@ export default function AdventurersPage({ state }: Props) {
   const selectedAdventurer = selectedId ? state.adventurers[selectedId] : null;
 
   return (
-    <div>
+    <div className="page-shell">
       <header className="topbar">
         <div>
           <p className="eyebrow">WESTWIND GUILD · ROSTER</p>
