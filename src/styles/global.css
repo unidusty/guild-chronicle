@@ -104,9 +104,9 @@ td { padding: 12px 10px; border-bottom: 1px solid #292f2a; color: #b9c0b9; font-
 @media (max-width: 900px)  { .candidate-grid { grid-template-columns: 1fr; } }
 
 /* ── Adventurer Page ─────────────────────────────────────────────── */
-.adv-page { display: flex; gap: 14px; align-items: flex-start; }
+.adv-page { display: flex; gap: 14px; align-items: flex-start; max-width: 1200px; }
 .adv-list-col { flex: 1 1 auto; min-width: 0; }
-.adv-page.has-detail .adv-list-col { flex: 0 0 340px; }
+.adv-page.has-detail .adv-list-col { flex: 0 0 300px; }
 .adv-detail-col { flex: 1 1 auto; min-width: 0; }
 
 /* Filter bar */
@@ -125,21 +125,23 @@ td { padding: 12px 10px; border-bottom: 1px solid #292f2a; color: #b9c0b9; font-
 .adv-row.selected td { background: #1f2b22; }
 .adv-empty { padding: 24px 10px; color: #6a736b; font-size: 12px; }
 
-/* Detail panel — 좌우 2분할 */
+/* ── Detail panel ───────────────────────────────────────────────── */
 .panel.adv-detail { position: relative; display: flex; gap: 0; padding: 0; overflow: hidden; }
 .detail-close { position: absolute; top: 14px; right: 16px; border: 0; background: transparent; color: #4a5a4a; font-size: 20px; cursor: pointer; line-height: 1; padding: 4px 6px; z-index: 1; }
 .detail-close:hover { color: #c8cec8; }
 
-/* 좌측 캐릭터 카드 */
-.adv-char-card { width: 240px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; padding: 22px 18px; border-right: 1px solid #2a322c; }
-.portrait.bust { width: 204px; height: 272px; font-size: 52px; flex-shrink: 0; }
-.char-nameplate { display: flex; flex-direction: column; gap: 4px; }
-.char-name { font-family: Georgia, serif; font-size: 17px; font-weight: 500; color: #e4e5df; margin: 0; }
-.char-class-meta { font-size: 11px; color: #a08c55; margin: 0; }
-.char-grades { display: flex; gap: 16px; }
+/* 좌측 캐릭터 카드 (260px 고정) */
+.adv-char-card { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; padding: 22px 18px; border-right: 1px solid #2a322c; background: #151c17; }
+/* 반신 초상화: 내부 폭 224px × 310px ≈ 260:360 비율 */
+.portrait.bust { width: 224px; height: 310px; font-size: 56px; flex-shrink: 0; }
+.char-nameplate { display: flex; flex-direction: column; gap: 3px; }
+.char-name { font-family: Georgia, serif; font-size: 20px; font-weight: 500; color: #e4e5df; margin: 0; }
+.char-class-meta { font-size: 12px; color: #a08c55; font-weight: 500; margin: 0; }
+.char-race-meta { font-size: 11px; color: #6a736b; margin: 0; }
+.char-grades { display: flex; gap: 14px; }
 .grade-item label { display: block; font-size: 9px; color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 5px; }
 .adv-rank-badge { display: inline-block; padding: 3px 10px; border: 1px solid #8a7646; color: #cbb06f; font-family: Georgia, serif; font-size: 13px; font-weight: 700; }
-.char-status-block { display: flex; flex-direction: column; gap: 7px; }
+.char-status-block { display: flex; flex-direction: column; gap: 6px; }
 .char-status-row { display: flex; align-items: center; gap: 8px; }
 .char-status-row > label { font-size: 9px; color: #5e6a60; letter-spacing: .06em; text-transform: uppercase; width: 28px; flex-shrink: 0; }
 .char-location { font-size: 11px; color: #8a948a; }
@@ -147,25 +149,31 @@ td { padding: 12px 10px; border-bottom: 1px solid #292f2a; color: #b9c0b9; font-
 .char-belonging-val { color: #9a8a65; font-size: 12px; font-weight: 600; }
 .belonging-bar { height: 5px; background: #222a24; }
 .belonging-bar i { display: block; height: 100%; background: #7a9a6a; }
-.char-key-traits { padding-top: 14px; border-top: 1px solid #2a322c; }
+/* 대표 특성: margin-top:auto 로 카드 하단 고정 */
+.char-key-traits { padding-top: 13px; border-top: 1px solid #2a322c; margin-top: auto; }
 .char-section-label { font-size: 9px; color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 8px; }
 
 /* 우측 정보 패널 */
-.adv-info-panel { flex: 1; min-width: 0; padding: 22px 24px; display: flex; flex-direction: column; }
-.info-section { padding-top: 18px; border-top: 1px solid #2a322c; margin-top: 18px; }
-.info-section.first { padding-top: 0; border-top: none; margin-top: 0; }
-.info-section-title { font-size: 10px; color: #9c8757; font-weight: 700; letter-spacing: .15em; margin: 0 0 12px; }
+.adv-info-panel { flex: 1; min-width: 0; padding: 14px; }
+/* 카드 그리드: 290px 이상이면 2열, 미만이면 1열 자동 전환 */
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; align-content: start; }
+.activity-card { grid-column: 1 / -1; }
+
+/* 정보 카드 — 독립 박스 */
+.info-card { border: 1px solid #2a322c; background: #1a211b; padding: 15px 16px; }
+.info-card-title { font-size: 10px; color: #9c8757; font-weight: 700; letter-spacing: .15em; margin: 0 0 12px; }
 .info-rows { display: flex; flex-direction: column; gap: 8px; }
-.info-row { display: flex; align-items: center; gap: 12px; }
-.info-row > label { font-size: 10px; color: #5e6a60; letter-spacing: .04em; width: 36px; flex-shrink: 0; }
+.info-row { display: flex; align-items: center; gap: 10px; }
+.info-row > label { font-size: 10px; color: #5e6a60; letter-spacing: .04em; width: 34px; flex-shrink: 0; }
 .info-row > span { font-size: 12px; color: #c4c9c4; }
 .info-empty { font-size: 11px; color: #4a5a4a; margin: 0; }
 
-/* 능력치 */
-.detail-stat-list { display: flex; flex-direction: column; gap: 8px; }
-.detail-stat-row { display: grid; grid-template-columns: 2.8rem 1fr 2.2rem; align-items: center; gap: 8px; }
+/* 능력치 — 바 180~220px 고정 */
+.detail-stat-list { display: flex; flex-direction: column; gap: 9px; }
+.detail-stat-row { display: grid; grid-template-columns: 2.8rem minmax(180px, 220px) 2.2rem; align-items: center; gap: 8px; }
+.detail-stat-row .stat-val { font-size: 14px; }
 
-/* 특성 (info panel 내 — specificity로 기본 trait-tag 오버라이드) */
+/* 특성 (info-card 내 — specificity 오버라이드) */
 .adv-trait-list { gap: 6px; }
 .adv-trait-list .trait-tag { padding: 5px 10px; font-size: 11px; }
 

@@ -44,7 +44,8 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
 
         <div className="char-nameplate">
           <h3 className="char-name">{adv.name}</h3>
-          <p className="char-class-meta">{cls?.name ?? "미정"} / {raceLabels[adv.race]}</p>
+          <p className="char-class-meta">{cls?.name ?? "미정"}</p>
+          <p className="char-race-meta">{raceLabels[adv.race]} · {genderLabels[adv.gender]} · {adv.age}세</p>
         </div>
 
         <div className="char-grades">
@@ -91,76 +92,82 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
         )}
       </div>
 
-      {/* ── 우측 정보 패널 ── */}
+      {/* ── 우측 정보 패널 (카드 그리드) ── */}
       <div className="adv-info-panel">
+        <div className="info-grid">
 
-        <div className="info-section first">
-          <p className="info-section-title">기본 정보</p>
-          <div className="info-rows">
-            <div className="info-row">
-              <label>성별</label>
-              <span>{genderLabels[adv.gender]}</span>
-            </div>
-            <div className="info-row">
-              <label>나이</label>
-              <span>{adv.age}세</span>
-            </div>
-            <div className="info-row">
-              <label>성격</label>
-              <span>{adv.personality}</span>
-            </div>
-            <div className="info-row">
-              <label>출신</label>
-              <span>{adv.background}</span>
+          {/* 기본 정보 */}
+          <div className="info-card">
+            <p className="info-card-title">기본 정보</p>
+            <div className="info-rows">
+              <div className="info-row">
+                <label>성별</label>
+                <span>{genderLabels[adv.gender]}</span>
+              </div>
+              <div className="info-row">
+                <label>나이</label>
+                <span>{adv.age}세</span>
+              </div>
+              <div className="info-row">
+                <label>성격</label>
+                <span>{adv.personality}</span>
+              </div>
+              <div className="info-row">
+                <label>출신</label>
+                <span>{adv.background}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="info-section">
-          <p className="info-section-title">능력치</p>
-          <div className="detail-stat-list">
-            {(Object.keys(adv.stats) as Array<keyof Stats>).map((stat) => {
-              const val = adv.stats[stat];
-              const isPrimary = primaryStats.has(stat);
-              return (
-                <div className="detail-stat-row" key={stat}>
-                  <span className={isPrimary ? "stat-label primary" : "stat-label"}>{statLabels[stat]}</span>
-                  <div className="stat-bar">
-                    <i className={isPrimary ? "primary" : ""} style={{ width: `${(val / 18) * 100}%` }} />
+          {/* 능력치 */}
+          <div className="info-card">
+            <p className="info-card-title">능력치</p>
+            <div className="detail-stat-list">
+              {(Object.keys(adv.stats) as Array<keyof Stats>).map((stat) => {
+                const val = adv.stats[stat];
+                const isPrimary = primaryStats.has(stat);
+                return (
+                  <div className="detail-stat-row" key={stat}>
+                    <span className={isPrimary ? "stat-label primary" : "stat-label"}>{statLabels[stat]}</span>
+                    <div className="stat-bar">
+                      <i className={isPrimary ? "primary" : ""} style={{ width: `${(val / 18) * 100}%` }} />
+                    </div>
+                    <b className={isPrimary ? "stat-val primary" : "stat-val"}>{val}</b>
                   </div>
-                  <b className={isPrimary ? "stat-val primary" : "stat-val"}>{val}</b>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="info-section">
-          <p className="info-section-title">특성</p>
-          <div className="trait-list adv-trait-list">
-            {adv.traits.map((t) => (
-              <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
-            ))}
-            {adv.traits.length === 0 && <span className="info-empty">없음</span>}
-          </div>
-        </div>
-
-        <div className="info-section">
-          <p className="info-section-title">최근 활동</p>
-          {chronicle.length === 0 ? (
-            <p className="info-empty">기록된 활동이 없습니다.</p>
-          ) : (
-            <div className="activity-list">
-              {chronicle.map((entry) => (
-                <div className="activity-item" key={entry.id}>
-                  <time>{formatShortGameDate(entry.date)}</time>
-                  <p>{entry.title} — {entry.description}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
 
+          {/* 특성 */}
+          <div className="info-card">
+            <p className="info-card-title">특성</p>
+            <div className="trait-list adv-trait-list">
+              {adv.traits.map((t) => (
+                <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
+              ))}
+              {adv.traits.length === 0 && <span className="info-empty">없음</span>}
+            </div>
+          </div>
+
+          {/* 최근 활동 — 전체 폭 */}
+          <div className="info-card activity-card">
+            <p className="info-card-title">최근 활동</p>
+            {chronicle.length === 0 ? (
+              <p className="info-empty">기록된 활동이 없습니다.</p>
+            ) : (
+              <div className="activity-list">
+                {chronicle.map((entry) => (
+                  <div className="activity-item" key={entry.id}>
+                    <time>{formatShortGameDate(entry.date)}</time>
+                    <p>{entry.title} — {entry.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+        </div>
       </div>
     </div>
   );
