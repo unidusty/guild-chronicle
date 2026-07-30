@@ -1,5 +1,6 @@
 import type { Adventurer, GameDate, GameState } from "../../types/game";
 import { adventurerStatusLabels, raceLabels, seasonLabels } from "../constants/labels";
+import { getPortraitPath } from "../assets/portraits";
 
 const formatGold = (value: number) => `${new Intl.NumberFormat("ko-KR").format(value)} G`;
 
@@ -48,6 +49,7 @@ export function getRosterRows(state: GameState) {
       assignment,
       status: adventurerStatusLabels[adventurer.status],
       statusTone: adventurer.status === "dispatched" ? "active" : adventurer.injuryIds.length > 0 ? "warning" : "idle",
+      portraitPath: getPortraitPath(adventurer.portraitId, adventurer.race, adventurer.gender),
     };
   });
 }

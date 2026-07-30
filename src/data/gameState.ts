@@ -14,10 +14,16 @@ export const initialGameState: GameState = {
     partyIds: ["party-silverhawk", "party-bluelantern"],
   },
   classes: {
-    swordsman: { id: "swordsman", name: "검사", role: "vanguard", primaryStats: ["strength", "endurance"] },
-    ranger: { id: "ranger", name: "정찰자", role: "scout", primaryStats: ["agility", "perception"] },
-    guardian: { id: "guardian", name: "수호자", role: "vanguard", primaryStats: ["endurance", "willpower"] },
-    healer: { id: "healer", name: "치유사", role: "support", primaryStats: ["intelligence", "willpower"] },
+    // 기존 샘플 데이터용 직업
+    swordsman: { id: "swordsman", name: "검사",   role: "vanguard", primaryStats: ["strength", "endurance"] },
+    ranger:    { id: "ranger",    name: "정찰자", role: "scout",    primaryStats: ["agility", "perception"] },
+    guardian:  { id: "guardian",  name: "수호자", role: "vanguard", primaryStats: ["endurance", "willpower"] },
+    healer:    { id: "healer",    name: "치유사", role: "support",  primaryStats: ["intelligence", "willpower"] },
+    // 영입 시스템 직업
+    warrior: { id: "warrior", name: "전사",   role: "vanguard", primaryStats: ["strength", "endurance"] },
+    mage:    { id: "mage",    name: "마법사", role: "damage",   primaryStats: ["intelligence", "perception"] },
+    priest:  { id: "priest",  name: "성직자", role: "support",  primaryStats: ["intelligence", "willpower"] },
+    rogue:   { id: "rogue",   name: "도적",   role: "damage",   primaryStats: ["agility", "perception"] },
   },
   injuries: {
     "injury-ella-bruise": {
