@@ -5,6 +5,8 @@ import { generateCandidates } from "../game/generator/adventurer";
 import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetrics, getRosterRows } from "../game/simulation/selectors";
 import RecruitmentPanel from "../features/recruitment/RecruitmentPanel";
 import AdventurersPage from "../features/adventurers/AdventurersPage";
+import { UI_SCALES, useUiScale } from "../lib/uiScale";
+import type { UiScale } from "../lib/uiScale";
 
 type Page = "dashboard" | "adventurers";
 interface NavItem { label: string; page: Page | null; }
@@ -25,6 +27,7 @@ const reportPresentation = {
 } as const;
 
 export default function App() {
+  const [uiScale, setUiScale] = useUiScale();
   const [state, setState] = useState(initialGameState);
   const [candidates, setCandidates] = useState(() =>
     generateCandidates(3, initialGameState.classes, initialGameState.currentDate,
@@ -78,6 +81,20 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <div className="scale-selector">
+          <span className="scale-selector-label">UI 배율</span>
+          <div className="scale-btns">
+            {UI_SCALES.map((s) => (
+              <button
+                key={s}
+                className={`scale-btn${uiScale === s ? " active" : ""}`}
+                onClick={() => setUiScale(s as UiScale)}
+              >
+                {s * 100}%
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="sidebar-note"><span>현재 날짜</span><strong>{formatGameDate(state.currentDate)}</strong></div>
       </aside>
 
