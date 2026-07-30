@@ -32,7 +32,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
   const portraitPath = getPortraitPath(adv.portraitId, adv.race, adv.gender);
   const primaryStats = new Set(cls?.primaryStats ?? []);
   const keyTraits = adv.traits.slice(0, 3);
-  const chronicle = getAdventurerChronicle(state, adv.id, 8);
+  const chronicle = getAdventurerChronicle(state, adv.id, 5);
   const bio = getAdventurerBio(adv, cls?.name);
   const guildParty = adv.partyId ? state.parties[adv.partyId] : null;
   const currentQuest = adv.currentQuestId ? state.quests[adv.currentQuestId] : null;
@@ -49,8 +49,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
 
         <div className="char-nameplate">
           <h3 className="char-name">{adv.name}</h3>
-          <p className="char-class-meta">{cls?.name ?? "미정"}</p>
-          <p className="char-race-meta">{raceLabels[adv.race]} · {adv.age}세</p>
+          <p className="char-class-meta">{raceLabels[adv.race]} · {cls?.name ?? "미정"}</p>
         </div>
 
         <div className="char-grades">
@@ -138,7 +137,14 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
           </div>
         </div>
 
-        {/* ── Row 2: 전투 능력 | 보유 기술 | 특성 ── */}
+        {/* ── Row 2: 캐릭터 설명 (전체 폭) ── */}
+        <div className="detail-row detail-row-full">
+          <div className="info-card bio-card">
+            <p className="char-bio">{bio}</p>
+          </div>
+        </div>
+
+        {/* ── Row 3: 전투 능력 | 소속 정보 | 특성 ── */}
         <div className="detail-row detail-row-3">
           <div className="info-card">
             <p className="info-card-title">전투 능력</p>
@@ -167,9 +173,8 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
           </div>
 
           <div className="info-card">
-            <p className="info-card-title">보유 기술</p>
-            <p className="char-bio">{bio}</p>
-            <div className="info-rows skill-info-rows">
+            <p className="info-card-title">소속 정보</p>
+            <div className="info-rows">
               <div className="info-row"><label>파티</label><span>{guildParty?.name ?? "미배정"}</span></div>
               <div className="info-row"><label>의뢰</label><span>{currentQuest?.title ?? "없음"}</span></div>
               <div className="info-row"><label>가입</label><span>{formatShortGameDate(adv.joinedAt)}</span></div>
@@ -187,8 +192,8 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
           </div>
         </div>
 
-        {/* ── Row 3: 최근 활동 ── */}
-        <div className="detail-row detail-row-fill">
+        {/* ── Row 4: 최근 활동 (전체 폭) ── */}
+        <div className="detail-row detail-row-full">
           <div className="info-card activity-card">
             <p className="info-card-title">최근 활동</p>
             {chronicle.length === 0 ? (

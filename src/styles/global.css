@@ -191,25 +191,25 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .char-key-traits { padding-top: 12px; border-top: 1px solid #2a322c; margin-top: auto; }
 .char-section-label { font-size: var(--font-tiny); color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 8px; }
 
-/* 우측 정보 패널 — flex 열 + 독립 스크롤 */
-.adv-info-panel { flex: 1; min-width: 0; padding: calc(12px * var(--ui-scale)); overflow-y: auto; display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); }
+/* 우측 정보 패널 — flex 열 + 독립 스크롤, max-width로 카드 과도 확장 방지 */
+.adv-info-panel { flex: 1; min-width: 0; max-width: calc(900px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)); overflow-y: auto; display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
 /* 행별 명시적 그리드 */
-.detail-row { display: grid; gap: calc(10px * var(--ui-scale)); }
+.detail-row { display: grid; gap: calc(8px * var(--ui-scale)); }
 .detail-row-2    { grid-template-columns: 1fr 1fr; }
 .detail-row-3    { grid-template-columns: 1fr 1fr 1fr; }
-.detail-row-fill { flex: 1; min-height: 120px; grid-template-columns: 1fr; }
+.detail-row-full { grid-template-columns: 1fr; }
 
 /* 정보 카드 — 독립 박스 */
-.info-card { border: 1px solid #2a322c; background: #1a211b; padding: calc(14px * var(--ui-scale)) calc(15px * var(--ui-scale)); }
-.info-card-title { font-size: var(--font-small); color: #9c8757; font-weight: 700; letter-spacing: .12em; margin: 0 0 calc(14px * var(--ui-scale)); }
-.info-rows { display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); }
+.info-card { border: 1px solid #2a322c; background: #1a211b; padding: calc(12px * var(--ui-scale)) calc(14px * var(--ui-scale)); }
+.info-card-title { font-size: var(--font-small); color: #9c8757; font-weight: 700; letter-spacing: .12em; margin: 0 0 calc(11px * var(--ui-scale)); }
+.info-rows { display: flex; flex-direction: column; gap: calc(9px * var(--ui-scale)); }
 .info-row { display: flex; align-items: center; gap: 10px; }
 .info-row > label { font-size: var(--font-small); color: #5e6a60; letter-spacing: .04em; width: calc(40px * var(--ui-scale)); flex-shrink: 0; }
 .info-row > span { font-size: var(--font-body); color: #c4c9c4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* 보유 기술 카드 — bio 아래 여백 */
-.skill-info-rows { margin-top: calc(12px * var(--ui-scale)); }
 .info-empty { font-size: var(--font-small); color: #4a5a4a; margin: 0; }
-.char-bio { margin: 0; font-size: calc(13px * var(--ui-scale)); color: #9ca49d; line-height: 1.65; font-style: italic; }
+/* 캐릭터 설명 카드 — 전체 폭, 얇은 패딩 */
+.bio-card { padding-top: calc(9px * var(--ui-scale)); padding-bottom: calc(9px * var(--ui-scale)); }
+.char-bio { margin: 0; font-size: calc(13px * var(--ui-scale)); color: #9ca49d; line-height: 1.6; font-style: italic; }
 
 /* 능력치 바 — 배율 비례, 카드 폭 무관하게 max-width 고정 */
 .detail-stat-list { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); max-width: calc(280px * var(--ui-scale)); }
@@ -229,9 +229,9 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .adv-trait-list { gap: 6px; }
 .adv-trait-list .trait-tag { padding: 5px 10px; font-size: calc(12px * var(--ui-scale)); }
 
-/* 최근 활동 */
-.activity-card { display: flex; flex-direction: column; min-height: 0; }
-.activity-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: calc(16px * var(--ui-scale)); }
-.activity-item { display: grid; grid-template-columns: calc(64px * var(--ui-scale)) 1fr; gap: calc(10px * var(--ui-scale)); align-items: baseline; }
+/* 최근 활동 — 자연 높이 (flex:1 없음, 최대 5건) */
+.activity-card { display: flex; flex-direction: column; }
+.activity-list { display: flex; flex-direction: column; gap: calc(12px * var(--ui-scale)); }
+.activity-item { display: grid; grid-template-columns: calc(60px * var(--ui-scale)) 1fr; gap: calc(10px * var(--ui-scale)); align-items: baseline; }
 .activity-item time { font-size: var(--font-tiny); color: #8b7650; letter-spacing: .04em; }
 .activity-item p { margin: 0; font-size: calc(13px * var(--ui-scale)); color: #8a9489; line-height: 1.55; }
