@@ -57,12 +57,17 @@ function CandidateCard({ adventurer: c, classes, disabled, onRecruit }: CardProp
 
   return (
     <article className="candidate-card">
+
+      {/* ── 헤더: 초상화 + 이름·잠재력·메타 ── */}
       <div className="candidate-header">
         <div className="portrait large">
           {portraitPath ? <img src={portraitPath} alt={c.name} /> : initials}
         </div>
         <div className="candidate-identity">
-          <strong className="candidate-name">{c.name}</strong>
+          <div className="candidate-name-row">
+            <strong className="candidate-name">{c.name}</strong>
+            <span className={`pot-badge pot-${potGrade.toLowerCase()}`}>{potGrade}</span>
+          </div>
           <span className="candidate-meta">
             {raceLabels[c.race]} · {genderLabels[c.gender]} · {c.age}세
           </span>
@@ -70,6 +75,7 @@ function CandidateCard({ adventurer: c, classes, disabled, onRecruit }: CardProp
         </div>
       </div>
 
+      {/* ── 능력치 ── */}
       <div className="candidate-stats">
         {(Object.keys(c.stats) as Array<keyof Stats>).map((stat) => {
           const val = c.stats[stat];
@@ -86,28 +92,22 @@ function CandidateCard({ adventurer: c, classes, disabled, onRecruit }: CardProp
         })}
       </div>
 
-      <div className="candidate-footer">
-        <div className="candidate-footer-row">
-          <span>잠재력</span>
-          <span className={`pot-grade pot-${potGrade.toLowerCase()}`}>{potGrade}</span>
-          <span className="footer-sep" />
-          <span>소속감</span>
-          <span>{c.belonging}</span>
-        </div>
-        <div className="trait-list">
-          {c.traits.map((t) => (
-            <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
-          ))}
-        </div>
+      {/* ── 특성 ── */}
+      <div className="trait-list">
+        {c.traits.map((t) => (
+          <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
+        ))}
       </div>
 
+      {/* ── 영입 버튼: 카드 하단 고정 ── */}
       <button
         className="recruit-btn"
         onClick={() => onRecruit(c)}
         disabled={disabled}
       >
-        {disabled ? "영입 완료" : "영입"}
+        {disabled ? "선발 마감" : "영입"}
       </button>
+
     </article>
   );
 }

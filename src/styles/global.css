@@ -64,37 +64,41 @@ td { padding: 12px 10px; border-bottom: 1px solid #292f2a; color: #b9c0b9; font-
 .recruit-panel { margin-top: 14px; }
 .recruit-empty { color: #6a736b; font-size: 12px; margin: 0; }
 .candidate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.candidate-card { display: flex; flex-direction: column; gap: 13px; padding: 16px; border: 1px solid #2a3230; background: #171d19; }
+.candidate-card { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #2a3230; background: #171d19; }
+/* 헤더 */
 .candidate-header { display: flex; gap: 12px; align-items: flex-start; }
 .portrait.large { width: 52px; height: 52px; font-size: 15px; flex-shrink: 0; }
-.candidate-identity { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.candidate-name { font-family: Georgia, serif; font-size: 14px; color: #ddd8ce; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.candidate-meta { font-size: 10px; color: #67736a; }
-.candidate-class { font-size: 10px; color: #a08c55; letter-spacing: .04em; }
-/* stat rows */
+.candidate-identity { display: flex; flex-direction: column; gap: 5px; min-width: 0; flex: 1; }
+/* 이름 행: 이름 왼쪽, 잠재력 배지 오른쪽 */
+.candidate-name-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.candidate-name { font-family: Georgia, serif; font-size: 16px; color: #ddd8ce; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 잠재력 배지 */
+.pot-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 1px solid; font-family: Georgia, serif; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.pot-s { color: #e8c87a; border-color: rgba(232,200,122,.45); background: rgba(232,200,122,.07); }
+.pot-a { color: #8db49a; border-color: rgba(141,180,154,.4);  background: rgba(141,180,154,.06); }
+.pot-b { color: #9ca5ae; border-color: rgba(156,165,174,.35); background: rgba(156,165,174,.05); }
+.pot-c { color: #7a8078; border-color: rgba(122,128,120,.3);  background: transparent; }
+.pot-d { color: #5a5e5a; border-color: rgba(90,94,90,.25);    background: transparent; }
+/* 종족·나이·직업 */
+.candidate-meta  { font-size: 11px; color: #67736a; line-height: 1; }
+.candidate-class { font-size: 10px; color: #a08c55; letter-spacing: .03em; }
+/* 능력치 */
 .candidate-stats { display: flex; flex-direction: column; gap: 5px; }
-.stat-row { display: grid; grid-template-columns: 2rem 1fr 1.6rem; align-items: center; gap: 6px; }
-.stat-label { font-size: 9px; color: #5e6a60; text-transform: uppercase; }
+.stat-row { display: grid; grid-template-columns: 2.5rem 1fr 1.8rem; align-items: center; gap: 6px; }
+.stat-label { font-size: 10px; color: #5e6a60; }
 .stat-label.primary { color: #9a8855; }
 .stat-bar { height: 3px; background: #222a24; }
 .stat-bar i { display: block; height: 100%; background: #5a7a64; }
 .stat-bar i.primary { background: #a08c55; }
-.stat-val { font-size: 10px; color: #8a9289; text-align: right; }
+.stat-val { font-size: 11px; color: #8a9289; text-align: right; font-variant-numeric: tabular-nums; }
 .stat-val.primary { color: #c4a860; }
-/* footer */
-.candidate-footer { display: flex; flex-direction: column; gap: 7px; }
-.candidate-footer-row { display: flex; align-items: center; gap: 7px; font-size: 10px; color: #7a847c; }
-.footer-sep { flex: 1; }
-.pot-grade { font-family: Georgia, serif; font-size: 14px; font-weight: 700; }
-.pot-s { color: #e8c87a; text-shadow: 0 0 8px rgba(232,200,122,.4); }
-.pot-a { color: #8db49a; }
-.pot-b { color: #9ca5ae; }
-.pot-c { color: #7a8078; }
-.pot-d { color: #5a5e5a; }
-.trait-list { display: flex; flex-wrap: wrap; gap: 4px; }
-.trait-tag { padding: 2px 7px; border: 1px solid #323c34; color: #7a8a7c; font-size: 9px; letter-spacing: .02em; }
-/* recruit button */
+/* 특성 */
+.trait-list { display: flex; flex-wrap: wrap; gap: 4px; min-height: 20px; }
+.trait-tag { padding: 3px 7px; border: 1px solid #323c34; color: #7a8a7c; font-size: 10px; letter-spacing: .01em; }
+/* 영입 버튼: margin-top: auto 로 카드 하단 고정 */
 .recruit-btn { width: 100%; padding: 10px; border: 1px solid #5a4e38; background: #2e2718; color: #c4a860; font-size: 11px; letter-spacing: .06em; cursor: pointer; margin-top: auto; transition: background .15s, border-color .15s; }
 .recruit-btn:not(:disabled):hover { background: #3c3220; border-color: #7a6840; }
 .recruit-btn:disabled { border-color: #2a302c; background: #1c211e; color: #42484a; cursor: not-allowed; }
-@media (max-width: 1250px) { main { padding-left: 28px; padding-right: 28px; } .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+/* 반응형 */
+@media (max-width: 1250px) { main { padding-left: 28px; padding-right: 28px; } .metric-grid { grid-template-columns: repeat(2, 1fr); } .candidate-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px)  { .candidate-grid { grid-template-columns: 1fr; } }

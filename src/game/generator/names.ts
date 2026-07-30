@@ -1,27 +1,62 @@
 import type { Race, Gender } from "../../types/game";
 import { pick } from "./util";
 
+// 이름 풀: 종족·성별별 30개 이상, 성씨 30개 이상
 const namePool = {
   human: {
-    male: ["Aldric", "Bryn", "Corvin", "Daven", "Erik", "Fenwick", "Gareth", "Halren", "Isen", "Jovyn",
-           "Kael", "Lorn", "Maren", "Neven", "Oswin", "Pell", "Rolf", "Sever", "Thane", "Uwen"],
-    female: ["Aelith", "Brynn", "Calla", "Dara", "Elara", "Faye", "Gwen", "Hana", "Iriel", "Jana",
-             "Kira", "Lyra", "Mira", "Nara", "Orla", "Petra", "Rhea", "Sona", "Tara", "Vela"],
-    surname: ["Ashford", "Coldwater", "Dunmore", "Eastmere", "Farrow", "Goldstone", "Greymoor", "Ironwood", "Thornwall", "Vinter"],
+    // 서양 판타지풍 한글 음차
+    male: [
+      "레온", "에단", "카일", "아론", "세바", "루카", "마르", "도리안", "가렛", "베릭",
+      "오스윈", "코르빈", "탠", "리오", "드레이", "알드릭", "이젠", "다벤", "페넬", "세버",
+      "놀든", "앤더", "솔", "발렌", "테오", "케인", "울프", "기드", "로스", "아네스",
+    ],
+    female: [
+      "엘라", "마리엔", "세라", "리나", "에이라", "파야", "그웬", "한나", "이리엘", "야나",
+      "키라", "리라", "미라", "나라", "오를라", "피트라", "레아", "소나", "타라", "벨라",
+      "에리아", "칼라", "다라", "린다", "에나", "발라", "테사", "셀린", "아나", "카라",
+    ],
+    surname: [
+      "빈터", "로우", "카인", "베르", "로웬", "루멘", "그레이무어", "애쉬포드", "콜드워터", "던모어",
+      "파로", "골드스톤", "아이언우드", "이스트미어", "손웰", "워렌", "블레이크", "스턴", "플린", "알마",
+      "크로우", "덴턴", "포드", "케른", "마쉬", "할렌", "베인", "듀크", "레인", "노르",
+    ],
   },
   elf: {
-    male: ["Aelion", "Caelith", "Daeven", "Elarien", "Faeryn", "Galewin", "Haelion", "Ilaren", "Kaelith", "Laerion",
-           "Maewin", "Naelith", "Olaeren", "Paelith", "Raeven", "Saelion", "Taelith", "Ulaerin", "Vaelion", "Waelith"],
-    female: ["Aelara", "Caevyn", "Daevara", "Elaira", "Faeryn", "Galewynn", "Haelara", "Ilaria", "Kaelara", "Laeira",
-             "Maelara", "Naelith", "Olaevyn", "Paelara", "Raevyn", "Saelara", "Taelith", "Ulaevyn", "Vaelara", "Waelith"],
-    surname: ["Arvel", "Dawnleaf", "Evenstar", "Farwind", "Glorybrook", "Halfmoon", "Jadeleaf", "Kindlestar", "Leafwhisper", "Moonveil"],
+    // 부드럽고 신비로운 한글 판타지 음차
+    male: [
+      "아엘리온", "카엘리스", "하엘리온", "에리온", "파에린", "갈레윈", "실론", "나엘리스", "라에리온", "마에윈",
+      "바엘리스", "사엘리온", "타엘리스", "루엘리온", "리엔", "에라엘", "이라엘", "에일리온", "카엘린", "다에린",
+      "파에윈", "가에리온", "바에린", "사엘린", "아에린", "나에리온", "타에린", "렐리온", "오라엘", "발리온",
+    ],
+    female: [
+      "아엘라라", "세리아", "라에나", "에이라", "카에빈", "하엘라라", "일라리아", "라에이라", "마엘라라", "나에이라",
+      "파엘라라", "라에빈", "사엘라라", "바엘라라", "아에린", "에라이라", "카엘라", "세아엘", "리에나", "나에린",
+      "파에라", "가에린", "바에라", "사에린", "아에라", "나엘라", "타에라", "레아엘", "미에린", "셀라에린",
+    ],
+    surname: [
+      "아르벨", "린델", "베르나", "로엔", "실바", "세릴", "밀레나", "아에로", "실리아", "달로린",
+      "아르빌", "베이라", "나엘로", "세란", "린벨", "베른", "로린", "실린", "아르라", "린도",
+      "베렐", "실마", "에론", "아르달", "베나", "로발", "세벨", "아르마", "달린", "에린",
+    ],
   },
   dwarf: {
-    male: ["Bofur", "Dain", "Gimrak", "Horgrak", "Karduk", "Magni", "Norgrak", "Orgrim", "Thorak", "Urgrak",
-           "Wulfgar", "Brundar", "Caedrak", "Durgin", "Embrak"],
-    female: ["Brynn", "Dagna", "Frigga", "Hilda", "Ingrid", "Kista", "Marta", "Norra", "Sigrda", "Thora",
-             "Ulfhild", "Birna", "Caera", "Dagni", "Erda"],
-    surname: ["Goldpick", "Hammerfall", "Ironshield", "Rockmantle", "Silveranvil", "Steelbrow", "Stonefist", "Strongback", "맥주먹", "Warhammer"],
+    // 거칠고 간결한 이름
+    male: [
+      "도르간", "브록", "울릭", "토르간", "바른", "그룬", "보린", "카르", "김라크", "호르그",
+      "두르긴", "막니", "탁린", "엠브락", "볼그린", "크로긴", "보푸르", "다인", "울프가르", "브룬다르",
+      "그림라크", "고르긴", "나르긴", "오르긴", "발긴", "솔긴", "로긴", "힘라크", "발드라크", "두르가",
+    ],
+    female: [
+      "브린", "다그나", "프리가", "힐다", "잉그리드", "키스타", "마르타", "노라", "시그르다", "토라",
+      "울프힐드", "비르나", "에르다", "카에라", "다그니", "보르나", "힐데", "아스나", "군나", "호르나",
+      "이르나", "베르나", "요르나", "룬나", "스테나", "톨나", "올가", "헬가", "베나", "하르나",
+    ],
+    // 드워프 성씨: 특기·외모·직업을 딴 별명형
+    surname: [
+      "맥주먹", "돌수염", "쇠망치", "화덕손", "철주먹", "금곡괭이", "바위어깨", "불망치", "돌이마", "강철팔",
+      "땅굴손", "금도끼", "바위발", "쇠등", "용광로손", "바위심장", "돌눈", "쇠뿔", "화산턱", "철수염",
+      "화덕발", "바위코", "돌팔꿈치", "쇠귀", "철가슴", "바위이마", "돌발", "쇠얼굴", "금손", "쇠머리",
+    ],
   },
 } as const;
 
@@ -31,3 +66,10 @@ export function generateName(race: Race, gender: Gender): string {
   const last = pick(pool.surname);
   return `${first} ${last}`;
 }
+
+// 이름 풀 크기 (테스트·검증용)
+export const namePoolSize = {
+  human:  { male: namePool.human.male.length,  female: namePool.human.female.length,  surname: namePool.human.surname.length  },
+  elf:    { male: namePool.elf.male.length,     female: namePool.elf.female.length,    surname: namePool.elf.surname.length    },
+  dwarf:  { male: namePool.dwarf.male.length,   female: namePool.dwarf.female.length,  surname: namePool.dwarf.surname.length  },
+} as const;
