@@ -42,6 +42,7 @@ export const initialGameState: GameState = {
       potential: 82, traits: [{ id: "trait-brave", revealed: true }], belonging: 76,
       status: "recovering", partyId: null, currentQuestId: null,
       injuryIds: ["injury-ella-bruise"], joinedAt: { year: 315, season: "spring", day: 4 }, isArchived: false,
+      personality: "책임감 강함", background: "왕도",
     },
     "adv-lien": {
       id: "adv-lien", name: "리엔 아르벨", race: "elf", gender: "male", age: 91,
@@ -50,6 +51,7 @@ export const initialGameState: GameState = {
       potential: 79, traits: [{ id: "trait-keen-eye", revealed: true }], belonging: 68,
       status: "dispatched", partyId: "party-silverhawk", currentQuestId: "quest-caravan",
       injuryIds: [], joinedAt: { year: 314, season: "autumn", day: 19 }, isArchived: false,
+      personality: "과묵함", background: "숲 마을",
     },
     "adv-dorgan": {
       id: "adv-dorgan", name: "도르간 맥주먹", race: "dwarf", gender: "male", age: 57,
@@ -58,6 +60,7 @@ export const initialGameState: GameState = {
       potential: 66, traits: [{ id: "trait-stubborn", revealed: true }], belonging: 84,
       status: "training", partyId: null, currentQuestId: null,
       injuryIds: [], joinedAt: { year: 316, season: "winter", day: 2 }, isArchived: false,
+      personality: "거침없음", background: "광산 도시",
     },
     "adv-marien": {
       id: "adv-marien", name: "마리엔 로우", race: "human", gender: "female", age: 29,
@@ -66,6 +69,7 @@ export const initialGameState: GameState = {
       potential: 73, traits: [{ id: "trait-calm", revealed: true }], belonging: 72,
       status: "dispatched", partyId: "party-bluelantern", currentQuestId: "quest-missing",
       injuryIds: [], joinedAt: { year: 316, season: "summer", day: 11 }, isArchived: false,
+      personality: "다정함", background: "농촌",
     },
   },
   parties: {

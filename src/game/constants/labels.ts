@@ -1,4 +1,4 @@
-import type { AdventurerStatus, Gender, Race, Stats } from "../../types/game";
+import type { Adventurer, AdventurerStatus, Gender, Race, Stats } from "../../types/game";
 
 export const raceLabels: Record<Race, string> = {
   human: "인간",
@@ -13,10 +13,10 @@ export const genderLabels: Record<Gender, string> = {
 
 export const adventurerStatusLabels: Record<AdventurerStatus, string> = {
   idle: "대기",
-  dispatched: "파견",
+  dispatched: "의뢰 수행",
   injured: "부상",
-  training: "훈련",
-  recovering: "경상",
+  training: "훈련 중",
+  recovering: "휴식",
 };
 
 export const seasonLabels = {
@@ -41,4 +41,10 @@ export function getPotentialGrade(potential: number): "S" | "A" | "B" | "C" | "D
   if (potential >= 56) return "B";
   if (potential >= 40) return "C";
   return "D";
+}
+
+export function getStatusTone(adv: Adventurer): "active" | "warning" | "idle" {
+  if (adv.status === "dispatched") return "active";
+  if (adv.injuryIds.length > 0 || adv.status === "injured") return "warning";
+  return "idle";
 }

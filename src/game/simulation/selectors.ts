@@ -54,6 +54,25 @@ export function getRosterRows(state: GameState) {
   });
 }
 
+export function getAdventurerLocationLabel(adventurer: Adventurer, state: GameState): string {
+  switch (adventurer.status) {
+    case "idle":      return "길드 본부";
+    case "training":  return "훈련장";
+    case "injured":
+    case "recovering": return "의무실";
+    case "dispatched": {
+      if (adventurer.currentQuestId) {
+        const quest = state.quests[adventurer.currentQuestId];
+        if (quest) {
+          const region = state.regions[quest.regionId];
+          if (region) return region.name;
+        }
+      }
+      return "파견 중";
+    }
+  }
+}
+
 export function getActiveQuestRows(state: GameState) {
   return Object.values(state.quests)
     .filter((quest) => quest.status === "assigned")

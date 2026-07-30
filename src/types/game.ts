@@ -48,6 +48,8 @@ export interface Adventurer {
   injuryIds: EntityId[];
   joinedAt: GameDate;
   isArchived: boolean;
+  personality: string;
+  background: string;
 }
 
 export interface AdventurerClass {

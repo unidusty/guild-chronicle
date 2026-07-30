@@ -4,6 +4,19 @@ import { generateName } from "./names";
 import { pickTraits } from "./traits";
 import { clamp, pick, roll } from "./util";
 
+const PERSONALITIES = [
+  "낙천적", "냉정함", "욕심 많음", "책임감 강함", "소심함",
+  "충동적", "신중함", "호기심 많음", "직설적", "다정함",
+  "자존심 강함", "과묵함", "명랑함", "독립적", "온화함",
+  "의심 많음", "사려깊음", "거침없음", "의리 있음", "집착 강함",
+];
+
+const BACKGROUNDS = [
+  "농촌", "왕도", "변경 마을", "항구 도시", "산악 부족",
+  "광산 도시", "숲 마을", "귀족 가문", "수도원", "상인 가문",
+  "슬럼가", "군인 가정", "유랑단", "어촌 마을", "사막 부족",
+];
+
 const RACES: Race[] = ["human", "elf", "dwarf"];
 const GENDERS: Gender[] = ["male", "female"];
 
@@ -96,6 +109,8 @@ export function generateAdventurer(
     injuryIds:      [],
     joinedAt:       currentDate,
     isArchived:     false,
+    personality:    pick(PERSONALITIES),
+    background:     pick(BACKGROUNDS),
   };
 }
 
