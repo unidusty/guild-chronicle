@@ -2,6 +2,37 @@ import type { Adventurer, ChronicleEntry, EntityId, GameDate, GameState } from "
 import { adventurerStatusLabels, raceLabels, seasonLabels } from "../constants/labels";
 import { getPortraitPath } from "../assets/portraits";
 
+const PERSONALITY_ADJ: Record<string, string> = {
+  "책임감 강함": "책임감 강한",
+  "과묵함": "과묵한",
+  "거침없음": "거침없는",
+  "다정함": "다정한",
+  "신중함": "신중한",
+  "용감함": "용감한",
+  "쾌활함": "쾌활한",
+  "냉철함": "냉철한",
+  "호기심 많음": "호기심 많은",
+  "의리 있음": "의리 있는",
+  "고집스러움": "고집스러운",
+  "느긋함": "느긋한",
+  "예민함": "예민한",
+  "낙천적임": "낙천적인",
+  "고독을 즐김": "고독을 즐기는",
+  "장난기 많음": "장난기 많은",
+  "진지함": "진지한",
+  "절제된 성격": "절제된",
+  "탐구적임": "탐구적인",
+  "강인함": "강인한",
+};
+
+export function getAdventurerBio(adv: Adventurer, className: string | undefined): string {
+  const adj = PERSONALITY_ADJ[adv.personality] ?? adv.personality;
+  const cls = className ?? "모험가";
+  const bg = adv.background ?? "";
+  if (bg) return `${bg} 출신의 ${adj} ${cls}.`;
+  return `${adj} ${cls}.`;
+}
+
 const formatGold = (value: number) => `${new Intl.NumberFormat("ko-KR").format(value)} G`;
 
 export const formatGameDate = (date: GameDate) => `왕국력 ${date.year}년 · ${seasonLabels[date.season]} ${date.day}일`;

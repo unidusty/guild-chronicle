@@ -11,6 +11,7 @@ import {
 import { getTraitName } from "../../game/generator/traits";
 import {
   formatShortGameDate,
+  getAdventurerBio,
   getAdventurerChronicle,
   getAdventurerLocationLabel,
 } from "../../game/simulation/selectors";
@@ -31,6 +32,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
   const primaryStats = new Set(cls?.primaryStats ?? []);
   const keyTraits = adv.traits.slice(0, 3);
   const chronicle = getAdventurerChronicle(state, adv.id);
+  const bio = getAdventurerBio(adv, cls?.name);
 
   return (
     <div className="panel adv-detail">
@@ -45,7 +47,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
         <div className="char-nameplate">
           <h3 className="char-name">{adv.name}</h3>
           <p className="char-class-meta">{cls?.name ?? "미정"}</p>
-          <p className="char-race-meta">{raceLabels[adv.race]} · {genderLabels[adv.gender]} · {adv.age}세</p>
+          <p className="char-race-meta">{raceLabels[adv.race]} · {adv.age}세</p>
         </div>
 
         <div className="char-grades">
@@ -92,11 +94,11 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
         )}
       </div>
 
-      {/* ── 우측 정보 패널 (카드 그리드) ── */}
+      {/* ── 우측 정보 패널 ── */}
       <div className="adv-info-panel">
         <div className="info-grid">
 
-          {/* 기본 정보 */}
+          {/* Row 1: 기본 정보 | 능력치 */}
           <div className="info-card">
             <p className="info-card-title">기본 정보</p>
             <div className="info-rows">
@@ -119,7 +121,6 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          {/* 능력치 */}
           <div className="info-card">
             <p className="info-card-title">능력치</p>
             <div className="detail-stat-list">
@@ -139,7 +140,12 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          {/* 특성 */}
+          {/* Row 2: 캐릭터 설명 | 특성 */}
+          <div className="info-card">
+            <p className="info-card-title">캐릭터 설명</p>
+            <p className="char-bio">{bio}</p>
+          </div>
+
           <div className="info-card">
             <p className="info-card-title">특성</p>
             <div className="trait-list adv-trait-list">
@@ -150,7 +156,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          {/* 최근 활동 — 전체 폭 */}
+          {/* Row 3: 최근 활동 (전체 폭) */}
           <div className="info-card activity-card">
             <p className="info-card-title">최근 활동</p>
             {chronicle.length === 0 ? (
