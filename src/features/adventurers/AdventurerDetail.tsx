@@ -6,6 +6,7 @@ import {
   getPotentialGrade,
   getStatusTone,
   raceLabels,
+  roleLabels,
   statLabels,
 } from "../../game/constants/labels";
 import { getTraitName } from "../../game/generator/traits";
@@ -31,8 +32,10 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
   const portraitPath = getPortraitPath(adv.portraitId, adv.race, adv.gender);
   const primaryStats = new Set(cls?.primaryStats ?? []);
   const keyTraits = adv.traits.slice(0, 3);
-  const chronicle = getAdventurerChronicle(state, adv.id);
+  const chronicle = getAdventurerChronicle(state, adv.id, 8);
   const bio = getAdventurerBio(adv, cls?.name);
+  const guildParty = adv.partyId ? state.parties[adv.partyId] : null;
+  const currentQuest = adv.currentQuestId ? state.quests[adv.currentQuestId] : null;
 
   return (
     <div className="panel adv-detail">
@@ -70,6 +73,12 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             <label>위치</label>
             <span className="char-location">{locationLabel}</span>
           </div>
+          <div className="char-status-row">
+            <label>컨디션</label>
+            <span className={adv.injuryIds.length > 0 ? "char-condition warning" : "char-condition"}>
+              {adv.injuryIds.length > 0 ? `부상 ${adv.injuryIds.length}건` : "이상 없음"}
+            </span>
+          </div>
         </div>
 
         <div className="char-belonging">
@@ -98,30 +107,18 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
       <div className="adv-info-panel">
         <div className="info-grid">
 
-          {/* Row 1: 기본 정보 | 능력치 */}
-          <div className="info-card">
+          {/* ── Row 1: 기본 정보 | 능력치 ── */}
+          <div className="info-card card-half">
             <p className="info-card-title">기본 정보</p>
             <div className="info-rows">
-              <div className="info-row">
-                <label>성별</label>
-                <span>{genderLabels[adv.gender]}</span>
-              </div>
-              <div className="info-row">
-                <label>나이</label>
-                <span>{adv.age}세</span>
-              </div>
-              <div className="info-row">
-                <label>성격</label>
-                <span>{adv.personality}</span>
-              </div>
-              <div className="info-row">
-                <label>출신</label>
-                <span>{adv.background}</span>
-              </div>
+              <div className="info-row"><label>성별</label><span>{genderLabels[adv.gender]}</span></div>
+              <div className="info-row"><label>나이</label><span>{adv.age}세</span></div>
+              <div className="info-row"><label>성격</label><span>{adv.personality}</span></div>
+              <div className="info-row"><label>출신</label><span>{adv.background}</span></div>
             </div>
           </div>
 
-          <div className="info-card">
+          <div className="info-card card-half">
             <p className="info-card-title">능력치</p>
             <div className="detail-stat-list">
               {(Object.keys(adv.stats) as Array<keyof Stats>).map((stat) => {
@@ -140,13 +137,44 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          {/* Row 2: 캐릭터 설명 | 특성 */}
-          <div className="info-card">
-            <p className="info-card-title">캐릭터 설명</p>
-            <p className="char-bio">{bio}</p>
+          {/* ── Row 2: 전투 능력 | 보유 기술 | 특성 ── */}
+          <div className="info-card card-third">
+            <p className="info-card-title">전투 능력</p>
+            <div className="combat-profile">
+              {cls && (
+                <div className="combat-role-row">
+                  <label>역할</label>
+                  <span className="role-tag">{roleLabels[cls.role]}</span>
+                </div>
+              )}
+              <div className="detail-stat-list">
+                {(cls?.primaryStats ?? []).map((stat) => {
+                  const val = adv.stats[stat];
+                  return (
+                    <div className="detail-stat-row" key={stat}>
+                      <span className="stat-label primary">{statLabels[stat]}</span>
+                      <div className="stat-bar">
+                        <i className="primary" style={{ width: `${(val / 18) * 100}%` }} />
+                      </div>
+                      <b className="stat-val primary">{val}</b>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          <div className="info-card">
+          <div className="info-card card-third">
+            <p className="info-card-title">보유 기술</p>
+            <p className="char-bio">{bio}</p>
+            <div className="info-rows skill-info-rows">
+              <div className="info-row"><label>파티</label><span>{guildParty?.name ?? "미배정"}</span></div>
+              <div className="info-row"><label>의뢰</label><span>{currentQuest?.title ?? "없음"}</span></div>
+              <div className="info-row"><label>가입</label><span>{formatShortGameDate(adv.joinedAt)}</span></div>
+            </div>
+          </div>
+
+          <div className="info-card card-third">
             <p className="info-card-title">특성</p>
             <div className="trait-list adv-trait-list">
               {adv.traits.map((t) => (
@@ -156,8 +184,8 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             </div>
           </div>
 
-          {/* Row 3: 최근 활동 (전체 폭) */}
-          <div className="info-card activity-card">
+          {/* ── Row 3: 최근 활동 ── */}
+          <div className="info-card card-full">
             <p className="info-card-title">최근 활동</p>
             {chronicle.length === 0 ? (
               <p className="info-empty">기록된 활동이 없습니다.</p>

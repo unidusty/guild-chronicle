@@ -35,6 +35,13 @@ export const statLabels: Record<keyof Stats, string> = {
   willpower:    "의지",
 };
 
+export const roleLabels: Record<"vanguard" | "damage" | "support" | "scout", string> = {
+  vanguard: "전위",
+  damage:   "딜러",
+  support:  "서포터",
+  scout:    "정찰",
+};
+
 export function getPotentialGrade(potential: number): "S" | "A" | "B" | "C" | "D" {
   if (potential >= 88) return "S";
   if (potential >= 72) return "A";

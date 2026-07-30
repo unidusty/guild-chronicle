@@ -152,7 +152,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .detail-close:hover { color: #c8cec8; }
 
 /* 좌측 캐릭터 카드 — 배율에 비례 */
-.adv-char-card { width: calc(260px * var(--ui-scale)); flex-shrink: 0; display: flex; flex-direction: column; gap: calc(12px * var(--ui-scale)); padding: calc(20px * var(--ui-scale)) calc(16px * var(--ui-scale)); border-right: 1px solid #2a322c; background: #151c17; }
+.adv-char-card { width: calc(260px * var(--ui-scale)); flex-shrink: 0; display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); padding: calc(20px * var(--ui-scale)) calc(16px * var(--ui-scale)); border-right: 1px solid #2a322c; background: #151c17; }
 /* 반신 초상화: 228×316px ≈ 13:18 비율 — 카드 패딩과 함께 비례 확대 */
 .portrait.bust { width: calc(228px * var(--ui-scale)); height: calc(316px * var(--ui-scale)); font-size: calc(56px * var(--ui-scale)); flex-shrink: 0; }
 .char-nameplate { display: flex; flex-direction: column; gap: 3px; }
@@ -166,6 +166,8 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .char-status-row { display: flex; align-items: center; gap: 8px; }
 .char-status-row > label { font-size: 9px; color: #5e6a60; letter-spacing: .06em; text-transform: uppercase; width: 28px; flex-shrink: 0; }
 .char-location { font-size: 11px; color: #8a948a; }
+.char-condition { font-size: 11px; color: #8a948a; }
+.char-condition.warning { color: #d5a178; }
 .char-belonging-header { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #5e6a60; margin-bottom: 6px; letter-spacing: .04em; }
 .char-belonging-val { color: #9a8a65; font-size: 12px; font-weight: 600; }
 .belonging-bar { height: 5px; background: #222a24; }
@@ -176,31 +178,41 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 
 /* 우측 정보 패널 — 패널 내에서 독립 스크롤 */
 .adv-info-panel { flex: 1; min-width: 0; padding: calc(12px * var(--ui-scale)); overflow-y: auto; }
-/* 카드 그리드: minmax 기준폭도 배율에 비례 */
-.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(295px * var(--ui-scale)), 1fr)); gap: calc(10px * var(--ui-scale)); align-content: start; }
-.activity-card { grid-column: 1 / -1; }
+/* 카드 그리드: 6열 고정 — span으로 행별 분할 */
+.info-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: calc(10px * var(--ui-scale)); align-content: start; }
+.card-half  { grid-column: span 3; }
+.card-third { grid-column: span 2; }
+.card-full  { grid-column: 1 / -1; }
 
 /* 정보 카드 — 독립 박스 */
 .info-card { border: 1px solid #2a322c; background: #1a211b; padding: calc(14px * var(--ui-scale)) calc(15px * var(--ui-scale)); }
 .info-card-title { font-size: 10px; color: #9c8757; font-weight: 700; letter-spacing: .15em; margin: 0 0 11px; }
-.info-rows { display: flex; flex-direction: column; gap: 7px; }
+.info-rows { display: flex; flex-direction: column; gap: 9px; }
 .info-row { display: flex; align-items: center; gap: 10px; }
 .info-row > label { font-size: 10px; color: #5e6a60; letter-spacing: .04em; width: 34px; flex-shrink: 0; }
-.info-row > span { font-size: 12px; color: #c4c9c4; }
+.info-row > span { font-size: 12px; color: #c4c9c4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 보유 기술 카드 — bio 아래 여백 */
+.skill-info-rows { margin-top: 10px; }
 .info-empty { font-size: 11px; color: #4a5a4a; margin: 0; }
 .char-bio { margin: 0; font-size: 12px; color: #9ca49d; line-height: 1.65; font-style: italic; }
 
 /* 능력치 — 바 배율 비례 */
-.detail-stat-list { display: flex; flex-direction: column; gap: 8px; max-width: calc(320px * var(--ui-scale)); }
+.detail-stat-list { display: flex; flex-direction: column; gap: 10px; max-width: calc(320px * var(--ui-scale)); }
 .detail-stat-row { display: grid; grid-template-columns: 2.8rem 1fr 2.2rem; align-items: center; gap: 8px; }
 .detail-stat-row .stat-val { font-size: 13px; }
+/* 전투 능력 카드 */
+.combat-profile { display: flex; flex-direction: column; gap: 10px; }
+.combat-role-row { display: flex; align-items: center; gap: 8px; }
+.combat-role-row > label { font-size: 9px; color: #5e6a60; letter-spacing: .06em; text-transform: uppercase; width: 28px; flex-shrink: 0; }
+.role-tag { font-size: 12px; color: #a08c55; font-weight: 600; letter-spacing: .03em; }
+.combat-profile .detail-stat-list { max-width: none; }
 
 /* 특성 (info-card 내 — specificity 오버라이드) */
 .adv-trait-list { gap: 6px; }
 .adv-trait-list .trait-tag { padding: 5px 10px; font-size: 11px; }
 
 /* 최근 활동 */
-.activity-list { display: flex; flex-direction: column; gap: 10px; }
-.activity-item { display: grid; grid-template-columns: 60px 1fr; gap: 8px; align-items: baseline; }
+.activity-list { display: flex; flex-direction: column; gap: 14px; }
+.activity-item { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
 .activity-item time { font-size: 9px; color: #8b7650; letter-spacing: .04em; }
-.activity-item p { margin: 0; font-size: 11px; color: #8a9489; line-height: 1.5; }
+.activity-item p { margin: 0; font-size: 11px; color: #8a9489; line-height: 1.55; }
