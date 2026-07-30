@@ -5,7 +5,7 @@ import { generateCandidates } from "../game/generator/adventurer";
 import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetrics, getRosterRows } from "../game/simulation/selectors";
 import RecruitmentPanel from "../features/recruitment/RecruitmentPanel";
 import AdventurersPage from "../features/adventurers/AdventurersPage";
-import { UI_SCALES, useUiScale } from "../lib/uiScale";
+import { UI_SCALES, UI_SCALE_LABELS, useUiScale } from "../lib/uiScale";
 import type { UiScale } from "../lib/uiScale";
 
 type Page = "dashboard" | "adventurers";
@@ -90,7 +90,7 @@ export default function App() {
                 className={`scale-btn${uiScale === s ? " active" : ""}`}
                 onClick={() => setUiScale(s as UiScale)}
               >
-                {s * 100}%
+                {UI_SCALE_LABELS[s]}
               </button>
             ))}
           </div>
