@@ -118,9 +118,9 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 @media (max-width: 900px)  { .candidate-grid { grid-template-columns: 1fr; } }
 
 /* ── Adventurer Page ─────────────────────────────────────────────── */
-.adv-page { display: flex; gap: 14px; align-items: flex-start; max-width: 1200px; }
+.adv-page { display: flex; gap: calc(14px * var(--ui-scale)); align-items: flex-start; max-width: calc(1200px * var(--ui-scale)); }
 .adv-list-col { flex: 1 1 auto; min-width: 0; }
-.adv-page.has-detail .adv-list-col { flex: 0 0 268px; }
+.adv-page.has-detail .adv-list-col { flex: 0 0 calc(268px * var(--ui-scale)); }
 .adv-detail-col { flex: 1 1 auto; min-width: 0; }
 
 /* Filter bar */
@@ -134,6 +134,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* Adventurer list table */
 .table-wrap { overflow-x: auto; }
 .adv-table th, .adv-table td { white-space: nowrap; }
+.adv-table .portrait { width: calc(34px * var(--ui-scale)); height: calc(34px * var(--ui-scale)); }
 .adv-row { cursor: pointer; }
 .adv-row td { padding: calc(11px * var(--ui-scale)) 10px; }
 .adv-row:hover td { background: #1e2420; }
@@ -146,10 +147,10 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .detail-close { position: absolute; top: 12px; right: 14px; border: 0; background: transparent; color: #4a5a4a; font-size: 20px; cursor: pointer; line-height: 1; padding: 4px 6px; z-index: 1; }
 .detail-close:hover { color: #c8cec8; }
 
-/* 좌측 캐릭터 카드 (260px 고정) */
-.adv-char-card { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; padding: 20px 16px; border-right: 1px solid #2a322c; background: #151c17; }
-/* 반신 초상화: 228×316px ≈ 13:18 비율 */
-.portrait.bust { width: 228px; height: 316px; font-size: 56px; flex-shrink: 0; }
+/* 좌측 캐릭터 카드 — 배율에 비례 */
+.adv-char-card { width: calc(260px * var(--ui-scale)); flex-shrink: 0; display: flex; flex-direction: column; gap: calc(12px * var(--ui-scale)); padding: calc(20px * var(--ui-scale)) calc(16px * var(--ui-scale)); border-right: 1px solid #2a322c; background: #151c17; }
+/* 반신 초상화: 228×316px ≈ 13:18 비율 — 카드 패딩과 함께 비례 확대 */
+.portrait.bust { width: calc(228px * var(--ui-scale)); height: calc(316px * var(--ui-scale)); font-size: calc(56px * var(--ui-scale)); flex-shrink: 0; }
 .char-nameplate { display: flex; flex-direction: column; gap: 3px; }
 .char-name { font-family: Georgia, serif; font-size: 21px; font-weight: 500; color: #e4e5df; margin: 0; }
 .char-class-meta { font-size: 12px; color: #a08c55; font-weight: 500; margin: 0; }
@@ -171,8 +172,8 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 
 /* 우측 정보 패널 */
 .adv-info-panel { flex: 1; min-width: 0; padding: calc(12px * var(--ui-scale)); }
-/* 카드 그리드: 295px 이상이면 2열, 미만이면 1열 자동 전환 */
-.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(295px, 1fr)); gap: 10px; align-content: start; }
+/* 카드 그리드: minmax 기준폭도 배율에 비례 */
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(295px * var(--ui-scale)), 1fr)); gap: calc(10px * var(--ui-scale)); align-content: start; }
 .activity-card { grid-column: 1 / -1; }
 
 /* 정보 카드 — 독립 박스 */
@@ -185,8 +186,8 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .info-empty { font-size: 11px; color: #4a5a4a; margin: 0; }
 .char-bio { margin: 0; font-size: 12px; color: #9ca49d; line-height: 1.65; font-style: italic; }
 
-/* 능력치 — 바 180~220px, 숫자 13px */
-.detail-stat-list { display: flex; flex-direction: column; gap: 8px; max-width: 320px; }
+/* 능력치 — 바 배율 비례 */
+.detail-stat-list { display: flex; flex-direction: column; gap: 8px; max-width: calc(320px * var(--ui-scale)); }
 .detail-stat-row { display: grid; grid-template-columns: 2.8rem 1fr 2.2rem; align-items: center; gap: 8px; }
 .detail-stat-row .stat-val { font-size: 13px; }
 
