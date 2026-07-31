@@ -208,7 +208,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .info-card-title { font-size: var(--font-card-title); color: #9c8757; font-weight: 700; letter-spacing: .10em; margin: 0 0 calc(7px * var(--ui-scale)); }
 .info-rows { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
 .info-row { display: flex; align-items: center; gap: 12px; }
-.info-row > label { font-size: var(--font-small); color: #5e6a60; letter-spacing: .04em; width: calc(44px * var(--ui-scale)); flex-shrink: 0; }
+.info-row > label { font-size: var(--font-small); color: #5e6a60; letter-spacing: .04em; width: calc(44px * var(--ui-scale)); flex-shrink: 0; white-space: nowrap; }
 .info-row > span { font-size: var(--font-important); color: #c4c9c4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .info-empty { font-size: var(--font-small); color: #4a5a4a; margin: 0; }
 /* 캐릭터 설명 카드 — 전체 폭, 얇은 패딩 */
@@ -279,7 +279,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .settings-done:hover { background: rgba(138,118,70,.1); }
 
 /* ── Party Page ─────────────────────────────────────────────────── */
-.party-page { display: flex; gap: calc(14px * var(--ui-scale)); align-items: stretch; width: 100%; }
+.party-page { display: flex; gap: calc(14px * var(--ui-scale)); align-items: stretch; width: 100%; min-height: 0; }
 .party-list-col { flex: 1 1 auto; min-width: 0; overflow-y: auto; }
 .party-page.has-detail .party-list-col { flex: 0 0 calc(300px * var(--ui-scale)); overflow-y: auto; }
 .party-detail-col { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
@@ -301,23 +301,24 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .portrait.portrait-md { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); font-size: 13px; flex-shrink: 0; }
 
 /* Party detail panel */
-.party-detail { position: relative; flex-direction: column; padding: 0; overflow: hidden; flex: 1; min-height: 0; }
+.party-detail { position: relative; display: flex; flex-direction: column; padding: 0; overflow: hidden; flex: 1; min-height: 0; }
 .party-detail-header { display: flex; align-items: center; justify-content: space-between; padding: calc(20px * var(--ui-scale)) calc(52px * var(--ui-scale)) calc(16px * var(--ui-scale)) calc(24px * var(--ui-scale)); border-bottom: 1px solid #2a322c; flex-shrink: 0; }
-.party-detail-title { display: flex; align-items: center; gap: calc(12px * var(--ui-scale)); }
+.party-detail-title { display: flex; align-items: center; gap: calc(12px * var(--ui-scale)); min-width: 0; flex: 1; }
 .party-rank { font-family: Georgia, serif; font-size: calc(20px * var(--ui-scale)); font-weight: 700; }
-.party-name-heading { margin: 0; font-size: calc(22px * var(--ui-scale)); color: #eaebe5; }
-.party-name-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); }
+.party-name-heading { margin: 0; font-size: calc(22px * var(--ui-scale)); color: #eaebe5; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.party-name-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); min-width: 0; }
 .party-rename-btn { padding: calc(3px * var(--ui-scale)) calc(10px * var(--ui-scale)); border: 1px solid #3a4e3e; background: transparent; color: #8aaa8e; font-size: var(--font-small); cursor: pointer; letter-spacing: .04em; transition: border-color .12s, background .12s; }
 .party-rename-btn:hover { border-color: #5a8a5e; background: rgba(60,90,60,.1); }
-.party-rename-form { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
-.party-rename-input { background: #101510; border: 1px solid #3a4e3e; color: #eaebe5; font-size: calc(18px * var(--ui-scale)); padding: calc(4px * var(--ui-scale)) calc(10px * var(--ui-scale)); outline: none; width: calc(220px * var(--ui-scale)); }
+.party-rename-form { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); min-width: 0; }
+.party-rename-input { background: #101510; border: 1px solid #3a4e3e; color: #eaebe5; font-size: calc(18px * var(--ui-scale)); padding: calc(4px * var(--ui-scale)) calc(10px * var(--ui-scale)); outline: none; width: 100%; max-width: calc(220px * var(--ui-scale)); }
 .party-rename-input:focus { border-color: #5a8a5e; }
 .party-rename-actions { display: flex; gap: calc(8px * var(--ui-scale)); }
 .party-rename-error { color: #c49090; font-size: var(--font-small); margin: 0; }
-.party-detail-body { flex: 1; overflow-y: auto; padding: calc(20px * var(--ui-scale)) calc(24px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(22px * var(--ui-scale)); }
+.party-detail-body { flex: 1; min-height: 0; overflow-y: auto; padding: calc(20px * var(--ui-scale)) calc(24px * var(--ui-scale)) calc(36px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(22px * var(--ui-scale)); }
 .party-members-section,
 .party-quest-section,
 .party-meta-section { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.party-meta-section .info-row > label { width: calc(64px * var(--ui-scale)); }
 .party-member-list { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
 .party-member-row { display: flex; align-items: center; gap: calc(12px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #2a322c; background: #181f1a; }
 .party-member-row.is-leader { border-color: #3d4a38; background: #1c261d; }
