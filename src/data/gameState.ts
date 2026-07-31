@@ -43,6 +43,8 @@ export const initialGameState: GameState = {
       status: "recovering", partyId: null, currentQuestId: null,
       injuryIds: ["injury-ella-bruise"], joinedAt: { year: 315, season: "spring", day: 4 }, isArchived: false,
       personality: "책임감 강함", background: "왕도",
+      combatRatings:    { attack: 3, defense: 4, evasion: 2, accuracy: 2, survival: 4, leadership: 3 },
+      combatTendencies: { melee: 4, ranged: 2, magic: 3, survival: 3, command: 3 },
     },
     "adv-lien": {
       id: "adv-lien", name: "리엔 아르벨", race: "elf", gender: "male", age: 91,
@@ -52,6 +54,8 @@ export const initialGameState: GameState = {
       status: "dispatched", partyId: "party-silverhawk", currentQuestId: "quest-caravan",
       injuryIds: [], joinedAt: { year: 314, season: "autumn", day: 19 }, isArchived: false,
       personality: "과묵함", background: "숲 마을",
+      combatRatings:    { attack: 3, defense: 2, evasion: 5, accuracy: 5, survival: 2, leadership: 3 },
+      combatTendencies: { melee: 2, ranged: 5, magic: 3, survival: 2, command: 3 },
     },
     "adv-dorgan": {
       id: "adv-dorgan", name: "도르간 맥주먹", race: "dwarf", gender: "male", age: 57,
@@ -61,6 +65,8 @@ export const initialGameState: GameState = {
       status: "training", partyId: null, currentQuestId: null,
       injuryIds: [], joinedAt: { year: 316, season: "winter", day: 2 }, isArchived: false,
       personality: "거침없음", background: "광산 도시",
+      combatRatings:    { attack: 2, defense: 4, evasion: 1, accuracy: 1, survival: 4, leadership: 3 },
+      combatTendencies: { melee: 4, ranged: 1, magic: 3, survival: 5, command: 3 },
     },
     "adv-marien": {
       id: "adv-marien", name: "마리엔 로우", race: "human", gender: "female", age: 29,
@@ -70,6 +76,8 @@ export const initialGameState: GameState = {
       status: "dispatched", partyId: "party-bluelantern", currentQuestId: "quest-missing",
       injuryIds: [], joinedAt: { year: 316, season: "summer", day: 11 }, isArchived: false,
       personality: "다정함", background: "농촌",
+      combatRatings:    { attack: 1, defense: 3, evasion: 2, accuracy: 2, survival: 3, leadership: 4 },
+      combatTendencies: { melee: 1, ranged: 2, magic: 4, survival: 2, command: 4 },
     },
   },
   parties: {

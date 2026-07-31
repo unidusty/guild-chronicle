@@ -1,4 +1,4 @@
-import type { Adventurer, AdventurerClass, EntityId, GameDate, Race, Gender, Stats } from "../../types/game";
+import type { Adventurer, AdventurerClass, CombatRatings, CombatTendencies, EntityId, GameDate, Race, Gender, Stats } from "../../types/game";
 import { getPortraitsByRaceGender } from "../assets/portraits";
 import { generateName } from "./names";
 import { pickTraits } from "./traits";
@@ -67,6 +67,39 @@ function generateStats(classData: AdventurerClass, race: Race): Stats {
   return base;
 }
 
+function statToStars(v: number): number {
+  if (v >= 16) return 5;
+  if (v >= 13) return 4;
+  if (v >= 11) return 3;
+  if (v >= 8)  return 2;
+  return 1;
+}
+
+function avg(...vals: number[]): number {
+  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+}
+
+export function deriveCombatRatings(stats: Stats): CombatRatings {
+  return {
+    attack:     statToStars(avg(stats.strength, stats.agility)),
+    defense:    statToStars(avg(stats.endurance, stats.willpower)),
+    evasion:    statToStars(avg(stats.agility, stats.perception)),
+    accuracy:   statToStars(avg(stats.perception, stats.agility)),
+    survival:   statToStars(avg(stats.endurance, stats.willpower)),
+    leadership: statToStars(avg(stats.willpower, stats.intelligence)),
+  };
+}
+
+export function deriveCombatTendencies(stats: Stats): CombatTendencies {
+  return {
+    melee:    statToStars(avg(stats.strength, stats.endurance)),
+    ranged:   statToStars(avg(stats.agility, stats.perception)),
+    magic:    statToStars(avg(stats.intelligence, stats.willpower)),
+    survival: statToStars(stats.endurance),
+    command:  statToStars(avg(stats.willpower, stats.intelligence)),
+  };
+}
+
 function pickPortraitId(race: Race, gender: Gender): string | null {
   const available = getPortraitsByRaceGender(race, gender);
   if (available.length === 0) return null;
@@ -90,27 +123,31 @@ export function generateAdventurer(
   let id: EntityId;
   do { id = makeId(); } while (usedIds.has(id));
 
+  const stats = generateStats(classData, race);
+
   return {
     id,
-    name:           generateName(race, gender),
+    name:             generateName(race, gender),
     race,
     gender,
-    age:            roll(ageMin, ageMax),
+    age:              roll(ageMin, ageMax),
     classId,
-    rank:           "D",
-    portraitId:     pickPortraitId(race, gender),
-    stats:          generateStats(classData, race),
-    potential:      roll(30, 90),
-    traits:         pickTraits(roll(1, 3)),
-    belonging:      roll(28, 55),
-    status:         "idle",
-    partyId:        null,
-    currentQuestId: null,
-    injuryIds:      [],
-    joinedAt:       currentDate,
-    isArchived:     false,
-    personality:    pick(PERSONALITIES),
-    background:     pick(BACKGROUNDS),
+    rank:             "D",
+    portraitId:       pickPortraitId(race, gender),
+    stats,
+    potential:        roll(30, 90),
+    traits:           pickTraits(roll(1, 3)),
+    belonging:        roll(28, 55),
+    status:           "idle",
+    partyId:          null,
+    currentQuestId:   null,
+    injuryIds:        [],
+    joinedAt:         currentDate,
+    isArchived:       false,
+    personality:      pick(PERSONALITIES),
+    background:       pick(BACKGROUNDS),
+    combatRatings:    deriveCombatRatings(stats),
+    combatTendencies: deriveCombatTendencies(stats),
   };
 }
 

@@ -174,6 +174,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .char-nameplate,
 .char-grades,
 .char-status-block,
+.char-party-block,
 .char-belonging,
 .char-key-traits { flex-shrink: 0; }
 .char-nameplate { display: flex; flex-direction: column; gap: calc(7px * var(--ui-scale)); }
@@ -189,6 +190,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .char-location { font-size: calc(15px * var(--ui-scale)); color: #8a948a; }
 .char-condition { font-size: calc(15px * var(--ui-scale)); color: #8a948a; }
 .char-condition.warning { color: #d5a178; }
+.char-party-block { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); padding-top: calc(10px * var(--ui-scale)); border-top: 1px solid #2a322c; }
 .char-belonging-header { display: flex; justify-content: space-between; align-items: center; font-size: var(--font-tiny); color: #5e6a60; margin-bottom: calc(9px * var(--ui-scale)); letter-spacing: .04em; }
 .char-belonging-val { color: #9a8a65; font-size: calc(15px * var(--ui-scale)); font-weight: 600; }
 .belonging-bar { height: calc(8px * var(--ui-scale)); background: #222a24; }
@@ -198,18 +200,24 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .char-key-traits .trait-tag { font-size: var(--font-small); padding: 5px 10px; }
 .char-section-label { font-size: var(--font-tiny); color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 10px; }
 
-/* 우측 정보 패널 — flex 열 + 독립 스크롤 */
-.adv-info-panel { flex: 1; min-width: 0; padding: calc(14px * var(--ui-scale)); overflow-y: auto; display: flex; flex-direction: column; gap: calc(12px * var(--ui-scale)); }
+/* 우측 — 탭 + 콘텐츠 래퍼 */
+.adv-detail-right { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.adv-tab-nav { display: flex; border-bottom: 1px solid #2a322c; background: #151c17; flex-shrink: 0; }
+.adv-tab { padding: calc(10px * var(--ui-scale)) calc(18px * var(--ui-scale)); background: transparent; border: 0; border-bottom: 2px solid transparent; color: #5e6a60; font-size: var(--font-small); letter-spacing: .06em; cursor: pointer; }
+.adv-tab:hover { color: #9ca49d; }
+.adv-tab.active { color: #c4a860; border-bottom-color: #c4a860; }
+.adv-tab-body { flex: 1; min-height: 0; overflow-y: auto; padding: calc(12px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.tab-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; color: #4a5a4a; font-size: var(--font-body); }
 /* 행별 명시적 그리드 */
-.detail-row { display: grid; gap: calc(12px * var(--ui-scale)); }
+.detail-row { display: grid; gap: calc(8px * var(--ui-scale)); }
 .detail-row-2    { grid-template-columns: 1fr 1fr; }
 .detail-row-3    { grid-template-columns: 1fr 1fr 1fr; }
 .detail-row-full { grid-template-columns: 1fr; }
 
 /* 정보 카드 — 독립 박스 */
-.info-card { border: 1px solid #2a322c; background: #1a211b; padding: calc(18px * var(--ui-scale)); }
-.info-card-title { font-size: var(--font-card-title); color: #9c8757; font-weight: 700; letter-spacing: .10em; margin: 0 0 calc(16px * var(--ui-scale)); }
-.info-rows { display: flex; flex-direction: column; gap: calc(13px * var(--ui-scale)); }
+.info-card { border: 1px solid #2a322c; background: #1a211b; padding: calc(13px * var(--ui-scale)); }
+.info-card-title { font-size: var(--font-card-title); color: #9c8757; font-weight: 700; letter-spacing: .10em; margin: 0 0 calc(10px * var(--ui-scale)); }
+.info-rows { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
 .info-row { display: flex; align-items: center; gap: 12px; }
 .info-row > label { font-size: var(--font-small); color: #5e6a60; letter-spacing: .04em; width: calc(44px * var(--ui-scale)); flex-shrink: 0; }
 .info-row > span { font-size: var(--font-important); color: #c4c9c4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -219,26 +227,35 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .char-bio { margin: 0; font-size: calc(15px * var(--ui-scale)); color: #9ca49d; line-height: 1.65; font-style: italic; }
 
 /* 능력치 바 — 배율 비례, 카드 폭 무관하게 max-width 고정 */
-.detail-stat-list { display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); max-width: calc(300px * var(--ui-scale)); }
-.detail-stat-row { display: grid; grid-template-columns: calc(56px * var(--ui-scale)) 1fr calc(40px * var(--ui-scale)); align-items: center; gap: calc(10px * var(--ui-scale)); min-height: calc(36px * var(--ui-scale)); }
+.detail-stat-list { display: flex; flex-direction: column; gap: calc(7px * var(--ui-scale)); max-width: calc(300px * var(--ui-scale)); }
+.detail-stat-row { display: grid; grid-template-columns: calc(56px * var(--ui-scale)) 1fr calc(40px * var(--ui-scale)); align-items: center; gap: calc(8px * var(--ui-scale)); min-height: calc(28px * var(--ui-scale)); }
 .detail-stat-row .stat-label { font-size: calc(14px * var(--ui-scale)); }
 .detail-stat-row .stat-val { font-size: calc(15px * var(--ui-scale)); text-align: right; }
 .detail-stat-row .stat-bar { height: var(--stat-bar-height); background: #243024; }
 .detail-stat-row .stat-bar i { background: #5a8a64; }
 .detail-stat-row .stat-bar i.primary { background: #b09050; }
-/* 전투 능력 카드 */
-.combat-profile { display: flex; flex-direction: column; gap: calc(12px * var(--ui-scale)); }
-.combat-role-row { display: flex; align-items: center; gap: 10px; }
-.combat-role-row > label { font-size: var(--font-tiny); color: #5e6a60; letter-spacing: .06em; text-transform: uppercase; width: calc(36px * var(--ui-scale)); flex-shrink: 0; }
-.role-tag { font-size: calc(15px * var(--ui-scale)); color: #a08c55; font-weight: 600; letter-spacing: .03em; }
+/* 전투 능력 — 별점 */
+.combat-rating-list { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.combat-rating-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); min-height: calc(24px * var(--ui-scale)); }
+.combat-rating-label { font-size: var(--font-small); color: #5e6a60; width: calc(52px * var(--ui-scale)); flex-shrink: 0; letter-spacing: .02em; }
+.star-rating { color: #c4a860; font-size: calc(14px * var(--ui-scale)); letter-spacing: 1px; }
+/* 전투 성향 — 바 */
+.tendency-list { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.tendency-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); min-height: calc(24px * var(--ui-scale)); }
+.tendency-label { font-size: var(--font-small); color: #5e6a60; width: calc(52px * var(--ui-scale)); flex-shrink: 0; letter-spacing: .02em; }
+.tendency-bar { flex: 1; height: calc(6px * var(--ui-scale)); background: #222a24; }
+.tendency-bar i { display: block; height: 100%; background: #5a8a64; }
+.tendency-val { font-size: var(--font-small); color: #8a9289; width: calc(20px * var(--ui-scale)); text-align: right; font-variant-numeric: tabular-nums; }
 
 /* 특성 (info-card 내 — specificity 오버라이드) */
 .adv-trait-list { gap: 7px; }
 .adv-trait-list .trait-tag { padding: 6px 12px; font-size: calc(13px * var(--ui-scale)); }
 
-/* 최근 활동 — 자연 높이 (flex:1 없음, 최대 5건) */
+/* 최근 활동 */
 .activity-card { display: flex; flex-direction: column; }
-.activity-list { display: flex; flex-direction: column; gap: calc(14px * var(--ui-scale)); }
-.activity-item { display: grid; grid-template-columns: calc(68px * var(--ui-scale)) 1fr; gap: calc(12px * var(--ui-scale)); align-items: baseline; }
-.activity-item time { font-size: var(--font-tiny); color: #8b7650; letter-spacing: .04em; }
-.activity-item p { margin: 0; font-size: calc(15px * var(--ui-scale)); color: #8a9489; line-height: 1.6; }
+.activity-list { display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); }
+.activity-item { display: grid; grid-template-columns: calc(68px * var(--ui-scale)) 1fr; gap: calc(10px * var(--ui-scale)); }
+.activity-item time { font-size: var(--font-tiny); color: #8b7650; letter-spacing: .04em; padding-top: 2px; }
+.activity-content { display: flex; flex-direction: column; gap: 3px; }
+.activity-content strong { font-size: calc(15px * var(--ui-scale)); color: #c0c8c0; }
+.activity-content span { font-size: var(--font-small); color: #6a7a6c; line-height: 1.5; }

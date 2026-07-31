@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Adventurer, GameState, Stats } from "../../types/game";
 import { getPortraitPath } from "../../game/assets/portraits";
 import {
@@ -6,7 +7,6 @@ import {
   getPotentialGrade,
   getStatusTone,
   raceLabels,
-  roleLabels,
   statLabels,
 } from "../../game/constants/labels";
 import { getTraitName } from "../../game/generator/traits";
@@ -17,6 +17,45 @@ import {
   getAdventurerLocationLabel,
 } from "../../game/simulation/selectors";
 
+type DetailTab = "info" | "skills" | "equipment" | "traits" | "relations" | "chronicle";
+
+const DETAIL_TABS: { id: DetailTab; label: string }[] = [
+  { id: "info",      label: "정보" },
+  { id: "skills",    label: "스킬" },
+  { id: "equipment", label: "장비" },
+  { id: "traits",    label: "특성" },
+  { id: "relations", label: "관계" },
+  { id: "chronicle", label: "연대기" },
+];
+
+const PLACEHOLDER_LABEL: Partial<Record<DetailTab, string>> = {
+  skills:    "스킬",
+  equipment: "장비",
+  traits:    "특성",
+  relations: "관계",
+  chronicle: "연대기",
+};
+
+const COMBAT_RATING_KEYS = ["attack", "defense", "evasion", "accuracy", "survival", "leadership"] as const;
+type CombatRatingKey = typeof COMBAT_RATING_KEYS[number];
+const COMBAT_RATING_LABELS: Record<CombatRatingKey, string> = {
+  attack: "공격", defense: "방어", evasion: "회피", accuracy: "명중", survival: "생존", leadership: "리더십",
+};
+
+const COMBAT_TENDENCY_KEYS = ["melee", "ranged", "magic", "survival", "command"] as const;
+type CombatTendencyKey = typeof COMBAT_TENDENCY_KEYS[number];
+const COMBAT_TENDENCY_LABELS: Record<CombatTendencyKey, string> = {
+  melee: "근접전", ranged: "원거리", magic: "마법", survival: "생존력", command: "지휘",
+};
+
+function StarRating({ value }: { value: number }) {
+  return (
+    <span className="star-rating" aria-label={`${value}성`}>
+      {"★".repeat(value)}{"☆".repeat(5 - value)}
+    </span>
+  );
+}
+
 interface Props {
   adventurer: Adventurer;
   state: GameState;
@@ -24,6 +63,8 @@ interface Props {
 }
 
 export default function AdventurerDetail({ adventurer: adv, state, onClose }: Props) {
+  const [activeTab, setActiveTab] = useState<DetailTab>("info");
+
   const cls = state.classes[adv.classId];
   const potGrade = getPotentialGrade(adv.potential);
   const statusTone = getStatusTone(adv);
@@ -80,6 +121,17 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
           </div>
         </div>
 
+        <div className="char-party-block">
+          <div className="char-status-row">
+            <label>파티</label>
+            <span className="char-location">{guildParty?.name ?? "미배정"}</span>
+          </div>
+          <div className="char-status-row">
+            <label>의뢰</label>
+            <span className="char-location">{currentQuest?.title ?? "없음"}</span>
+          </div>
+        </div>
+
         <div className="char-belonging">
           <div className="char-belonging-header">
             <span>소속감</span>
@@ -102,115 +154,130 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
         )}
       </div>
 
-      {/* ── 우측 정보 패널 ── */}
-      <div className="adv-info-panel">
+      {/* ── 우측: 탭 + 콘텐츠 ── */}
+      <div className="adv-detail-right">
+        <nav className="adv-tab-nav">
+          {DETAIL_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              className={`adv-tab${activeTab === tab.id ? " active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
 
-        {/* ── Row 1: 기본 정보 | 능력치 ── */}
-        <div className="detail-row detail-row-2">
-          <div className="info-card">
-            <p className="info-card-title">기본 정보</p>
-            <div className="info-rows">
-              <div className="info-row"><label>성별</label><span>{genderLabels[adv.gender]}</span></div>
-              <div className="info-row"><label>나이</label><span>{adv.age}세</span></div>
-              <div className="info-row"><label>성격</label><span>{adv.personality}</span></div>
-              <div className="info-row"><label>출신</label><span>{adv.background}</span></div>
-            </div>
-          </div>
-
-          <div className="info-card">
-            <p className="info-card-title">능력치</p>
-            <div className="detail-stat-list">
-              {(Object.keys(adv.stats) as Array<keyof Stats>).map((stat) => {
-                const val = adv.stats[stat];
-                const isPrimary = primaryStats.has(stat);
-                return (
-                  <div className="detail-stat-row" key={stat}>
-                    <span className={isPrimary ? "stat-label primary" : "stat-label"}>{statLabels[stat]}</span>
-                    <div className="stat-bar">
-                      <i className={isPrimary ? "primary" : ""} style={{ width: `${(val / 18) * 100}%` }} />
-                    </div>
-                    <b className={isPrimary ? "stat-val primary" : "stat-val"}>{val}</b>
+        <div className="adv-tab-body">
+          {activeTab === "info" ? (
+            <>
+              {/* Row 1: 기본 정보 | 능력치 */}
+              <div className="detail-row detail-row-2">
+                <div className="info-card">
+                  <p className="info-card-title">기본 정보</p>
+                  <div className="info-rows">
+                    <div className="info-row"><label>성별</label><span>{genderLabels[adv.gender]}</span></div>
+                    <div className="info-row"><label>나이</label><span>{adv.age}세</span></div>
+                    <div className="info-row"><label>성격</label><span>{adv.personality}</span></div>
+                    <div className="info-row"><label>출신</label><span>{adv.background}</span></div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Row 2: 캐릭터 설명 (전체 폭) ── */}
-        <div className="detail-row detail-row-full">
-          <div className="info-card bio-card">
-            <p className="char-bio">{bio}</p>
-          </div>
-        </div>
-
-        {/* ── Row 3: 전투 능력 | 소속 정보 | 특성 ── */}
-        <div className="detail-row detail-row-3">
-          <div className="info-card">
-            <p className="info-card-title">전투 능력</p>
-            <div className="combat-profile">
-              {cls && (
-                <div className="combat-role-row">
-                  <label>역할</label>
-                  <span className="role-tag">{roleLabels[cls.role]}</span>
                 </div>
-              )}
-              <div className="detail-stat-list">
-                {(cls?.primaryStats ?? []).map((stat) => {
-                  const val = adv.stats[stat];
-                  return (
-                    <div className="detail-stat-row" key={stat}>
-                      <span className="stat-label primary">{statLabels[stat]}</span>
-                      <div className="stat-bar">
-                        <i className="primary" style={{ width: `${(val / 18) * 100}%` }} />
-                      </div>
-                      <b className="stat-val primary">{val}</b>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
 
-          <div className="info-card">
-            <p className="info-card-title">소속 정보</p>
-            <div className="info-rows">
-              <div className="info-row"><label>파티</label><span>{guildParty?.name ?? "미배정"}</span></div>
-              <div className="info-row"><label>의뢰</label><span>{currentQuest?.title ?? "없음"}</span></div>
-              <div className="info-row"><label>가입</label><span>{formatShortGameDate(adv.joinedAt)}</span></div>
-            </div>
-          </div>
-
-          <div className="info-card">
-            <p className="info-card-title">특성</p>
-            <div className="trait-list adv-trait-list">
-              {adv.traits.map((t) => (
-                <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
-              ))}
-              {adv.traits.length === 0 && <span className="info-empty">없음</span>}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Row 4: 최근 활동 (전체 폭) ── */}
-        <div className="detail-row detail-row-full">
-          <div className="info-card activity-card">
-            <p className="info-card-title">최근 활동</p>
-            {chronicle.length === 0 ? (
-              <p className="info-empty">기록된 활동이 없습니다.</p>
-            ) : (
-              <div className="activity-list">
-                {chronicle.map((entry) => (
-                  <div className="activity-item" key={entry.id}>
-                    <time>{formatShortGameDate(entry.date)}</time>
-                    <p>{entry.title} — {entry.description}</p>
+                <div className="info-card">
+                  <p className="info-card-title">능력치</p>
+                  <div className="detail-stat-list">
+                    {(Object.keys(adv.stats) as Array<keyof Stats>).map((stat) => {
+                      const val = adv.stats[stat];
+                      const isPrimary = primaryStats.has(stat);
+                      return (
+                        <div className="detail-stat-row" key={stat}>
+                          <span className={isPrimary ? "stat-label primary" : "stat-label"}>{statLabels[stat]}</span>
+                          <div className="stat-bar">
+                            <i className={isPrimary ? "primary" : ""} style={{ width: `${(val / 18) * 100}%` }} />
+                          </div>
+                          <b className={isPrimary ? "stat-val primary" : "stat-val"}>{val}</b>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+                </div>
               </div>
-            )}
-          </div>
-        </div>
 
+              {/* Row 2: 캐릭터 설명 */}
+              <div className="detail-row detail-row-full">
+                <div className="info-card bio-card">
+                  <p className="char-bio">{bio}</p>
+                </div>
+              </div>
+
+              {/* Row 3: 전투 능력 | 전투 성향 | 특성 */}
+              <div className="detail-row detail-row-3">
+                <div className="info-card">
+                  <p className="info-card-title">전투 능력</p>
+                  <div className="combat-rating-list">
+                    {COMBAT_RATING_KEYS.map((key) => (
+                      <div className="combat-rating-row" key={key}>
+                        <span className="combat-rating-label">{COMBAT_RATING_LABELS[key]}</span>
+                        <StarRating value={adv.combatRatings[key]} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="info-card">
+                  <p className="info-card-title">전투 성향</p>
+                  <div className="tendency-list">
+                    {COMBAT_TENDENCY_KEYS.map((key) => (
+                      <div className="tendency-row" key={key}>
+                        <span className="tendency-label">{COMBAT_TENDENCY_LABELS[key]}</span>
+                        <div className="tendency-bar">
+                          <i style={{ width: `${(adv.combatTendencies[key] / 5) * 100}%` }} />
+                        </div>
+                        <span className="tendency-val">{adv.combatTendencies[key]}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="info-card">
+                  <p className="info-card-title">특성</p>
+                  <div className="trait-list adv-trait-list">
+                    {adv.traits.map((t) => (
+                      <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
+                    ))}
+                    {adv.traits.length === 0 && <span className="info-empty">없음</span>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 4: 최근 활동 */}
+              <div className="detail-row detail-row-full">
+                <div className="info-card activity-card">
+                  <p className="info-card-title">최근 활동</p>
+                  {chronicle.length === 0 ? (
+                    <p className="info-empty">기록된 활동이 없습니다.</p>
+                  ) : (
+                    <div className="activity-list">
+                      {chronicle.map((entry) => (
+                        <div className="activity-item" key={entry.id}>
+                          <time>{formatShortGameDate(entry.date)}</time>
+                          <div className="activity-content">
+                            <strong>{entry.title}</strong>
+                            {entry.description && <span>{entry.description}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="tab-placeholder">
+              {PLACEHOLDER_LABEL[activeTab]} 정보는 추후 구현 예정입니다.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

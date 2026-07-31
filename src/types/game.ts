@@ -29,6 +29,23 @@ export interface TraitRef {
   revealed: boolean;
 }
 
+export interface CombatRatings {
+  attack: number;
+  defense: number;
+  evasion: number;
+  accuracy: number;
+  survival: number;
+  leadership: number;
+}
+
+export interface CombatTendencies {
+  melee: number;
+  ranged: number;
+  magic: number;
+  survival: number;
+  command: number;
+}
+
 export interface Adventurer {
   id: EntityId;
   name: string;
@@ -50,6 +67,8 @@ export interface Adventurer {
   isArchived: boolean;
   personality: string;
   background: string;
+  combatRatings: CombatRatings;
+  combatTendencies: CombatTendencies;
 }
 
 export interface AdventurerClass {
