@@ -4,7 +4,6 @@ import { getPortraitPath } from "../../game/assets/portraits";
 import {
   adventurerStatusLabels,
   genderLabels,
-  getPotentialGrade,
   getStatusTone,
   raceLabels,
   statLabels,
@@ -66,7 +65,6 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
   const [activeTab, setActiveTab] = useState<DetailTab>("info");
 
   const cls = state.classes[adv.classId];
-  const potGrade = getPotentialGrade(adv.potential);
   const statusTone = getStatusTone(adv);
   const locationLabel = getAdventurerLocationLabel(adv, state);
   const initials = adv.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
@@ -84,74 +82,69 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
 
       {/* ── 좌측 캐릭터 카드 ── */}
       <div className="adv-char-card">
+        {/* 초상화 — 이름/등급 그라데이션 오버레이 포함 */}
         <div className="portrait bust">
           {portraitPath ? <img src={portraitPath} alt={adv.name} /> : initials}
-        </div>
-
-        <div className="char-nameplate">
-          <h3 className="char-name">{adv.name}</h3>
-          <p className="char-class-meta">{raceLabels[adv.race]} · {cls?.name ?? "미정"}</p>
-        </div>
-
-        <div className="char-grades">
-          <div className="grade-item">
-            <label>등급</label>
-            <span className="adv-rank-badge">{adv.rank}</span>
-          </div>
-          <div className="grade-item">
-            <label>잠재력</label>
-            <span className={`pot-badge pot-${potGrade.toLowerCase()}`}>{potGrade}</span>
+          <div className="portrait-overlay">
+            <div className="portrait-name-row">
+              <h3 className="char-name">{adv.name}</h3>
+              <span className="adv-rank-badge">{adv.rank}</span>
+            </div>
+            <p className="char-class-meta">{raceLabels[adv.race]} · {cls?.name ?? "미정"}</p>
           </div>
         </div>
 
-        <div className="char-status-block">
-          <div className="char-status-row">
-            <label>상태</label>
-            <span className={`status ${statusTone}`}>{adventurerStatusLabels[adv.status]}</span>
-          </div>
-          <div className="char-status-row">
-            <label>위치</label>
-            <span className="char-location">{locationLabel}</span>
-          </div>
-          <div className="char-status-row">
-            <label>컨디션</label>
-            <span className={adv.injuryIds.length > 0 ? "char-condition warning" : "char-condition"}>
-              {adv.injuryIds.length > 0 ? `부상 ${adv.injuryIds.length}건` : "이상 없음"}
-            </span>
-          </div>
-        </div>
-
-        <div className="char-party-block">
-          <div className="char-status-row">
-            <label>파티</label>
-            <span className="char-location">{guildParty?.name ?? "미배정"}</span>
-          </div>
-          <div className="char-status-row">
-            <label>의뢰</label>
-            <span className="char-location">{currentQuest?.title ?? "없음"}</span>
-          </div>
-        </div>
-
-        <div className="char-belonging">
-          <div className="char-belonging-header">
-            <span>소속감</span>
-            <span className="char-belonging-val">{adv.belonging}</span>
-          </div>
-          <div className="belonging-bar">
-            <i style={{ width: `${adv.belonging}%` }} />
-          </div>
-        </div>
-
-        {keyTraits.length > 0 && (
-          <div className="char-key-traits">
-            <p className="char-section-label">대표 특성</p>
-            <div className="trait-list">
-              {keyTraits.map((t) => (
-                <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
-              ))}
+        {/* 하단 정보 영역 */}
+        <div className="char-card-body">
+          <div className="char-status-block">
+            <div className="char-status-row">
+              <label>상태</label>
+              <span className={`status ${statusTone}`}>{adventurerStatusLabels[adv.status]}</span>
+            </div>
+            <div className="char-status-row">
+              <label>위치</label>
+              <span className="char-location">{locationLabel}</span>
+            </div>
+            <div className="char-status-row">
+              <label>컨디션</label>
+              <span className={adv.injuryIds.length > 0 ? "char-condition warning" : "char-condition"}>
+                {adv.injuryIds.length > 0 ? `부상 ${adv.injuryIds.length}건` : "이상 없음"}
+              </span>
             </div>
           </div>
-        )}
+
+          <div className="char-party-block">
+            <div className="char-status-row">
+              <label>파티</label>
+              <span className="char-location">{guildParty?.name ?? "미배정"}</span>
+            </div>
+            <div className="char-status-row">
+              <label>의뢰</label>
+              <span className="char-location">{currentQuest?.title ?? "없음"}</span>
+            </div>
+          </div>
+
+          <div className="char-belonging">
+            <div className="char-belonging-header">
+              <span>소속감</span>
+              <span className="char-belonging-val">{adv.belonging}</span>
+            </div>
+            <div className="belonging-bar">
+              <i style={{ width: `${adv.belonging}%` }} />
+            </div>
+          </div>
+
+          {keyTraits.length > 0 && (
+            <div className="char-key-traits">
+              <p className="char-section-label">대표 특성</p>
+              <div className="trait-list">
+                {keyTraits.map((t) => (
+                  <span key={t.id} className="trait-tag">{getTraitName(t.id)}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── 우측: 탭 + 콘텐츠 ── */}
