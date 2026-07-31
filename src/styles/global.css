@@ -502,10 +502,10 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .wh-sort-btn.active { color: #98b89c; border-color: #3a5040; background: rgba(36,56,40,.4); }
 
 /* Item list */
-.wh-list { flex: 1; overflow-y: auto; padding: calc(12px * var(--ui-scale)) calc(24px * var(--ui-scale)) calc(24px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(2px * var(--ui-scale)); max-width: calc(720px * var(--ui-scale)); }
-.wh-list-header { display: grid; grid-template-columns: 1fr calc(56px * var(--ui-scale)) calc(72px * var(--ui-scale)) calc(80px * var(--ui-scale)); gap: calc(12px * var(--ui-scale)); padding: calc(4px * var(--ui-scale)) calc(14px * var(--ui-scale)) calc(8px * var(--ui-scale)); border-bottom: 1px solid #161e18; font-size: var(--font-xsmall); color: #3e4e40; letter-spacing: .04em; }
+.wh-list { flex: 1; overflow-y: auto; padding: calc(12px * var(--ui-scale)) calc(24px * var(--ui-scale)) calc(24px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(2px * var(--ui-scale)); max-width: calc(800px * var(--ui-scale)); }
+.wh-list-header { display: grid; grid-template-columns: 1fr calc(56px * var(--ui-scale)) calc(72px * var(--ui-scale)) calc(80px * var(--ui-scale)) calc(60px * var(--ui-scale)); gap: calc(12px * var(--ui-scale)); padding: calc(4px * var(--ui-scale)) calc(14px * var(--ui-scale)) calc(8px * var(--ui-scale)); border-bottom: 1px solid #161e18; font-size: var(--font-xsmall); color: #3e4e40; letter-spacing: .04em; }
 .wh-list-header span:not(.wh-col-name) { text-align: right; }
-.wh-entry { display: grid; grid-template-columns: 1fr calc(56px * var(--ui-scale)) calc(72px * var(--ui-scale)) calc(80px * var(--ui-scale)); gap: calc(12px * var(--ui-scale)); align-items: center; padding: calc(7px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #192218; border-left-width: 2px; background: rgba(14,22,16,.7); transition: background .08s; }
+.wh-entry { display: grid; grid-template-columns: 1fr calc(56px * var(--ui-scale)) calc(72px * var(--ui-scale)) calc(80px * var(--ui-scale)) calc(60px * var(--ui-scale)); gap: calc(12px * var(--ui-scale)); align-items: center; padding: calc(7px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #192218; border-left-width: 2px; background: rgba(14,22,16,.7); transition: background .08s; }
 .wh-entry:hover { background: rgba(22,34,24,.9); }
 .wh-col-name { display: flex; flex-direction: column; gap: calc(2px * var(--ui-scale)); min-width: 0; }
 .wh-item-name { font-size: var(--font-small); color: #b0ccb4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -514,7 +514,45 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .wh-col-qty   { color: #88b08c; }
 .wh-col-unit  { color: #5e7260; }
 .wh-col-total { color: #c0a040; }
+.wh-col-sell  { text-align: right; }
+.wh-sell-btn { padding: calc(3px * var(--ui-scale)) calc(9px * var(--ui-scale)); border: 1px solid #2a3a2e; background: transparent; color: #6a7e6c; font-size: var(--font-xsmall); cursor: pointer; letter-spacing: .02em; transition: border-color .1s, color .1s, background .1s; white-space: nowrap; }
+.wh-sell-btn:hover { border-color: #4a6e50; color: #90b894; background: rgba(40,70,44,.2); }
+.wh-sell-unavail { font-size: var(--font-xsmall); color: #2e3a30; }
 .wh-empty { padding: calc(28px * var(--ui-scale)) calc(24px * var(--ui-scale)); color: #4a5e4c; font-size: var(--font-small); }
+.wh-summary-gold { border-left: 1px solid #2a3a2e; padding-left: calc(20px * var(--ui-scale)); color: #8a9e8c; }
+.wh-summary-gold strong { color: #c8a84a; }
+
+/* Sell modal */
+.sell-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 300; display: flex; align-items: center; justify-content: center; }
+.sell-modal { background: #0f1812; border: 1px solid #3a5040; width: calc(340px * var(--ui-scale)); max-width: 90vw; display: flex; flex-direction: column; gap: calc(18px * var(--ui-scale)); padding: calc(24px * var(--ui-scale)); animation: modal-in .14s ease; }
+.sell-modal-head { display: flex; flex-direction: column; gap: calc(3px * var(--ui-scale)); }
+.sell-modal-title { font-size: calc(18px * var(--ui-scale)); color: #c8e0cc; margin: 0; font-family: Georgia, serif; font-weight: 500; }
+.sell-info { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); border-top: 1px solid #1c2820; padding-top: calc(14px * var(--ui-scale)); }
+.sell-info-row { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--font-small); }
+.sell-info-row label { color: #5e7060; }
+.sell-info-row span { color: #a0bca4; }
+.sell-qty-section { display: flex; flex-direction: column; gap: calc(7px * var(--ui-scale)); }
+.sell-qty-label { font-size: var(--font-tiny); color: #5e7060; letter-spacing: .04em; }
+.sell-qty-control { display: flex; align-items: center; gap: calc(5px * var(--ui-scale)); }
+.sell-qty-btn { width: calc(30px * var(--ui-scale)); height: calc(30px * var(--ui-scale)); border: 1px solid #2a3a2e; background: #151d17; color: #8aaa8e; font-size: var(--font-body); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .1s; }
+.sell-qty-btn:hover:not(:disabled) { background: #1e2e22; border-color: #3a5040; }
+.sell-qty-btn:disabled { opacity: .35; cursor: default; }
+.sell-qty-input { width: calc(64px * var(--ui-scale)); height: calc(30px * var(--ui-scale)); border: 1px solid #2a3a2e; background: #131a15; color: #c0d8c4; font: inherit; font-size: var(--font-small); text-align: center; -moz-appearance: textfield; }
+.sell-qty-input::-webkit-outer-spin-button, .sell-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sell-all-btn { margin-left: calc(3px * var(--ui-scale)); padding: 0 calc(10px * var(--ui-scale)); height: calc(30px * var(--ui-scale)); border: 1px solid #283828; background: transparent; color: #7a9e7e; font-size: var(--font-xsmall); letter-spacing: .03em; cursor: pointer; transition: border-color .1s, color .1s; white-space: nowrap; }
+.sell-all-btn:hover { border-color: #3a5040; color: #98b89c; }
+.sell-total { display: flex; justify-content: space-between; align-items: baseline; padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); background: rgba(20,34,24,.6); border: 1px solid #1e3020; }
+.sell-total label { font-size: var(--font-small); color: #6a7e6c; }
+.sell-total strong { font-size: calc(17px * var(--ui-scale)); color: #c8a84a; }
+.sell-actions { display: flex; gap: calc(8px * var(--ui-scale)); justify-content: flex-end; }
+.sell-cancel-btn { padding: calc(7px * var(--ui-scale)) calc(16px * var(--ui-scale)); border: 1px solid #2a3a2e; background: transparent; color: #6a7e6c; font-size: var(--font-small); cursor: pointer; transition: border-color .1s, color .1s; }
+.sell-cancel-btn:hover { border-color: #3a5040; color: #a0bca4; }
+.sell-confirm-btn { padding: calc(7px * var(--ui-scale)) calc(20px * var(--ui-scale)); border: 1px solid #4a7050; background: #2a4a30; color: #a0c8a4; font-size: var(--font-small); cursor: pointer; transition: background .12s; }
+.sell-confirm-btn:hover:not(:disabled) { background: #3a5c3e; }
+.sell-confirm-btn:disabled { opacity: .4; cursor: default; }
+
+/* Warehouse sale toast */
+.wh-toast { position: fixed; bottom: calc(28px * var(--ui-scale)); left: 50%; transform: translateX(-50%); background: #1a2e1e; border: 1px solid #3a5040; color: #a0c8a4; font-size: var(--font-small); padding: calc(10px * var(--ui-scale)) calc(22px * var(--ui-scale)); z-index: 200; animation: modal-in .14s ease; white-space: nowrap; }
 
 /* Loot category accent colors */
 .loot-category-monster { border-left-color: #7a3a28; }

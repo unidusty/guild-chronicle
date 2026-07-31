@@ -191,7 +191,7 @@ export default function App() {
         ) : page === "quests" ? (
           <QuestBoardPage state={state} onStateChange={setState} />
         ) : page === "warehouse" ? (
-          <WarehousePage state={state} />
+          <WarehousePage state={state} onStateChange={setState} />
         ) : null}
       </main>
 

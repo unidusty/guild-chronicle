@@ -420,6 +420,7 @@ const _rawState: GameState = {
   ],
   pendingResults: [],
   warehouse: {},
+  saleTransactions: [],
 };
 
 export const initialGameState: GameState = (() => {

@@ -144,6 +144,16 @@ export interface QuestCompletionResult {
   loot: LootDrop[];
 }
 
+export interface SaleTransaction {
+  id: string;
+  date: GameDate;
+  itemId: string;
+  itemName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
 export interface Quest {
   id: EntityId;
   title: string;
@@ -225,4 +235,5 @@ export interface GameState {
   reports: DecisionReport[];
   pendingResults: QuestCompletionResult[];
   warehouse: Record<EntityId, number>;
+  saleTransactions: SaleTransaction[];
 }
