@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { EntityId, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
-import { adventurerStatusLabels, getStatusTone, partyStatusLabels } from "../../game/constants/labels";
+import { adventurerStatusLabels, getBondStageLabel, getStatusTone, partyStatusLabels } from "../../game/constants/labels";
 
 interface Props {
   partyId: EntityId;
@@ -11,11 +11,15 @@ interface Props {
   onRemoveMember: (adventurerId: EntityId) => void;
   onSetLeader: (adventurerId: EntityId) => void;
   onDelete: () => void;
+  onRename: (name: string) => void;
 }
 
-export default function PartyDetail({ partyId, state, onClose, onAddMember, onRemoveMember, onSetLeader, onDelete }: Props) {
+export default function PartyDetail({ partyId, state, onClose, onAddMember, onRemoveMember, onSetLeader, onDelete, onRename }: Props) {
   const [addingMember, setAddingMember] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [renameError, setRenameError] = useState("");
 
   const party = state.parties[partyId];
   if (!party) return null;
@@ -49,6 +53,31 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
     onDelete();
   }
 
+  function handleRenameOpen() {
+    playSelect();
+    setRenameValue(party.name);
+    setRenameError("");
+    setRenaming(true);
+  }
+
+  function handleRenameCancel() {
+    playSelect();
+    setRenaming(false);
+    setRenameError("");
+  }
+
+  function handleRenameSave() {
+    const trimmed = renameValue.trim();
+    if (trimmed.length < 2) { setRenameError("최소 2자 이상 입력하세요."); return; }
+    if (trimmed.length > 20) { setRenameError("최대 20자까지 입력할 수 있습니다."); return; }
+    playSelect();
+    onRename(trimmed);
+    setRenaming(false);
+    setRenameError("");
+  }
+
+  const bondLabel = getBondStageLabel(party.currentFormationQuestCount);
+
   return (
     <div className="panel party-detail">
       <button className="detail-close" onMouseEnter={playHover} onClick={() => { playSelect(); onClose(); }}>✕</button>
@@ -56,7 +85,30 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
       <div className="party-detail-header">
         <div className="party-detail-title">
           <span className="rank party-rank">{party.rank}</span>
-          <h2 className="party-name-heading">{party.name}</h2>
+          {renaming ? (
+            <div className="party-rename-form">
+              <input
+                className="party-rename-input"
+                value={renameValue}
+                maxLength={20}
+                autoFocus
+                onChange={(e) => { setRenameValue(e.target.value); setRenameError(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") handleRenameSave(); if (e.key === "Escape") handleRenameCancel(); }}
+              />
+              <div className="party-rename-actions">
+                <button className="member-action-btn" onMouseEnter={playHover} onClick={handleRenameSave}>저장</button>
+                <button className="member-action-btn" onMouseEnter={playHover} onClick={handleRenameCancel}>취소</button>
+              </div>
+              {renameError && <p className="party-rename-error">{renameError}</p>}
+            </div>
+          ) : (
+            <div className="party-name-row">
+              <h2 className="party-name-heading">{party.name}</h2>
+              {!isDispatched && (
+                <button className="party-rename-btn" onMouseEnter={playHover} onClick={handleRenameOpen}>이름 변경</button>
+              )}
+            </div>
+          )}
         </div>
         <span className={`status ${statusTone}`}>{partyStatusLabels[party.status]}</span>
       </div>
@@ -87,7 +139,7 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
                         <strong>{m.name}</strong>
                         {isLeader && <span className="leader-badge">리더</span>}
                       </div>
-                      <span className="quiet">{cls?.name ?? "미정"} · {m.rank}등급</span>
+                      <span className="quiet">{cls?.name ?? "미정"} · {m.rank}랭크</span>
                     </div>
                     <span className={`status ${tone}`}>{adventurerStatusLabels[m.status]}</span>
                     {!isDispatched && (
@@ -128,7 +180,7 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
                           </div>
                           <div className="add-member-info">
                             <strong>{adv.name}</strong>
-                            <span className="quiet">{cls?.name ?? "미정"} · {adv.rank}등급</span>
+                            <span className="quiet">{cls?.name ?? "미정"} · {adv.rank}랭크</span>
                           </div>
                           <button className="member-action-btn" onMouseEnter={playHover} onClick={() => handleAddMember(adv.id)}>추가</button>
                         </div>
@@ -161,7 +213,10 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
           <p className="char-section-label">파티 정보</p>
           <div className="info-card">
             <div className="info-rows">
-              <div className="info-row"><label>파티 등급</label><span className="rank">{party.rank}</span></div>
+              <div className="info-row"><label>파티 랭크</label><span className="rank">{party.rank}</span></div>
+              <div className="info-row"><label>유대</label><span>{bondLabel}</span></div>
+              <div className="info-row"><label>편성 일수</label><span>{party.currentFormationDays}일</span></div>
+              <div className="info-row"><label>완료 의뢰</label><span>{party.currentFormationQuestCount}건</span></div>
               <div className="info-row"><label>경험치</label><span>{party.experience}</span></div>
             </div>
           </div>

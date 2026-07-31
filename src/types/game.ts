@@ -2,7 +2,7 @@ export type EntityId = string;
 
 export type Race = "human" | "elf" | "dwarf";
 export type Gender = "male" | "female";
-export type AdventurerRank = "D" | "C" | "B" | "A" | "S";
+export type AdventurerRank = "F" | "E" | "D" | "C" | "B" | "A" | "S";
 export type AdventurerStatus = "idle" | "dispatched" | "injured" | "training" | "recovering";
 export type PartyStatus = "idle" | "dispatched" | "returning";
 export type QuestStatus = "available" | "assigned" | "completed" | "failed" | "expired";
@@ -87,15 +87,27 @@ export interface Injury {
   recoveryDays: number;
 }
 
+export interface PartyHistory {
+  memberIds: EntityId[];
+  startDate: GameDate;
+  endDate: GameDate;
+  questCount: number;
+}
+
 export interface Party {
   id: EntityId;
   name: string;
+  previousNames: string[];
   leaderId: EntityId | null;
   memberIds: EntityId[];
   rank: AdventurerRank;
   status: PartyStatus;
   activeQuestId: EntityId | null;
   experience: number;
+  currentFormationDays: number;
+  currentFormationQuestCount: number;
+  formationStartDate: GameDate | null;
+  formationHistory: PartyHistory[];
 }
 
 export interface Quest {

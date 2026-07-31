@@ -100,7 +100,7 @@ export default function App() {
                 ) : (
                   <div className="table-wrap roster-scroll">
                     <table>
-                      <thead><tr><th>모험가</th><th>직업</th><th>등급</th><th>현재 임무</th><th>상태</th></tr></thead>
+                      <thead><tr><th>모험가</th><th>직업</th><th>랭크</th><th>현재 임무</th><th>상태</th></tr></thead>
                       <tbody>
                         {activeDutyRoster.map((a) => (
                           <tr key={a.id}>

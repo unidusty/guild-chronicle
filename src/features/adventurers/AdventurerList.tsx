@@ -75,7 +75,7 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
               <tr>
                 <th>모험가</th>
                 <th>직업</th>
-                <th>등급</th>
+                <th>랭크</th>
                 <th>상태</th>
               </tr>
             </thead>

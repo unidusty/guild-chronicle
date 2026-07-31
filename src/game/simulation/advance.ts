@@ -34,7 +34,12 @@ function updateQuests(state: GameState): GameState {
 
       const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
       if (party) {
-        parties[party.id] = { ...party, status: "idle", activeQuestId: null };
+        parties[party.id] = {
+          ...party,
+          status: "idle",
+          activeQuestId: null,
+          currentFormationQuestCount: party.currentFormationQuestCount + 1,
+        };
 
         for (const memberId of party.memberIds) {
           if (adventurers[memberId]) {
@@ -152,6 +157,16 @@ function updateTraining(state: GameState): GameState {
   };
 }
 
+// ── Party formation days ────────────────────────────────────────────────────
+
+function updatePartyFormations(state: GameState): GameState {
+  const parties = { ...state.parties };
+  for (const party of Object.values(state.parties)) {
+    parties[party.id] = { ...party, currentFormationDays: party.currentFormationDays + 1 };
+  }
+  return { ...state, parties };
+}
+
 // ── Age increment (year change only) ────────────────────────────────────────
 
 function updateAges(state: GameState): GameState {
@@ -176,6 +191,7 @@ export function advanceDay(state: GameState): GameState {
   next = updateQuests(next);
   next = updateInjuries(next);
   next = updateTraining(next);
+  next = updatePartyFormations(next);
   if (yearChanged) next = updateAges(next);
   return next;
 }

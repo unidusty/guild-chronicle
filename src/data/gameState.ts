@@ -170,16 +170,28 @@ export const initialGameState: GameState = {
   },
   parties: {
     "party-silverhawk": {
-      id: "party-silverhawk", name: "은빛매 파티", leaderId: "adv-lien", memberIds: ["adv-lien"],
+      id: "party-silverhawk", name: "은빛매 파티", previousNames: [],
+      leaderId: "adv-lien", memberIds: ["adv-lien"],
       rank: "B", status: "dispatched", activeQuestId: "quest-caravan", experience: 640,
+      currentFormationDays: 42, currentFormationQuestCount: 8,
+      formationStartDate: { year: 317, season: "spring", day: 1 },
+      formationHistory: [],
     },
     "party-bluelantern": {
-      id: "party-bluelantern", name: "푸른등불 파티", leaderId: "adv-marien", memberIds: ["adv-marien"],
+      id: "party-bluelantern", name: "푸른등불 파티", previousNames: [],
+      leaderId: "adv-marien", memberIds: ["adv-marien"],
       rank: "C", status: "returning", activeQuestId: "quest-missing", experience: 295,
+      currentFormationDays: 21, currentFormationQuestCount: 3,
+      formationStartDate: { year: 317, season: "spring", day: 21 },
+      formationHistory: [],
     },
     "party-ironforge": {
-      id: "party-ironforge", name: "철기 파티", leaderId: "adv-theo", memberIds: ["adv-theo", "adv-braen", "adv-rina"],
+      id: "party-ironforge", name: "철기 파티", previousNames: [],
+      leaderId: "adv-theo", memberIds: ["adv-theo", "adv-braen", "adv-rina"],
       rank: "C", status: "idle", activeQuestId: null, experience: 120,
+      currentFormationDays: 10, currentFormationQuestCount: 1,
+      formationStartDate: { year: 317, season: "summer", day: 2 },
+      formationHistory: [],
     },
   },
   quests: {

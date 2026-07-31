@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { EntityId, GameState } from "../../types/game";
 import { playSelect } from "../../lib/audio";
-import { createParty, deleteParty, addPartyMember, removePartyMember, setPartyLeader } from "../../game/simulation/party";
+import { createParty, deleteParty, addPartyMember, removePartyMember, setPartyLeader, renameParty } from "../../game/simulation/party";
 import PartyList from "./PartyList";
 import PartyDetail from "./PartyDetail";
 
@@ -40,6 +40,11 @@ export default function PartiesPage({ state, onStateChange }: Props) {
     onStateChange((s) => setPartyLeader(s, selectedId, adventurerId));
   }
 
+  function handleRenameParty(name: string) {
+    if (!selectedId) return;
+    onStateChange((s) => renameParty(s, selectedId, name));
+  }
+
   return (
     <div className="page-shell">
       <header className="topbar">
@@ -67,6 +72,7 @@ export default function PartiesPage({ state, onStateChange }: Props) {
               onRemoveMember={handleRemoveMember}
               onSetLeader={handleSetLeader}
               onDelete={() => handleDeleteParty(selectedId)}
+              onRename={handleRenameParty}
             />
           </div>
         )}

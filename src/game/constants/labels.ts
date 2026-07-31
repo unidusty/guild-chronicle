@@ -56,6 +56,14 @@ export function getPotentialGrade(potential: number): "S" | "A" | "B" | "C" | "D
   return "D";
 }
 
+export function getBondStageLabel(questCount: number): string {
+  if (questCount >= 60) return "오랜 전우";
+  if (questCount >= 30) return "숙련된 팀워크";
+  if (questCount >= 15) return "익숙한 동료들";
+  if (questCount >= 5)  return "호흡을 맞추는 중";
+  return "신생 파티";
+}
+
 export function getStatusTone(adv: Adventurer): "active" | "warning" | "idle" {
   if (adv.status === "dispatched") return "active";
   if (adv.injuryIds.length > 0 || adv.status === "injured") return "warning";
