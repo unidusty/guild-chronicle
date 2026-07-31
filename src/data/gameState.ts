@@ -326,21 +326,25 @@ const _rawState: GameState = {
       id: "facility-guild-hall", name: "길드 홀",
       description: "길드의 중심 건물. 길드의 규모와 운영 기반을 결정한다.",
       level: 1, maxLevel: 3, status: "active", unlocks: [],
+      targetLevel: null, constructionProgressDays: 0, constructionDurationDays: 0, constructionStartedDay: null,
     },
     "facility-reception": {
       id: "facility-reception", name: "접수대",
       description: "의뢰를 접수하고 관리하는 공간. 처리 가능한 의뢰 수를 결정한다.",
       level: 1, maxLevel: 3, status: "active", unlocks: [],
+      targetLevel: null, constructionProgressDays: 0, constructionDurationDays: 0, constructionStartedDay: null,
     },
     "facility-storage": {
       id: "facility-storage", name: "창고",
       description: "전리품과 자원을 보관하는 시설. 현재는 무제한으로 운영한다.",
       level: 1, maxLevel: 3, status: "active", unlocks: [],
+      targetLevel: null, constructionProgressDays: 0, constructionDurationDays: 0, constructionStartedDay: null,
     },
     "facility-recruitment": {
       id: "facility-recruitment", name: "가입 심사실",
       description: "신규 모험가 지원자를 심사하는 공간. 건설하면 가입 심사 기능이 해금된다.",
       level: 0, maxLevel: 3, status: "unbuilt", unlocks: ["recruitment"],
+      targetLevel: null, constructionProgressDays: 0, constructionDurationDays: 0, constructionStartedDay: null,
     },
   },
   chronicle: [

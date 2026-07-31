@@ -183,16 +183,38 @@ export interface Region {
   control: "kingdom" | "contested" | "hostile";
 }
 
-export type FacilityStatus = "active" | "unbuilt";
+export type FacilityStatus = "unbuilt" | "constructing" | "active" | "upgrading";
 
 export interface Facility {
   id: EntityId;
   name: string;
   description: string;
-  level: number;      // 0 = unbuilt, 1–maxLevel = built
+  level: number;                         // 0 = unbuilt, 1–maxLevel = built
   maxLevel: number;
   status: FacilityStatus;
-  unlocks: string[];  // feature keys unlocked when this facility is built
+  unlocks: string[];
+  targetLevel: number | null;            // level being built/upgraded toward
+  constructionProgressDays: number;
+  constructionDurationDays: number;
+  constructionStartedDay: GameDate | null;
+}
+
+export type DailyReportItemKind =
+  | "quest_completed"
+  | "facility_completed"
+  | "injury_recovered"
+  | "training_completed";
+
+export interface DailyReportItem {
+  kind: DailyReportItemKind;
+  title: string;
+  description: string;
+}
+
+export interface DailyReport {
+  previousDate: GameDate;
+  nextDate: GameDate;
+  items: DailyReportItem[];
 }
 
 export interface Guild {

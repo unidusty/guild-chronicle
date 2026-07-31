@@ -619,3 +619,77 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 
 /* Placeholder */
 .placeholder-notice { padding: calc(28px * var(--ui-scale)) calc(40px * var(--ui-scale)); color: #4a5e4c; font-size: var(--font-small); }
+
+/* ── Guild Hall Tabs ────────────────────────────────────────── */
+.gh-tab-bar { display: flex; gap: 0; border-bottom: 1px solid #1e2a20; margin-bottom: calc(22px * var(--ui-scale)); }
+.gh-tab { padding: calc(10px * var(--ui-scale)) calc(22px * var(--ui-scale)); border: none; border-bottom: 2px solid transparent; background: transparent; color: #6a7e6c; font-size: var(--font-small); cursor: pointer; letter-spacing: .04em; transition: color .12s, border-color .12s; }
+.gh-tab:hover { color: #9ab09c; }
+.gh-tab.active { color: #c8e0cc; border-bottom-color: #4a7050; }
+.gh-tab.locked { opacity: 0.4; cursor: default; }
+.gh-tab.locked:hover { color: #6a7e6c; }
+.gh-tab-badge { margin-left: 6px; font-size: var(--font-tiny); color: #a08a4a; background: rgba(60,48,20,.6); padding: 2px 6px; border: 1px solid #4a3e18; vertical-align: middle; }
+
+/* ── Guild Hall Recruitment tab ─────────────────────────────── */
+.gh-recruitment-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: calc(10px * var(--ui-scale)); padding: calc(60px * var(--ui-scale)) 0; text-align: center; }
+.gh-recruitment-lock-icon { margin: 0; font-size: 32px; opacity: 0.4; }
+.gh-recruitment-lock-msg { margin: 0; font-size: var(--font-body); color: #6a7e6c; }
+.gh-recruitment-lock-hint { margin: 0; font-size: var(--font-small); color: #4a5e4c; }
+.gh-recruitment-progress-bar { width: 280px; height: 6px; background: #1e2a20; border-radius: 3px; overflow: hidden; }
+.gh-recruitment-progress-fill { height: 100%; background: #4a7050; transition: width .4s ease; }
+
+/* ── Facility confirm modal ──────────────────────────────────── */
+.fac-confirm-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; }
+.fac-confirm-modal { background: #16201a; border: 1px solid #2a4030; padding: calc(28px * var(--ui-scale)) calc(32px * var(--ui-scale)); width: calc(340px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(16px * var(--ui-scale)); }
+.fac-confirm-title { margin: 0; font-family: Georgia, serif; font-size: calc(18px * var(--ui-scale)); color: #c8e0cc; font-weight: 500; }
+.fac-confirm-info { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); background: rgba(14,22,16,.7); border: 1px solid #1e2c20; padding: calc(12px * var(--ui-scale)); }
+.fac-confirm-row { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--font-small); color: #6a7e6c; }
+.fac-confirm-row strong { color: #c8a84a; font-size: var(--font-body); }
+.fac-confirm-actions { display: flex; gap: calc(8px * var(--ui-scale)); justify-content: flex-end; }
+.fac-confirm-cancel { padding: calc(7px * var(--ui-scale)) calc(16px * var(--ui-scale)); border: 1px solid #2a3a2e; background: transparent; color: #6a7e6c; font-size: var(--font-small); cursor: pointer; }
+.fac-confirm-cancel:hover { border-color: #3a5040; color: #9ab09c; }
+.fac-confirm-ok { padding: calc(7px * var(--ui-scale)) calc(20px * var(--ui-scale)); border: 1px solid #4a7050; background: #2a4a30; color: #a0c8a4; font-size: var(--font-small); cursor: pointer; font-weight: 600; }
+.fac-confirm-ok:hover { background: #3a5c3e; }
+
+/* ── Facility construction progress ─────────────────────────── */
+.fac-detail-badge.constructing { color: #a08a4a; border-color: #4a3e18; }
+.fac-progress-bar { height: 6px; background: #1a2a1e; border-radius: 3px; overflow: hidden; }
+.fac-progress-fill { height: 100%; background: #4a7050; transition: width .3s ease; }
+.fac-progress-label { margin: 0; font-size: var(--font-tiny); color: #5a6a5c; }
+
+/* ── Day End Overlay ─────────────────────────────────────────── */
+.day-end-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.day-end-overlay.dim { background: rgba(0,0,0,.65); }
+.day-end-overlay.dark { background: rgba(10,14,12,.96); }
+
+/* Confirm panel */
+.day-end-confirm { background: #16201a; border: 1px solid #2a4030; padding: calc(36px * var(--ui-scale)) calc(40px * var(--ui-scale)); width: calc(380px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(22px * var(--ui-scale)); animation: modal-in .18s ease; }
+.day-end-confirm-eyebrow { margin: 0; font-size: var(--font-tiny); color: #5a7050; letter-spacing: .18em; font-weight: 700; }
+.day-end-confirm-title { margin: 0; font-family: Georgia, serif; font-size: calc(22px * var(--ui-scale)); color: #c8e0cc; font-weight: 500; }
+.day-end-confirm-summary { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); border: 1px solid #1e2c20; padding: calc(14px * var(--ui-scale)); background: rgba(14,22,16,.5); }
+.day-end-confirm-row { display: flex; justify-content: space-between; font-size: var(--font-small); color: #6a7e6c; }
+.day-end-confirm-row strong { color: #9ab09c; }
+.day-end-confirm-actions { display: flex; gap: calc(8px * var(--ui-scale)); justify-content: flex-end; }
+.day-end-cancel-btn { padding: calc(9px * var(--ui-scale)) calc(18px * var(--ui-scale)); border: 1px solid #2a3a2e; background: transparent; color: #6a7e6c; font: inherit; font-size: var(--font-small); cursor: pointer; }
+.day-end-cancel-btn:hover { border-color: #3a5040; color: #9ab09c; }
+.day-end-ok-btn { padding: calc(9px * var(--ui-scale)) calc(24px * var(--ui-scale)); border: 1px solid #4a7050; background: #2a4a30; color: #a0c8a4; font: inherit; font-size: var(--font-small); cursor: pointer; font-weight: 700; letter-spacing: .04em; }
+.day-end-ok-btn:hover { background: #3a5c3e; }
+
+/* Report panel */
+.day-end-report { width: calc(520px * var(--ui-scale)); max-height: 80vh; display: flex; flex-direction: column; gap: calc(24px * var(--ui-scale)); animation: modal-in .22s ease; }
+.day-end-report-eyebrow { margin: 0; font-size: var(--font-tiny); color: #5a7050; letter-spacing: .18em; font-weight: 700; }
+.day-end-report-date { margin: 0; font-family: Georgia, serif; font-size: calc(26px * var(--ui-scale)); color: #c8e0cc; font-weight: 500; }
+.day-end-report-items { display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); max-height: calc(320px * var(--ui-scale)); overflow-y: auto; }
+.day-end-report-empty { margin: 0; color: #5a6a5c; font-size: var(--font-small); padding: calc(12px * var(--ui-scale)) 0; }
+.day-end-report-item { display: flex; flex-direction: column; gap: 3px; padding: calc(12px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #1e2c20; background: rgba(18,28,20,.7); animation: slide-in .2s ease both; }
+.day-end-report-item strong { font-size: var(--font-small); color: #c8d8ca; }
+.day-end-report-item span { font-size: var(--font-tiny); color: #6a7e6c; }
+.day-end-report-item.quest_completed { border-left: 2px solid #4a7050; }
+.day-end-report-item.facility_completed { border-left: 2px solid #a08a4a; }
+.day-end-report-item.injury_recovered { border-left: 2px solid #7a4a3a; }
+.day-end-report-item.training_completed { border-left: 2px solid #3a5a7a; }
+.day-end-report-footer { display: flex; align-items: center; justify-content: space-between; padding-top: calc(16px * var(--ui-scale)); border-top: 1px solid #1e2c20; }
+.day-end-next-date-block { display: flex; flex-direction: column; gap: 4px; }
+.day-end-next-label { font-size: var(--font-tiny); color: #5a6a5c; letter-spacing: .08em; }
+.day-end-next-date { font-family: Georgia, serif; font-size: calc(18px * var(--ui-scale)); color: #a0c8a4; font-weight: 500; }
+
+@keyframes slide-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }

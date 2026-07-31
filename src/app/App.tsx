@@ -1,66 +1,58 @@
 import { useState } from "react";
 import { initialGameState } from "../data/gameState";
-import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetrics, getRosterRows } from "../game/simulation/selectors";
+import { formatGameDate } from "../game/simulation/selectors";
+import GuildHallPage from "../features/guildHall/GuildHallPage";
 import AdventurersPage from "../features/adventurers/AdventurersPage";
 import PartiesPage from "../features/parties/PartiesPage";
 import QuestBoardPage from "../features/quests/QuestBoardPage";
 import QuestResultPanel from "../features/quests/QuestResultPanel";
 import WarehousePage from "../features/warehouse/WarehousePage";
-import FacilitiesPage from "../features/facilities/FacilitiesPage";
+import DayEndOverlay from "../features/dayEnd/DayEndOverlay";
 import SettingsModal from "../components/SettingsModal";
 import { useAudio, playHover, playSelect } from "../lib/audio";
-import { advanceDay } from "../game/simulation/advance";
 
-type Page = "dashboard" | "adventurers" | "parties" | "quests" | "warehouse" | "facilities" | "recruitment";
+type Page = "guildHall" | "adventurers" | "parties" | "quests" | "warehouse";
 
 interface NavItem {
   label: string;
   page: Page | null;
-  locked?: boolean;
-  lockHint?: string;
 }
 
-const reportPresentation = {
-  medical:     { icon: "!", tone: "danger" },
-  emergency:   { icon: "Q", tone: "gold" },
-  recruitment: { icon: "+", tone: "green" },
-} as const;
+const NAV_ITEMS: NavItem[] = [
+  { label: "길드 홀",      page: "guildHall" },
+  { label: "모험가",       page: "adventurers" },
+  { label: "파티",         page: "parties" },
+  { label: "의뢰 게시판",  page: "quests" },
+  { label: "길드 창고",    page: "warehouse" },
+  { label: "세계 지도",    page: null },
+  { label: "연대기",       page: null },
+];
 
 export default function App() {
   const audio = useAudio();
   const [state, setState] = useState(initialGameState);
-  const [page, setPage] = useState<Page>("dashboard");
+  const [page, setPage] = useState<Page>("guildHall");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [dayEndOpen, setDayEndOpen] = useState(false);
 
-  const metrics      = getGuildMetrics(state);
-  const roster       = getRosterRows(state);
-  const activeQuests = getActiveQuestRows(state);
-
-  const activeDutyRoster = roster.filter((row) => state.adventurers[row.id]?.status !== "idle");
-
-  const hasRecruitmentRoom = (state.facilities["facility-recruitment"]?.level ?? 0) > 0;
-
-  const NAV_ITEMS: NavItem[] = [
-    { label: "길드 현황",   page: "dashboard" },
-    { label: "모험가",      page: "adventurers" },
-    { label: "파티",        page: "parties" },
-    { label: "의뢰 게시판", page: "quests" },
-    { label: "길드 창고",   page: "warehouse" },
-    { label: "가입 심사",   page: "recruitment", locked: !hasRecruitmentRoom, lockHint: "가입 심사실이 필요합니다." },
-    { label: "시설",        page: "facilities" },
-    { label: "세계 지도",   page: null },
-    { label: "연대기",      page: null },
-  ];
-
-  function handleAdvanceDay() { playSelect(); setState(advanceDay); }
   function openSettings() { playSelect(); setSettingsOpen(true); }
   function closeSettings() { setSettingsOpen(false); }
+
+  function handleDayEnd() { playSelect(); setDayEndOpen(true); }
+  function handleDayEndComplete(newState: typeof state) {
+    setState(newState);
+    setDayEndOpen(false);
+  }
+  function handleDayEndCancel() { setDayEndOpen(false); }
 
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand-mark">GC</div>
-        <div className="brand-copy"><strong>Guild Chronicle</strong><span>길드 연대기</span></div>
+        <div className="brand-copy">
+          <strong>Guild Chronicle</strong>
+          <span>길드 연대기</span>
+        </div>
         <nav>
           {NAV_ITEMS.map((item) => (
             <button
@@ -68,13 +60,11 @@ export default function App() {
               className={[
                 "nav-item",
                 item.page === page ? "active" : "",
-                item.locked ? "locked" : "",
-                !item.page && !item.locked ? "disabled" : "",
+                !item.page ? "disabled" : "",
               ].filter(Boolean).join(" ")}
-              title={item.locked ? item.lockHint : undefined}
               onMouseEnter={playHover}
               onClick={() => {
-                if (item.locked || !item.page) return;
+                if (!item.page) return;
                 playSelect();
                 setPage(item.page);
               }}
@@ -91,119 +81,15 @@ export default function App() {
         >
           설정
         </button>
-        <div className="sidebar-note"><span>오늘</span><strong>{formatGameDate(state.currentDate)}</strong></div>
+        <div className="sidebar-note">
+          <span>오늘</span>
+          <strong>{formatGameDate(state.currentDate)}</strong>
+        </div>
       </aside>
 
       <main>
-        {page === "dashboard" ? (
-          <>
-            <header className="topbar">
-              <div><p className="eyebrow">WESTWIND GUILD · HEAD OFFICE</p><h1>{state.guild.name} 운영 보고서</h1></div>
-              <div className="top-actions">
-                <button onMouseEnter={playHover}>게임 저장</button>
-                <button className="primary" onMouseEnter={playHover} onClick={handleAdvanceDay}>하루 진행</button>
-              </div>
-            </header>
-
-            <section className="metric-grid">
-              {metrics.map((item) => (
-                <article className="metric-card" key={item.label}>
-                  <span>{item.label}</span><strong>{item.value}</strong><small>{item.note}</small>
-                </article>
-              ))}
-            </section>
-
-            <section className="dashboard-grid">
-              <article className="panel roster-panel">
-                <div className="panel-heading">
-                  <div><p className="eyebrow">ACTIVE ROSTER</p><h2>오늘의 모험가 현황</h2></div>
-                  <button className="text-button" onMouseEnter={playHover}>전체 명단 →</button>
-                </div>
-                {activeDutyRoster.length === 0 ? (
-                  <p className="panel-empty">현재 진행 중인 활동이 없습니다.</p>
-                ) : (
-                  <div className="table-wrap roster-scroll">
-                    <table>
-                      <thead><tr><th>모험가</th><th>직업</th><th>랭크</th><th>현재 임무</th><th>상태</th></tr></thead>
-                      <tbody>
-                        {activeDutyRoster.map((a) => (
-                          <tr key={a.id}>
-                            <td>
-                              <div className="person">
-                                <div className="portrait">{a.portraitPath ? <img src={a.portraitPath} alt={a.name} /> : a.initials}</div>
-                                <div><strong>{a.name}</strong><span>{a.race} · {a.age}세</span></div>
-                              </div>
-                            </td>
-                            <td>{a.job}</td>
-                            <td><span className="rank">{a.rank}</span></td>
-                            <td>{a.assignment}</td>
-                            <td><span className={`status ${a.statusTone}`}>{a.status}</span></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </article>
-
-              <article className="panel report-panel">
-                <div className="panel-heading">
-                  <div><p className="eyebrow">MASTER'S DESK</p><h2>결재 대기</h2></div>
-                  <span className="count">{state.reports.length}</span>
-                </div>
-                <div className="report-list">
-                  {state.reports.map((report) => {
-                    const ui = reportPresentation[report.kind];
-                    return (
-                      <button className="report" key={report.id} onMouseEnter={playHover} onClick={playSelect}>
-                        <span className={`report-icon ${ui.tone}`}>{ui.icon}</span>
-                        <span><strong>{report.title}</strong><small>{report.description}</small></span>
-                        <b>›</b>
-                      </button>
-                    );
-                  })}
-                </div>
-              </article>
-
-              <article className="panel activity-panel">
-                <div className="panel-heading">
-                  <div><p className="eyebrow">LIVE OPERATIONS</p><h2>진행 중인 의뢰</h2></div>
-                  <span className="quiet">{activeQuests.length}개 파티 파견 중</span>
-                </div>
-                {activeQuests.length === 0 ? (
-                  <p className="panel-empty">현재 진행 중인 의뢰가 없습니다.</p>
-                ) : (
-                  <div className="activity-scroll">
-                    {activeQuests.map((quest) => (
-                      <div className="mission" key={quest.id}>
-                        <div>
-                          <span className={`mission-grade ${quest.grade.toLowerCase()}`}>{quest.grade}</span>
-                          <div><strong>{quest.title}</strong><small>{quest.partyName} · {quest.returnLabel}</small></div>
-                        </div>
-                        <div className="progress"><i style={{ width: `${quest.progress}%` }} /></div>
-                        <span>{quest.progress}%</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </article>
-
-              <article className="panel chronicle-panel">
-                <div className="panel-heading">
-                  <div><p className="eyebrow">CHRONICLE</p><h2>최근 연대기</h2></div>
-                  <button className="text-button" onMouseEnter={playHover}>기록 열기 →</button>
-                </div>
-                <div className="timeline">
-                  {state.chronicle.slice(0, 3).map((entry) => (
-                    <div key={entry.id}>
-                      <time>{formatShortGameDate(entry.date)}</time>
-                      <p><strong>{entry.title}</strong><br /><span className="timeline-desc">{entry.description}</span></p>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            </section>
-          </>
+        {page === "guildHall" ? (
+          <GuildHallPage state={state} onStateChange={setState} onDayEnd={handleDayEnd} />
         ) : page === "adventurers" ? (
           <AdventurersPage state={state} />
         ) : page === "parties" ? (
@@ -212,18 +98,6 @@ export default function App() {
           <QuestBoardPage state={state} onStateChange={setState} />
         ) : page === "warehouse" ? (
           <WarehousePage state={state} onStateChange={setState} />
-        ) : page === "facilities" ? (
-          <FacilitiesPage state={state} onStateChange={setState} />
-        ) : page === "recruitment" ? (
-          <div className="page-shell">
-            <header className="topbar">
-              <div>
-                <p className="eyebrow">WESTWIND GUILD · RECRUITMENT</p>
-                <h1>가입 심사</h1>
-              </div>
-            </header>
-            <p className="placeholder-notice">가입 심사 시스템은 다음 업데이트에서 구현됩니다.</p>
-          </div>
         ) : null}
       </main>
 
@@ -232,6 +106,14 @@ export default function App() {
           results={state.pendingResults}
           state={state}
           onDismiss={() => setState((s) => ({ ...s, pendingResults: [] }))}
+        />
+      )}
+
+      {dayEndOpen && (
+        <DayEndOverlay
+          state={state}
+          onComplete={handleDayEndComplete}
+          onCancel={handleDayEndCancel}
         />
       )}
 
