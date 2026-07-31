@@ -35,8 +35,14 @@ export default function App() {
   const audio = useAudio();
   const [state, setState] = useState(initialGameState);
   const [page, setPage] = useState<Page>("guildHall");
+  const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [dayEndOpen, setDayEndOpen] = useState(false);
+
+  function navigateToParty(partyId: string) {
+    setSelectedPartyId(partyId);
+    setPage("parties");
+  }
 
   function openSettings() { playSelect(); setSettingsOpen(true); }
   function closeSettings() { setSettingsOpen(false); }
@@ -94,9 +100,9 @@ export default function App() {
         {page === "guildHall" ? (
           <GuildHallPage state={state} onStateChange={setState} onDayEnd={handleDayEnd} />
         ) : page === "adventurers" ? (
-          <AdventurersPage state={state} />
+          <AdventurersPage state={state} onNavigateToParty={navigateToParty} />
         ) : page === "parties" ? (
-          <PartiesPage state={state} onStateChange={setState} />
+          <PartiesPage state={state} onStateChange={setState} initialSelectedId={selectedPartyId} onInitialIdConsumed={() => setSelectedPartyId(null)} />
         ) : page === "quests" ? (
           <QuestBoardPage state={state} onStateChange={setState} />
         ) : page === "warehouse" ? (

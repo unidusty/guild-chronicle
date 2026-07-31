@@ -3,9 +3,12 @@ import type { EntityId, GameState } from "../../types/game";
 import AdventurerList from "./AdventurerList";
 import AdventurerDetail from "./AdventurerDetail";
 
-interface Props { state: GameState; }
+interface Props {
+  state: GameState;
+  onNavigateToParty?: (partyId: EntityId) => void;
+}
 
-export default function AdventurersPage({ state }: Props) {
+export default function AdventurersPage({ state, onNavigateToParty }: Props) {
   const [selectedId, setSelectedId] = useState<EntityId | null>(null);
   const selectedAdventurer = selectedId ? state.adventurers[selectedId] : null;
 
@@ -23,6 +26,7 @@ export default function AdventurersPage({ state }: Props) {
             state={state}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            onPartyClick={onNavigateToParty}
           />
         </div>
         {selectedAdventurer && (

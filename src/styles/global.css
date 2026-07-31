@@ -791,6 +791,12 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .dev-actions button { padding: 5px 8px; border: 1px solid #2a4030; background: #1a2a1e; color: #7ab09a; font-size: 11px; cursor: pointer; text-align: left; }
 .dev-actions button:hover { background: #243828; }
 
+/* ── Adventurer List — Party Column ─────────────────────────────────────────── */
+.adv-party-link { border: none; background: transparent; color: #9c8757; font: inherit; font-size: var(--font-small); cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: #6a5a3a; transition: color .12s; }
+.adv-party-link:hover { color: #d2bb7e; text-decoration-color: #9c8757; }
+.adv-party-name { color: #9c8757; font-size: var(--font-small); }
+.adv-party-none { color: #4a5e4c; font-size: var(--font-small); }
+
 /* ── Party Combat Power & Synergy ─────────────────────────────────────────── */
 .party-power-banner { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); padding: calc(12px * var(--ui-scale)) calc(16px * var(--ui-scale)); background: #141c16; border-bottom: 1px solid #252e26; }
 .party-power-main { display: flex; align-items: baseline; gap: calc(10px * var(--ui-scale)); }

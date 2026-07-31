@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { EntityId, GameState } from "../../types/game";
 import { playSelect } from "../../lib/audio";
@@ -10,10 +10,19 @@ import PartyDetail from "./PartyDetail";
 interface Props {
   state: GameState;
   onStateChange: Dispatch<SetStateAction<GameState>>;
+  initialSelectedId?: string | null;
+  onInitialIdConsumed?: () => void;
 }
 
-export default function PartiesPage({ state, onStateChange }: Props) {
+export default function PartiesPage({ state, onStateChange, initialSelectedId, onInitialIdConsumed }: Props) {
   const [selectedId, setSelectedId] = useState<EntityId | null>(null);
+
+  useEffect(() => {
+    if (initialSelectedId) {
+      setSelectedId(initialSelectedId);
+      onInitialIdConsumed?.();
+    }
+  }, [initialSelectedId, onInitialIdConsumed]);
   const selectedParty = selectedId ? state.parties[selectedId] : null;
 
   function handleCreateParty(name: string) {

@@ -12,9 +12,10 @@ interface Props {
   state: GameState;
   selectedId: EntityId | null;
   onSelect: (id: EntityId) => void;
+  onPartyClick?: (partyId: EntityId) => void;
 }
 
-export default function AdventurerList({ state, selectedId, onSelect }: Props) {
+export default function AdventurerList({ state, selectedId, onSelect, onPartyClick }: Props) {
   const [query, setQuery] = useState("");
   const [filterClass, setFilterClass] = useState("");
   const [filterRace, setFilterRace] = useState("");
@@ -76,6 +77,7 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
                 <th>모험가</th>
                 <th>직업</th>
                 <th>랭크</th>
+                <th>파티</th>
                 <th>상태</th>
               </tr>
             </thead>
@@ -85,6 +87,7 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
                 const statusTone = getStatusTone(adv);
                 const initials = adv.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
                 const portraitPath = adv.portrait;
+                const party = adv.partyId ? state.parties[adv.partyId] : null;
 
                 return (
                   <tr
@@ -106,6 +109,21 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
                     </td>
                     <td>{cls?.name ?? "미정"}</td>
                     <td><span className="adv-rank-badge">{adv.rank}</span></td>
+                    <td>
+                      {party && onPartyClick ? (
+                        <button
+                          className="adv-party-link"
+                          onMouseEnter={playHover}
+                          onClick={(e) => { e.stopPropagation(); playSelect(); onPartyClick(party.id); }}
+                        >
+                          {party.name}
+                        </button>
+                      ) : party ? (
+                        <span className="adv-party-name">{party.name}</span>
+                      ) : (
+                        <span className="adv-party-none">미소속</span>
+                      )}
+                    </td>
                     <td><span className={`status ${statusTone}`}>{adventurerStatusLabels[adv.status]}</span></td>
                   </tr>
                 );
