@@ -5,7 +5,7 @@ import { adventurerStatusLabels, getBondStageLabel, getStatusTone, partyStatusLa
 import {
   calcPartyCombatPower,
   calcSynergy,
-  calcFormationMultiplier,
+  calcFormationAdjustment,
 } from "../../game/simulation/combatPower";
 import FormationGrid from "./FormationGrid";
 
@@ -19,11 +19,12 @@ interface Props {
   onDelete: () => void;
   onRename: (name: string) => void;
   onFormationSlot: (slot: FormationSlot, advId: string | null) => void;
+  onFormationSwap: (slotA: FormationSlot, slotB: FormationSlot) => void;
 }
 
 export default function PartyDetail({
   partyId, state, onClose, onAddMember, onRemoveMember,
-  onSetLeader, onDelete, onRename, onFormationSlot,
+  onSetLeader, onDelete, onRename, onFormationSlot, onFormationSwap,
 }: Props) {
   const [addingMember, setAddingMember] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -41,8 +42,7 @@ export default function PartyDetail({
 
   const combatPower = calcPartyCombatPower(party, members, state.classes);
   const synergy = calcSynergy(members, state.classes);
-  const formationMult = calcFormationMultiplier(party.formation, members);
-  const formationPct = Math.round((formationMult - 1) * 100);
+  const formationAdj = calcFormationAdjustment(party.formation, members);
 
   const eligibleAdventurers = Object.values(state.adventurers)
     .filter((adv) => !adv.isArchived && adv.status === "idle" && adv.partyId === null)
@@ -141,9 +141,9 @@ export default function PartyDetail({
           {synergy.penalties.map((p) => (
             <span key={p} className="synergy-tag penalty">{p}</span>
           ))}
-          {members.length > 0 && (
-            <span className={`synergy-tag ${formationPct >= 0 ? "bonus" : "penalty"}`}>
-              진형 {formationPct >= 0 ? `+${formationPct}` : formationPct}%
+          {members.length > 0 && formationAdj !== 0 && (
+            <span className={`synergy-tag ${formationAdj >= 0 ? "bonus" : "penalty"}`}>
+              진형 {formationAdj >= 0 ? `+${formationAdj}` : formationAdj}
             </span>
           )}
         </div>
@@ -239,6 +239,7 @@ export default function PartyDetail({
               classes={state.classes}
               disabled={isDispatched}
               onSlotChange={onFormationSlot}
+              onSlotSwap={onFormationSwap}
             />
           </section>
         )}

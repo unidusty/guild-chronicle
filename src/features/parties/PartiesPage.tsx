@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { EntityId, GameState } from "../../types/game";
 import { playSelect } from "../../lib/audio";
-import { createParty, deleteParty, addPartyMember, removePartyMember, setPartyLeader, renameParty, setFormationSlot } from "../../game/simulation/party";
+import { createParty, deleteParty, addPartyMember, removePartyMember, setPartyLeader, renameParty, setFormationSlot, swapFormationSlots } from "../../game/simulation/party";
 import type { FormationSlot } from "../../types/game";
 import PartyList from "./PartyList";
 import PartyDetail from "./PartyDetail";
@@ -60,6 +60,11 @@ export default function PartiesPage({ state, onStateChange, initialSelectedId, o
     onStateChange((s) => setFormationSlot(s, selectedId, slot, advId));
   }
 
+  function handleFormationSwap(slotA: FormationSlot, slotB: FormationSlot) {
+    if (!selectedId) return;
+    onStateChange((s) => swapFormationSlots(s, selectedId, slotA, slotB));
+  }
+
   return (
     <div className="page-shell">
       <header className="topbar">
@@ -89,6 +94,7 @@ export default function PartiesPage({ state, onStateChange, initialSelectedId, o
               onDelete={() => handleDeleteParty(selectedId)}
               onRename={handleRenameParty}
               onFormationSlot={handleFormationSlot}
+              onFormationSwap={handleFormationSwap}
             />
           </div>
         )}

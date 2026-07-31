@@ -7,20 +7,21 @@ import type {
   Formation,
   Party,
   Quest,
+  Stats,
 } from "../../types/game";
 
 // ── Class preferred positions ────────────────────────────────────────────────
 
 export const CLASS_PREFERRED_ROWS: Record<string, FormationRow[]> = {
-  warrior:  ["front"],
-  guardian: ["front"],
-  paladin:  ["front"],
+  warrior:   ["front"],
+  guardian:  ["front"],
+  paladin:   ["front"],
   swordsman: ["front", "mid"],
   spearman:  ["front", "mid"],
-  archer:  ["back", "mid"],
-  mage:    ["back", "mid"],
-  priest:  ["back", "mid"],
-  rogue:   ["back", "mid"],
+  archer:    ["back", "mid"],
+  mage:      ["back", "mid"],
+  priest:    ["back", "mid"],
+  rogue:     ["back", "mid"],
 };
 
 // ── Rank helpers ─────────────────────────────────────────────────────────────
@@ -49,19 +50,34 @@ export function computePartyRank(
 }
 
 // ── Individual member combat power ───────────────────────────────────────────
+//
+// Formula: classWeightedStatSum * 1.2 + ratingSum * 2
+//   - Primary stats (from AdventurerClass.primaryStats): weight 1.5
+//   - Other stats: weight 0.75
+//
+// Target individual ranges (with rebalanced stats):
+//   F-rank recruit: ~55-65   C-rank: ~80-95   B-rank: ~100-115   S-rank: ~140-160
 
-export function calcMemberCombatPower(adv: Adventurer): number {
-  const { strength, agility, endurance, intelligence, perception, willpower } = adv.stats;
-  const statSum = strength + agility + endurance + intelligence + perception + willpower;
+export function calcMemberCombatPower(adv: Adventurer, cls?: AdventurerClass): number {
+  const primaryStats: Array<keyof Stats> = cls?.primaryStats ?? [];
+  const stats = adv.stats;
+
+  let weightedSum = 0;
+  for (const [key, val] of Object.entries(stats) as [keyof Stats, number][]) {
+    const weight = primaryStats.includes(key) ? 1.5 : 0.75;
+    weightedSum += val * weight;
+  }
+
   const { attack, defense, evasion, accuracy, survival, leadership } = adv.combatRatings;
   const ratingSum = attack + defense + evasion + accuracy + survival + leadership;
-  return Math.round(statSum * 1.5 + ratingSum * 4);
+
+  return Math.round(weightedSum * 1.2 + ratingSum * 2);
 }
 
-// ── Synergy ──────────────────────────────────────────────────────────────────
+// ── Synergy (flat adjustments) ────────────────────────────────────────────────
 
 export interface SynergyResult {
-  multiplier: number;
+  adjustment: number;
   bonuses: string[];
   penalties: string[];
 }
@@ -70,11 +86,11 @@ export function calcSynergy(
   members: Adventurer[],
   classes: Record<string, AdventurerClass>,
 ): SynergyResult {
+  let adjustment = 0;
   const bonuses: string[] = [];
   const penalties: string[] = [];
-  let multiplier = 1.0;
 
-  if (members.length === 0) return { multiplier, bonuses, penalties };
+  if (members.length === 0) return { adjustment: 0, bonuses, penalties };
 
   const roles = members.map((m) => classes[m.classId]?.role ?? "damage");
   const hasVanguard = roles.some((r) => r === "vanguard");
@@ -83,51 +99,59 @@ export function calcSynergy(
   const hasMelee    = members.some((m) => ["warrior", "guardian", "paladin", "swordsman", "spearman"].includes(m.classId));
   const hasRanged   = members.some((m) => ["archer", "mage", "rogue"].includes(m.classId));
 
-  if (hasVanguard) { multiplier += 0.08; bonuses.push("탱커 보너스 +8%"); }
-  if (hasSupport)  { multiplier += 0.10; bonuses.push("힐러 보너스 +10%"); }
-  if (roleSet.size >= 3) { multiplier += 0.07; bonuses.push("역할 다양성 +7%"); }
-  if (hasMelee && hasRanged) { multiplier += 0.05; bonuses.push("근·원거리 균형 +5%"); }
+  if (hasVanguard) { adjustment += 10; bonuses.push("탱커 +10"); }
+  if (hasSupport)  { adjustment += 20; bonuses.push("힐러 +20"); }
+  if (roleSet.size >= 3) { adjustment += 10; bonuses.push("역할 다양성 +10"); }
+  if (hasMelee && hasRanged) { adjustment += 5; bonuses.push("균형 편성 +5"); }
 
-  if (!hasVanguard && members.length >= 2) {
-    multiplier -= 0.10; penalties.push("탱커 없음 -10%");
-  }
-  if (!hasSupport && members.length >= 3) {
-    multiplier -= 0.05; penalties.push("힐러 없음 -5%");
-  }
+  if (!hasVanguard && members.length >= 2) { adjustment -= 20; penalties.push("탱커 없음 -20"); }
+  if (!hasSupport  && members.length >= 3) { adjustment -= 15; penalties.push("힐러 없음 -15"); }
 
   const classCounts: Record<string, number> = {};
   for (const m of members) classCounts[m.classId] = (classCounts[m.classId] ?? 0) + 1;
-  const dupeClasses = Object.values(classCounts).filter((c) => c >= 2).length;
-  if (dupeClasses === 1) { multiplier -= 0.05; penalties.push("직업 중복 -5%"); }
-  if (dupeClasses >= 2)  { multiplier -= 0.15; penalties.push("직업 중복 과다 -15%"); }
+  const dupePenalty = Math.min(
+    15,
+    Object.values(classCounts).filter((c) => c >= 2).reduce((s, c) => s + (c - 1) * 5, 0),
+  );
+  if (dupePenalty > 0) { adjustment -= dupePenalty; penalties.push(`직업 중복 -${dupePenalty}`); }
 
-  return { multiplier: Math.max(0.5, multiplier), bonuses, penalties };
+  return { adjustment, bonuses, penalties };
 }
 
-// ── Formation position multiplier ────────────────────────────────────────────
+// ── Formation adjustment (flat per member) ────────────────────────────────────
+//   Correct position: +5 per member
+//   Wrong position:   -3 per member
 
 function slotToRow(slot: FormationSlot): FormationRow {
   return slot.split("-")[0] as FormationRow;
 }
 
-export function calcFormationMultiplier(
+export function calcFormationAdjustment(
   formation: Formation,
   members: Adventurer[],
 ): number {
   const assigned = Object.entries(formation) as [FormationSlot, string][];
-  if (assigned.length === 0) return 0.9;
+  if (assigned.length === 0) return 0;
 
-  let correct = 0;
+  let adj = 0;
   for (const [slot, advId] of assigned) {
     const adv = members.find((m) => m.id === advId);
     if (!adv) continue;
     const preferred = CLASS_PREFERRED_ROWS[adv.classId] ?? ["front", "mid", "back"];
-    if (preferred.includes(slotToRow(slot))) correct++;
+    adj += preferred.includes(slotToRow(slot)) ? 5 : -3;
   }
-  return 0.9 + (correct / assigned.length) * 0.2;
+  return adj;
 }
 
 // ── Party combat power ───────────────────────────────────────────────────────
+//
+// partyPower = memberBasePowerSum + synergyAdjustment + formationAdjustment
+//
+// Target party ranges:
+//   Early (F-rank, 3-4 members):    100–300
+//   Mid   (C-rank, 4 members):      300–500
+//   Late  (B-rank, 4-5 members):    400–650
+//   Top   (S-rank, 6 members):      850–1000
 
 export function calcPartyCombatPower(
   party: Party,
@@ -135,16 +159,16 @@ export function calcPartyCombatPower(
   classes: Record<string, AdventurerClass>,
 ): number {
   if (members.length === 0) return 0;
-  const base = members.reduce((sum, m) => sum + calcMemberCombatPower(m), 0);
-  const { multiplier } = calcSynergy(members, classes);
-  const formationMult = calcFormationMultiplier(party.formation, members);
-  return Math.round(base * multiplier * formationMult);
+  const memberBase = members.reduce((sum, m) => sum + calcMemberCombatPower(m, classes[m.classId]), 0);
+  const { adjustment: synergyAdj } = calcSynergy(members, classes);
+  const formationAdj = calcFormationAdjustment(party.formation, members);
+  return Math.max(0, memberBase + synergyAdj + formationAdj);
 }
 
 // ── Quest recommended power ──────────────────────────────────────────────────
 
 const RANK_BASE_POWER: Record<AdventurerRank, number> = {
-  F: 200, E: 360, D: 520, C: 680, B: 840, A: 940, S: 1000,
+  F: 120, E: 220, D: 330, C: 450, B: 580, A: 720, S: 880,
 };
 
 export function getQuestRecommendedPower(quest: Quest): number {

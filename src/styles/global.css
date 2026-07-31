@@ -837,6 +837,21 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .slot-picker-badge { font-size: calc(10px * var(--ui-scale)); background: #1a3e24; color: #6ab87a; padding: 1px 5px; border: 1px solid #2a5e34; }
 .slot-picker-empty { padding: calc(8px * var(--ui-scale)); font-size: var(--font-tiny); color: #4a5e4c; }
 
+/* ── Formation DnD ────────────────────────────────────────────────────────────── */
+.formation-unassigned { display: flex; flex-wrap: wrap; gap: calc(6px * var(--ui-scale)); min-height: calc(38px * var(--ui-scale)); padding: calc(6px * var(--ui-scale)); border: 1px dashed #2a3a2e; background: #0f1610; margin-bottom: calc(4px * var(--ui-scale)); transition: border-color .12s, background .12s; }
+.formation-unassigned.drop-target { border-color: #3a5040; border-style: dashed; }
+.formation-unassigned.drag-over { border-color: #6a9060; background: #141e14; }
+.formation-unassigned-empty { font-size: var(--font-tiny); color: #3a4e3c; align-self: center; padding: 0 4px; }
+.formation-member-card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: calc(4px * var(--ui-scale)) calc(10px * var(--ui-scale)); border: 1px solid #354a38; background: #182018; cursor: grab; min-width: calc(72px * var(--ui-scale)); transition: opacity .12s, border-color .12s; }
+.formation-member-card:hover { border-color: #4a6a50; }
+.formation-member-card.dragging { opacity: 0.35; }
+.fmc-name { font-size: var(--font-tiny); font-weight: 600; color: #c8d0c0; }
+.fmc-class { font-size: calc(11px * var(--ui-scale)); color: #6a7e6c; }
+.slot-card { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; height: 100%; justify-content: center; cursor: grab; }
+.slot-card:active { cursor: grabbing; }
+.formation-slot.drag-source { opacity: 0.4; border-style: dashed; }
+.formation-slot.drag-over { border-color: #6a9060 !important; background: #1a2e1e !important; outline: 1px solid #4a7050; }
+
 /* ── Quest Success Rate ──────────────────────────────────────────────────────── */
 .quest-challenge-badge { color: #c4a860; }
 .quest-success-rate { font-size: var(--font-small); font-weight: 700; min-width: calc(44px * var(--ui-scale)); text-align: right; }

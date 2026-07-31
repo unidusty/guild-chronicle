@@ -189,3 +189,26 @@ export function setFormationSlot(
     },
   };
 }
+
+export function swapFormationSlots(
+  state: GameState,
+  partyId: EntityId,
+  slotA: FormationSlot,
+  slotB: FormationSlot,
+): GameState {
+  const party = state.parties[partyId];
+  if (!party || party.status === "dispatched") return state;
+
+  const advA = party.formation[slotA];
+  const advB = party.formation[slotB];
+  if (advA === advB) return state;
+
+  const newFormation = { ...party.formation };
+  if (advA) newFormation[slotB] = advA; else delete newFormation[slotB];
+  if (advB) newFormation[slotA] = advB; else delete newFormation[slotA];
+
+  return {
+    ...state,
+    parties: { ...state.parties, [partyId]: { ...party, formation: newFormation } },
+  };
+}

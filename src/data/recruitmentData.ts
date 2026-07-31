@@ -95,10 +95,10 @@ export const STAT_TEMPLATES: Record<string, {
   secondary: Array<keyof Stats>;
 }> = {
   warrior:   { primary: ["strength", "endurance"],       secondary: ["willpower"] },
-  swordsman: { primary: ["strength", "endurance"],       secondary: ["agility"] },
+  swordsman: { primary: ["strength", "agility"],         secondary: ["endurance"] },
   spearman:  { primary: ["strength", "agility"],         secondary: ["endurance"] },
   archer:    { primary: ["agility", "perception"],       secondary: ["endurance"] },
-  mage:      { primary: ["intelligence", "perception"],  secondary: ["willpower"] },
+  mage:      { primary: ["intelligence", "willpower"],   secondary: ["perception"] },
   paladin:   { primary: ["endurance", "willpower"],      secondary: ["strength"] },
   rogue:     { primary: ["agility", "perception"],       secondary: ["intelligence"] },
   priest:    { primary: ["intelligence", "willpower"],   secondary: ["perception"] },
