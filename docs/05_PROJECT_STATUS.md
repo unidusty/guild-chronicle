@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**012-C — 랭크 시스템 및 파티 유대 기반**
+**013-A — 의뢰 게시판 UI 기반**
 
 ## 완료
 
@@ -48,6 +48,12 @@
 - 파티 유대: currentFormationDays / currentFormationQuestCount / 편성 리셋
 - PartyHistory 구조 (편성 변경 이력 보존)
 - 파티 상세 유대 단계 표시 (신생 파티 → 오랜 전우)
+- 의뢰 게시판 화면 (목록 + 상세 2열 레이아웃)
+- Quest 타입 확장 (questType, description, clientName, dangerLevel, recommendedPartySize, expiresInDays)
+- QuestStatus에 "in_progress" 추가
+- 상태/랭크 필터 정상 작동
+- 샘플 의뢰 12개 (F×2, E×2, D×2, C×1, B×2, S×1 + 기존 2개 assigned)
+- 파티 배정 버튼 (013-B 안내)
 - BGM 재생 (첫 사용자 입력 후 자동 시작, 반복)
 - UI 효과음 (hover, select)
 - 사운드 설정 화면 (BGM·효과음 볼륨 및 음소거 개별 조절, localStorage 저장)
@@ -78,7 +84,7 @@
 
 ## 다음 작업
 
-**013 — 의뢰 게시판** ← 현재
+**013-B — 의뢰 수락 및 파티 배정** ← 현재
 
 ## 주의사항
 

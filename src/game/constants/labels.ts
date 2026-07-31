@@ -1,4 +1,4 @@
-import type { Adventurer, AdventurerStatus, Gender, PartyStatus, Race, Stats } from "../../types/game";
+import type { Adventurer, AdventurerStatus, Gender, PartyStatus, QuestCategory, QuestStatus, QuestType, Race, Stats } from "../../types/game";
 
 export const raceLabels: Record<Race, string> = {
   human: "인간",
@@ -54,6 +54,38 @@ export function getPotentialGrade(potential: number): "S" | "A" | "B" | "C" | "D
   if (potential >= 56) return "B";
   if (potential >= 40) return "C";
   return "D";
+}
+
+export const questStatusLabels: Record<QuestStatus, string> = {
+  available:   "접수 가능",
+  assigned:    "수행 중",
+  in_progress: "수행 중",
+  completed:   "완료",
+  failed:      "실패",
+  expired:     "기한 만료",
+};
+
+export const questTypeLabels: Record<QuestType, string> = {
+  normal: "일반",
+  urgent: "긴급",
+  raid:   "대형",
+};
+
+export const questCategoryLabels: Record<QuestCategory, string> = {
+  escort:      "호위",
+  search:      "수색",
+  hunt:        "토벌",
+  delivery:    "배달",
+  rescue:      "구조",
+  exploration: "탐사",
+};
+
+export function dangerLevelLabel(level: number): string {
+  if (level >= 5) return "치명적";
+  if (level >= 4) return "매우 높음";
+  if (level >= 3) return "높음";
+  if (level >= 2) return "보통";
+  return "낮음";
 }
 
 export function getBondStageLabel(questCount: number): string {

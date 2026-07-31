@@ -5,7 +5,9 @@ export type Gender = "male" | "female";
 export type AdventurerRank = "F" | "E" | "D" | "C" | "B" | "A" | "S";
 export type AdventurerStatus = "idle" | "dispatched" | "injured" | "training" | "recovering";
 export type PartyStatus = "idle" | "dispatched" | "returning";
-export type QuestStatus = "available" | "assigned" | "completed" | "failed" | "expired";
+export type QuestStatus = "available" | "assigned" | "in_progress" | "completed" | "failed" | "expired";
+export type QuestType = "normal" | "urgent" | "raid";
+export type QuestCategory = "escort" | "search" | "hunt" | "delivery" | "rescue" | "exploration";
 export type ChronicleScope = "guild" | "adventurer" | "party" | "world";
 export type ChronicleCategory = "join" | "quest" | "injury" | "growth" | "facility" | "reputation" | "world";
 
@@ -115,8 +117,14 @@ export interface Quest {
   title: string;
   grade: AdventurerRank;
   regionId: EntityId;
-  type: "escort" | "search" | "hunt" | "delivery" | "rescue" | "exploration";
+  type: QuestCategory;
+  questType: QuestType;
   status: QuestStatus;
+  description: string;
+  clientName: string;
+  dangerLevel: number;
+  recommendedPartySize: number;
+  expiresInDays: number;
   rewardGold: number;
   durationDays: number;
   remainingDays: number;

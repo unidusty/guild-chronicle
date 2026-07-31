@@ -3,17 +3,18 @@ import { initialGameState } from "../data/gameState";
 import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetrics, getRosterRows } from "../game/simulation/selectors";
 import AdventurersPage from "../features/adventurers/AdventurersPage";
 import PartiesPage from "../features/parties/PartiesPage";
+import QuestBoardPage from "../features/quests/QuestBoardPage";
 import SettingsModal from "../components/SettingsModal";
 import { useAudio, playHover, playSelect } from "../lib/audio";
 import { advanceDay } from "../game/simulation/advance";
 
-type Page = "dashboard" | "adventurers" | "parties";
+type Page = "dashboard" | "adventurers" | "parties" | "quests";
 interface NavItem { label: string; page: Page | null; }
 const NAV_ITEMS: NavItem[] = [
   { label: "길드 현황",   page: "dashboard" },
   { label: "모험가",      page: "adventurers" },
   { label: "파티",        page: "parties" },
-  { label: "의뢰 게시판", page: null },
+  { label: "의뢰 게시판", page: "quests" },
   { label: "세계 지도",   page: null },
   { label: "시설",        page: null },
   { label: "연대기",      page: null },
@@ -184,6 +185,8 @@ export default function App() {
           <AdventurersPage state={state} />
         ) : page === "parties" ? (
           <PartiesPage state={state} onStateChange={setState} />
+        ) : page === "quests" ? (
+          <QuestBoardPage state={state} />
         ) : null}
       </main>
 
