@@ -70,17 +70,112 @@ function updateQuests(state: GameState): GameState {
   };
 }
 
-// ── Stubs (filled in as game systems grow) ───────────────────────────────────
+// ── Injury recovery ──────────────────────────────────────────────────────────
 
-function updateRecovery  (state: GameState): GameState { return state; }
-function checkDailyEvents(state: GameState): GameState { return state; }
+function updateInjuries(state: GameState): GameState {
+  const newEntries: ChronicleEntry[] = [];
+  const injuries    = { ...state.injuries };
+  const adventurers = { ...state.adventurers };
+  const date        = state.currentDate;
+
+  for (const injury of Object.values(state.injuries)) {
+    const remaining = injury.recoveryDays - 1;
+
+    if (remaining <= 0) {
+      delete injuries[injury.id];
+
+      const adv = adventurers[injury.adventurerId];
+      if (adv) {
+        const newInjuryIds = adv.injuryIds.filter((id) => id !== injury.id);
+        adventurers[adv.id] = {
+          ...adv,
+          injuryIds: newInjuryIds,
+          status:    newInjuryIds.length === 0 ? "idle" : adv.status,
+        };
+
+        newEntries.push({
+          id: `chronicle-recover-${adv.id}-${date.year}-${date.season}-${String(date.day).padStart(2, "0")}`,
+          date,
+          scope:            "adventurer",
+          category:         "injury",
+          title:            "부상 회복 완료",
+          description:      `${adv.name}의 ${injury.name}이(가) 완전히 회복되었습니다.`,
+          relatedEntityIds: [adv.id],
+        });
+      }
+    } else {
+      injuries[injury.id] = { ...injury, recoveryDays: remaining };
+    }
+  }
+
+  return {
+    ...state,
+    injuries,
+    adventurers,
+    chronicle: [...newEntries, ...state.chronicle],
+  };
+}
+
+// ── Training progress ────────────────────────────────────────────────────────
+
+function updateTraining(state: GameState): GameState {
+  const newEntries: ChronicleEntry[] = [];
+  const adventurers = { ...state.adventurers };
+  const date        = state.currentDate;
+
+  for (const adv of Object.values(state.adventurers)) {
+    if (adv.status !== "training") continue;
+
+    const remaining = adv.trainingDays - 1;
+
+    if (remaining <= 0) {
+      adventurers[adv.id] = { ...adv, trainingDays: 0, status: "idle" };
+
+      newEntries.push({
+        id: `chronicle-train-${adv.id}-${date.year}-${date.season}-${String(date.day).padStart(2, "0")}`,
+        date,
+        scope:            "adventurer",
+        category:         "growth",
+        title:            "훈련 완료",
+        description:      `${adv.name}이(가) 훈련을 마치고 대기 상태로 복귀했습니다.`,
+        relatedEntityIds: [adv.id],
+      });
+    } else {
+      adventurers[adv.id] = { ...adv, trainingDays: remaining };
+    }
+  }
+
+  return {
+    ...state,
+    adventurers,
+    chronicle: [...newEntries, ...state.chronicle],
+  };
+}
+
+// ── Age increment (year change only) ────────────────────────────────────────
+
+function updateAges(state: GameState): GameState {
+  const adventurers = { ...state.adventurers };
+
+  for (const adv of Object.values(state.adventurers)) {
+    if (!adv.isArchived) {
+      adventurers[adv.id] = { ...adv, age: adv.age + 1 };
+    }
+  }
+
+  return { ...state, adventurers };
+}
 
 // ── Main advance function ────────────────────────────────────────────────────
 
 export function advanceDay(state: GameState): GameState {
-  let next: GameState = { ...state, currentDate: advanceDate(state.currentDate) };
+  const newDate = advanceDate(state.currentDate);
+  const yearChanged = newDate.year > state.currentDate.year;
+
+  let next: GameState = { ...state, currentDate: newDate };
   next = updateQuests(next);
-  next = updateRecovery(next);
-  next = checkDailyEvents(next);
+  next = updateInjuries(next);
+  next = updateTraining(next);
+  if (yearChanged) next = updateAges(next);
   return next;
 }

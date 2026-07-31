@@ -63,6 +63,7 @@ export interface Adventurer {
   partyId: EntityId | null;
   currentQuestId: EntityId | null;
   injuryIds: EntityId[];
+  trainingDays: number;
   joinedAt: GameDate;
   isArchived: boolean;
   personality: string;

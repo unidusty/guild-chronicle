@@ -137,6 +137,7 @@ export function generateAdventurer(
     partyId:          null,
     currentQuestId:   null,
     injuryIds:        [],
+    trainingDays:     0,
     joinedAt:         currentDate,
     isArchived:       false,
     personality:      pick(PERSONALITIES),
