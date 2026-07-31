@@ -106,6 +106,7 @@ export interface Quest {
   status: QuestStatus;
   rewardGold: number;
   durationDays: number;
+  remainingDays: number;
   progress: number;
   assignedPartyId: EntityId | null;
   expectedReturnAt: GameDate | null;

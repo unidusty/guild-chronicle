@@ -156,10 +156,10 @@ export default function App() {
                   <button className="text-button" onMouseEnter={playHover}>기록 열기 →</button>
                 </div>
                 <div className="timeline">
-                  {state.chronicle.map((entry) => (
+                  {state.chronicle.slice(0, 3).map((entry) => (
                     <div key={entry.id}>
                       <time>{formatShortGameDate(entry.date)}</time>
-                      <p><strong>{entry.title}</strong><br />{entry.description}</p>
+                      <p><strong>{entry.title}</strong><br /><span className="timeline-desc">{entry.description}</span></p>
                     </div>
                   ))}
                 </div>

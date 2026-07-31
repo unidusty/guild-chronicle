@@ -84,6 +84,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .progress { height: 5px; background: #2a302b; }.progress i { display: block; height: 100%; background: #a58d54; }
 .mission > span { color: #999f99; font-size: var(--font-small); text-align: right; }
 .timeline { border-left: 1px solid #465047; margin-left: 5px; padding-left: 18px; }.timeline div { position: relative; padding-bottom: 17px; }.timeline div::before { content: ""; position: absolute; left: -22px; top: 3px; width: 7px; height: 7px; border: 1px solid #ac945a; background: #1a201c; }.timeline time { color: #8b7650; font-size: var(--font-tiny); }.timeline p { margin: 6px 0 0; color: #9ca49d; font-size: var(--font-small); line-height: 1.55; }.timeline strong { color: #d6d8d3; }
+.timeline-desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 /* ── Recruitment Panel ─────────────────────────────────────────── */
 .recruit-panel { margin-top: 14px; }
 .recruit-empty { color: #6a736b; font-size: var(--font-small); margin: 0; }

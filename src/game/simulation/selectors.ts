@@ -121,7 +121,7 @@ export function getActiveQuestRows(state: GameState) {
       return {
         ...quest,
         partyName: party?.name ?? "미배정",
-        returnLabel: quest.expectedReturnAt?.day === state.currentDate.day ? "예상 귀환 오늘 밤" : `예상 귀환 ${Math.max(1, (quest.expectedReturnAt?.day ?? state.currentDate.day) - state.currentDate.day)}일 후`,
+        returnLabel: quest.remainingDays <= 0 ? "귀환 완료" : `예상 귀환 ${quest.remainingDays}일 후`,
       };
     });
 }

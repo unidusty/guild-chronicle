@@ -93,13 +93,13 @@ export const initialGameState: GameState = {
   quests: {
     "quest-caravan": {
       id: "quest-caravan", title: "회색등성이 상단 호위", grade: "B", regionId: "region-grayridge",
-      type: "escort", status: "assigned", rewardGold: 1850, durationDays: 4, progress: 68,
+      type: "escort", status: "assigned", rewardGold: 1850, durationDays: 4, remainingDays: 2, progress: 68,
       assignedPartyId: "party-silverhawk", expectedReturnAt: { year: 317, season: "summer", day: 14 },
       riskTags: ["산적", "낙석"],
     },
     "quest-missing": {
       id: "quest-missing", title: "서부 수로의 실종자 수색", grade: "C", regionId: "region-westcanal",
-      type: "search", status: "assigned", rewardGold: 920, durationDays: 2, progress: 91,
+      type: "search", status: "assigned", rewardGold: 920, durationDays: 2, remainingDays: 1, progress: 91,
       assignedPartyId: "party-bluelantern", expectedReturnAt: { year: 317, season: "summer", day: 12 },
       riskTags: ["침수", "야간"],
     },

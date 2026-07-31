@@ -1,5 +1,4 @@
 import type { ChronicleEntry, GameDate, GameState } from "../../types/game";
-import { seasonLabels } from "../constants/labels";
 
 // ── Date arithmetic ─────────────────────────────────────────────────────────
 
@@ -9,50 +8,79 @@ type Season = typeof SEASON_ORDER[number];
 export function advanceDate(date: GameDate): GameDate {
   if (date.day < 30) return { ...date, day: date.day + 1 };
 
-  const idx     = SEASON_ORDER.indexOf(date.season as Season);
-  const nextIdx = (idx + 1) % 4;
-  const next    = SEASON_ORDER[nextIdx];
+  const idx  = SEASON_ORDER.indexOf(date.season as Season);
+  const next = SEASON_ORDER[(idx + 1) % 4];
   return { year: next === "spring" ? date.year + 1 : date.year, season: next, day: 1 };
 }
 
-// ── Chronicle entry for the new day ────────────────────────────────────────
+// ── Quest & adventurer update ────────────────────────────────────────────────
 
-function makeDayEntry(date: GameDate): ChronicleEntry {
-  const label = `${seasonLabels[date.season]} ${date.day}일`;
+const DAILY_PROGRESS = 15;
+
+function updateQuests(state: GameState): GameState {
+  const newEntries: ChronicleEntry[] = [];
+  const quests      = { ...state.quests };
+  const adventurers = { ...state.adventurers };
+  const parties     = { ...state.parties };
+  const date        = state.currentDate;
+
+  for (const quest of Object.values(state.quests)) {
+    if (quest.status !== "assigned") continue;
+
+    const remaining = quest.remainingDays - 1;
+
+    if (remaining <= 0) {
+      quests[quest.id] = { ...quest, remainingDays: 0, progress: 100, status: "completed" };
+
+      const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
+      if (party) {
+        parties[party.id] = { ...party, status: "idle", activeQuestId: null };
+
+        for (const memberId of party.memberIds) {
+          if (adventurers[memberId]) {
+            adventurers[memberId] = { ...adventurers[memberId], status: "idle", currentQuestId: null };
+          }
+        }
+
+        newEntries.push({
+          id: `chronicle-complete-${quest.id}-${date.year}-${date.season}-${String(date.day).padStart(2, "0")}`,
+          date,
+          scope:            "guild",
+          category:         "quest",
+          title:            `${quest.title} 완료`,
+          description:      `${party.name}가 의뢰를 마치고 길드로 귀환했습니다.`,
+          relatedEntityIds: [party.id, ...party.memberIds],
+        });
+      }
+    } else {
+      quests[quest.id] = {
+        ...quest,
+        remainingDays: remaining,
+        progress:      Math.min(99, quest.progress + DAILY_PROGRESS),
+      };
+    }
+  }
+
   return {
-    id: `chronicle-day-${date.year}-${date.season}-${String(date.day).padStart(2, "0")}`,
-    date,
-    scope:            "guild",
-    category:         "world",
-    title:            label,
-    description:      `왕국력 ${date.year}년 ${label}이 시작되었습니다.`,
-    relatedEntityIds: [],
+    ...state,
+    quests,
+    adventurers,
+    parties,
+    chronicle: [...newEntries, ...state.chronicle],
   };
 }
 
-// ── Daily update stubs (fill in as game systems are built) ──────────────────
+// ── Stubs (filled in as game systems grow) ───────────────────────────────────
 
-function updateQuests    (state: GameState): GameState { return state; }
-function updateParties   (state: GameState): GameState { return state; }
 function updateRecovery  (state: GameState): GameState { return state; }
 function checkDailyEvents(state: GameState): GameState { return state; }
 
-// ── Main advance function ───────────────────────────────────────────────────
+// ── Main advance function ────────────────────────────────────────────────────
 
 export function advanceDay(state: GameState): GameState {
-  const newDate = advanceDate(state.currentDate);
-  const entry   = makeDayEntry(newDate);
-
-  let next: GameState = {
-    ...state,
-    currentDate: newDate,
-    chronicle:   [entry, ...state.chronicle],
-  };
-
+  let next: GameState = { ...state, currentDate: advanceDate(state.currentDate) };
   next = updateQuests(next);
-  next = updateParties(next);
   next = updateRecovery(next);
   next = checkDailyEvents(next);
-
   return next;
 }
