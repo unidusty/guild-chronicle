@@ -266,9 +266,9 @@ export default function PartyDetail({
               <div className="info-row"><label>파티 랭크</label><span className="rank">{party.rank}</span></div>
               <div className="info-row"><label>유대</label><span>{bondLabel}</span></div>
               <div className="info-row"><label>편성 일수</label><span>{party.currentFormationDays}일</span></div>
-              <div className="info-row"><label>완료 의뢰 (현 편성)</label><span>{party.currentFormationQuestCount}건</span></div>
-              <div className="info-row"><label>총 완료 의뢰</label><span>{party.questsCompleted}건</span></div>
-              <div className="info-row"><label>총 활동 일수</label><span>{party.totalActivityDays}일</span></div>
+              <div className="info-row"><label>현 편성 의뢰</label><span>{party.currentFormationQuestCount}건</span></div>
+              <div className="info-row"><label>누적 의뢰</label><span>{party.questsCompleted}건</span></div>
+              <div className="info-row"><label>누적 활동일</label><span>{party.totalActivityDays}일</span></div>
               <div className="info-row"><label>총 수익</label><span>{party.totalGoldEarned.toLocaleString("ko-KR")} G</span></div>
             </div>
           </div>
