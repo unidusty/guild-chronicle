@@ -6,22 +6,19 @@ import PartiesPage from "../features/parties/PartiesPage";
 import QuestBoardPage from "../features/quests/QuestBoardPage";
 import QuestResultPanel from "../features/quests/QuestResultPanel";
 import WarehousePage from "../features/warehouse/WarehousePage";
+import FacilitiesPage from "../features/facilities/FacilitiesPage";
 import SettingsModal from "../components/SettingsModal";
 import { useAudio, playHover, playSelect } from "../lib/audio";
 import { advanceDay } from "../game/simulation/advance";
 
-type Page = "dashboard" | "adventurers" | "parties" | "quests" | "warehouse";
-interface NavItem { label: string; page: Page | null; }
-const NAV_ITEMS: NavItem[] = [
-  { label: "길드 현황",   page: "dashboard" },
-  { label: "모험가",      page: "adventurers" },
-  { label: "파티",        page: "parties" },
-  { label: "의뢰 게시판", page: "quests" },
-  { label: "길드 창고",   page: "warehouse" },
-  { label: "세계 지도",   page: null },
-  { label: "시설",        page: null },
-  { label: "연대기",      page: null },
-];
+type Page = "dashboard" | "adventurers" | "parties" | "quests" | "warehouse" | "facilities" | "recruitment";
+
+interface NavItem {
+  label: string;
+  page: Page | null;
+  locked?: boolean;
+  lockHint?: string;
+}
 
 const reportPresentation = {
   medical:     { icon: "!", tone: "danger" },
@@ -39,8 +36,21 @@ export default function App() {
   const roster       = getRosterRows(state);
   const activeQuests = getActiveQuestRows(state);
 
-  // 대시보드 "오늘의 모험가 현황" — 대기 제외, 활동 중만 표시
   const activeDutyRoster = roster.filter((row) => state.adventurers[row.id]?.status !== "idle");
+
+  const hasRecruitmentRoom = (state.facilities["facility-recruitment"]?.level ?? 0) > 0;
+
+  const NAV_ITEMS: NavItem[] = [
+    { label: "길드 현황",   page: "dashboard" },
+    { label: "모험가",      page: "adventurers" },
+    { label: "파티",        page: "parties" },
+    { label: "의뢰 게시판", page: "quests" },
+    { label: "길드 창고",   page: "warehouse" },
+    { label: "가입 심사",   page: "recruitment", locked: !hasRecruitmentRoom, lockHint: "가입 심사실이 필요합니다." },
+    { label: "시설",        page: "facilities" },
+    { label: "세계 지도",   page: null },
+    { label: "연대기",      page: null },
+  ];
 
   function handleAdvanceDay() { playSelect(); setState(advanceDay); }
   function openSettings() { playSelect(); setSettingsOpen(true); }
@@ -54,10 +64,20 @@ export default function App() {
         <nav>
           {NAV_ITEMS.map((item) => (
             <button
-              className={item.page === page ? "nav-item active" : "nav-item"}
               key={item.label}
+              className={[
+                "nav-item",
+                item.page === page ? "active" : "",
+                item.locked ? "locked" : "",
+                !item.page && !item.locked ? "disabled" : "",
+              ].filter(Boolean).join(" ")}
+              title={item.locked ? item.lockHint : undefined}
               onMouseEnter={playHover}
-              onClick={() => { if (item.page) { playSelect(); setPage(item.page); } }}
+              onClick={() => {
+                if (item.locked || !item.page) return;
+                playSelect();
+                setPage(item.page);
+              }}
             >
               {item.label}
             </button>
@@ -192,6 +212,18 @@ export default function App() {
           <QuestBoardPage state={state} onStateChange={setState} />
         ) : page === "warehouse" ? (
           <WarehousePage state={state} onStateChange={setState} />
+        ) : page === "facilities" ? (
+          <FacilitiesPage state={state} onStateChange={setState} />
+        ) : page === "recruitment" ? (
+          <div className="page-shell">
+            <header className="topbar">
+              <div>
+                <p className="eyebrow">WESTWIND GUILD · RECRUITMENT</p>
+                <h1>가입 심사</h1>
+              </div>
+            </header>
+            <p className="placeholder-notice">가입 심사 시스템은 다음 업데이트에서 구현됩니다.</p>
+          </div>
         ) : null}
       </main>
 

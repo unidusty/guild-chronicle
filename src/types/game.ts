@@ -183,11 +183,16 @@ export interface Region {
   control: "kingdom" | "contested" | "hostile";
 }
 
+export type FacilityStatus = "active" | "unbuilt";
+
 export interface Facility {
   id: EntityId;
   name: string;
-  level: number;
-  status: "active" | "upgrading" | "damaged";
+  description: string;
+  level: number;      // 0 = unbuilt, 1–maxLevel = built
+  maxLevel: number;
+  status: FacilityStatus;
+  unlocks: string[];  // feature keys unlocked when this facility is built
 }
 
 export interface Guild {

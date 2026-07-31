@@ -10,7 +10,7 @@ const _rawState: GameState = {
     gold: 18420,
     reputation: 1286,
     reputationTier: 3,
-    facilityIds: ["facility-counter", "facility-training", "facility-smithy", "facility-infirmary"],
+    facilityIds: ["facility-guild-hall", "facility-reception", "facility-storage", "facility-recruitment"],
     adventurerIds: ["adv-ella", "adv-lien", "adv-dorgan", "adv-marien", "adv-theo", "adv-serin", "adv-braen", "adv-vess", "adv-caelum", "adv-rina", "adv-korra", "adv-mael"],
     partyIds: ["party-silverhawk", "party-bluelantern", "party-ironforge"],
   },
@@ -322,10 +322,26 @@ const _rawState: GameState = {
     "region-northmountain": { id: "region-northmountain", name: "북부 산맥",    danger: 95, control: "hostile" },
   },
   facilities: {
-    "facility-counter": { id: "facility-counter", name: "길드 카운터", level: 2, status: "active" },
-    "facility-training": { id: "facility-training", name: "훈련장", level: 2, status: "active" },
-    "facility-smithy": { id: "facility-smithy", name: "대장간", level: 3, status: "active" },
-    "facility-infirmary": { id: "facility-infirmary", name: "치료실", level: 2, status: "active" },
+    "facility-guild-hall": {
+      id: "facility-guild-hall", name: "길드 홀",
+      description: "길드의 중심 건물. 길드의 규모와 운영 기반을 결정한다.",
+      level: 1, maxLevel: 3, status: "active", unlocks: [],
+    },
+    "facility-reception": {
+      id: "facility-reception", name: "접수대",
+      description: "의뢰를 접수하고 관리하는 공간. 처리 가능한 의뢰 수를 결정한다.",
+      level: 1, maxLevel: 3, status: "active", unlocks: [],
+    },
+    "facility-storage": {
+      id: "facility-storage", name: "창고",
+      description: "전리품과 자원을 보관하는 시설. 현재는 무제한으로 운영한다.",
+      level: 1, maxLevel: 3, status: "active", unlocks: [],
+    },
+    "facility-recruitment": {
+      id: "facility-recruitment", name: "가입 심사실",
+      description: "신규 모험가 지원자를 심사하는 공간. 건설하면 가입 심사 기능이 해금된다.",
+      level: 0, maxLevel: 3, status: "unbuilt", unlocks: ["recruitment"],
+    },
   },
   chronicle: [
     {
