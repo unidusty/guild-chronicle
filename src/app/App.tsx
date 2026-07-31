@@ -31,9 +31,12 @@ export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const metrics     = getGuildMetrics(state);
-  const roster      = getRosterRows(state);
+  const metrics      = getGuildMetrics(state);
+  const roster       = getRosterRows(state);
   const activeQuests = getActiveQuestRows(state);
+
+  // 대시보드 "오늘의 모험가 현황" — 대기 제외, 활동 중만 표시
+  const activeDutyRoster = roster.filter((row) => state.adventurers[row.id]?.status !== "idle");
 
   function handleAdvanceDay() { playSelect(); setState(advanceDay); }
   function openSettings() { playSelect(); setSettingsOpen(true); }
@@ -92,27 +95,31 @@ export default function App() {
                   <div><p className="eyebrow">ACTIVE ROSTER</p><h2>오늘의 모험가 현황</h2></div>
                   <button className="text-button" onMouseEnter={playHover}>전체 명단 →</button>
                 </div>
-                <div className="table-wrap">
-                  <table>
-                    <thead><tr><th>모험가</th><th>직업</th><th>등급</th><th>현재 임무</th><th>상태</th></tr></thead>
-                    <tbody>
-                      {roster.map((a) => (
-                        <tr key={a.id}>
-                          <td>
-                            <div className="person">
-                              <div className="portrait">{a.portraitPath ? <img src={a.portraitPath} alt={a.name} /> : a.initials}</div>
-                              <div><strong>{a.name}</strong><span>{a.race} · {a.age}세</span></div>
-                            </div>
-                          </td>
-                          <td>{a.job}</td>
-                          <td><span className="rank">{a.rank}</span></td>
-                          <td>{a.assignment}</td>
-                          <td><span className={`status ${a.statusTone}`}>{a.status}</span></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                {activeDutyRoster.length === 0 ? (
+                  <p className="panel-empty">현재 진행 중인 활동이 없습니다.</p>
+                ) : (
+                  <div className="table-wrap roster-scroll">
+                    <table>
+                      <thead><tr><th>모험가</th><th>직업</th><th>등급</th><th>현재 임무</th><th>상태</th></tr></thead>
+                      <tbody>
+                        {activeDutyRoster.map((a) => (
+                          <tr key={a.id}>
+                            <td>
+                              <div className="person">
+                                <div className="portrait">{a.portraitPath ? <img src={a.portraitPath} alt={a.name} /> : a.initials}</div>
+                                <div><strong>{a.name}</strong><span>{a.race} · {a.age}세</span></div>
+                              </div>
+                            </td>
+                            <td>{a.job}</td>
+                            <td><span className="rank">{a.rank}</span></td>
+                            <td>{a.assignment}</td>
+                            <td><span className={`status ${a.statusTone}`}>{a.status}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </article>
 
               <article className="panel report-panel">
@@ -139,16 +146,22 @@ export default function App() {
                   <div><p className="eyebrow">LIVE OPERATIONS</p><h2>진행 중인 의뢰</h2></div>
                   <span className="quiet">{activeQuests.length}개 파티 파견 중</span>
                 </div>
-                {activeQuests.map((quest) => (
-                  <div className="mission" key={quest.id}>
-                    <div>
-                      <span className={`mission-grade ${quest.grade.toLowerCase()}`}>{quest.grade}</span>
-                      <div><strong>{quest.title}</strong><small>{quest.partyName} · {quest.returnLabel}</small></div>
-                    </div>
-                    <div className="progress"><i style={{ width: `${quest.progress}%` }} /></div>
-                    <span>{quest.progress}%</span>
+                {activeQuests.length === 0 ? (
+                  <p className="panel-empty">현재 진행 중인 의뢰가 없습니다.</p>
+                ) : (
+                  <div className="activity-scroll">
+                    {activeQuests.map((quest) => (
+                      <div className="mission" key={quest.id}>
+                        <div>
+                          <span className={`mission-grade ${quest.grade.toLowerCase()}`}>{quest.grade}</span>
+                          <div><strong>{quest.title}</strong><small>{quest.partyName} · {quest.returnLabel}</small></div>
+                        </div>
+                        <div className="progress"><i style={{ width: `${quest.progress}%` }} /></div>
+                        <span>{quest.progress}%</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </article>
 
               <article className="panel chronicle-panel">
@@ -170,7 +183,7 @@ export default function App() {
         ) : page === "adventurers" ? (
           <AdventurersPage state={state} />
         ) : page === "parties" ? (
-          <PartiesPage state={state} />
+          <PartiesPage state={state} onStateChange={setState} />
         ) : null}
       </main>
 

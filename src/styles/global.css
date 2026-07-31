@@ -317,3 +317,48 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .party-member-name-row { display: flex; align-items: center; gap: 8px; }
 .party-member-name-row strong { font-size: var(--font-body); color: #e4e5df; }
 .leader-badge { padding: 2px 7px; border: 1px solid #7a6840; color: #c4a860; font-size: var(--font-tiny); letter-spacing: .04em; }
+
+/* Party edit controls */
+.member-actions { display: flex; gap: 5px; margin-left: auto; flex-shrink: 0; }
+.member-action-btn { padding: calc(4px * var(--ui-scale)) calc(10px * var(--ui-scale)); border: 1px solid #454d46; background: transparent; color: #8f9890; font-size: var(--font-tiny); cursor: pointer; letter-spacing: .03em; transition: border-color .12s, color .12s; }
+.member-action-btn:hover { border-color: #7a8a7c; color: #c4c9c4; }
+.member-action-btn.danger { border-color: #5a3a3a; color: #c49090; }
+.member-action-btn.danger:hover { border-color: #8a5a5a; color: #e8a8a8; }
+
+/* Add member section */
+.add-member-section { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); margin-top: calc(6px * var(--ui-scale)); }
+.add-member-toggle { align-self: flex-start; padding: calc(5px * var(--ui-scale)) calc(12px * var(--ui-scale)); border: 1px solid #2a322c; background: transparent; color: #6a736b; font-size: var(--font-tiny); cursor: pointer; letter-spacing: .04em; transition: border-color .12s, color .12s; }
+.add-member-toggle:hover { border-color: #454d46; color: #9ca49c; }
+.add-member-panel { display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); max-height: calc(200px * var(--ui-scale)); overflow-y: auto; border: 1px solid #252e27; background: #141a16; padding: calc(8px * var(--ui-scale)); }
+.add-member-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); padding: calc(6px * var(--ui-scale)) 0; border-bottom: 1px solid #252e27; }
+.add-member-row:last-child { border-bottom: none; }
+.add-member-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.add-member-info strong { font-size: var(--font-small); color: #d0d5d0; }
+
+/* Party delete section */
+.party-delete-section { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); padding-top: calc(16px * var(--ui-scale)); border-top: 1px solid #252e27; margin-top: auto; }
+.party-dissolve-btn { align-self: flex-start; padding: calc(6px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #5a3a3a; background: transparent; color: #c49090; font-size: var(--font-small); cursor: pointer; letter-spacing: .04em; transition: border-color .12s, background .12s; }
+.party-dissolve-btn:hover { border-color: #8a5a5a; background: rgba(90,40,40,.1); }
+.party-delete-confirm { display: flex; align-items: center; gap: calc(14px * var(--ui-scale)); }
+.party-delete-confirm span { font-size: var(--font-small); color: #c49090; }
+.party-delete-actions { display: flex; gap: 6px; }
+
+/* Party locked notice */
+.party-locked-notice { margin: 0; padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #3d4a38; background: #1a2219; color: #8a9489; font-size: var(--font-small); }
+
+/* Party create form in list */
+.party-list-toolbar { margin-bottom: 10px; }
+.party-new-btn { padding: calc(8px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #2a322c; background: transparent; color: #8a9489; font-size: var(--font-small); cursor: pointer; letter-spacing: .04em; transition: border-color .12s, color .12s; }
+.party-new-btn:hover { border-color: #454d46; color: #c4c9c4; }
+.party-create-form { display: flex; gap: 6px; align-items: center; }
+.party-create-input { flex: 1; padding: calc(7px * var(--ui-scale)) 10px; border: 1px solid #3a423a; background: #1a201c; color: #c8cec8; font: inherit; font-size: var(--font-small); outline: none; }
+.party-create-input:focus { border-color: #4a5a4a; }
+.party-create-btn { padding: calc(7px * var(--ui-scale)) calc(12px * var(--ui-scale)); border: 1px solid #5a7646; background: transparent; color: #9ab46a; font-size: var(--font-small); cursor: pointer; transition: border-color .12s; }
+.party-create-btn:hover { border-color: #7a9a56; }
+.party-create-btn.cancel { border-color: #3a423a; color: #6a736b; }
+.party-create-btn.cancel:hover { border-color: #5a625a; color: #8a948a; }
+
+/* Dashboard panel improvements */
+.roster-scroll { max-height: calc(224px * var(--ui-scale)); overflow-y: auto; }
+.activity-scroll { max-height: calc(200px * var(--ui-scale)); overflow-y: auto; }
+.panel-empty { margin: 0; padding: calc(16px * var(--ui-scale)) 0 calc(8px * var(--ui-scale)); color: #6a736b; font-size: var(--font-small); }

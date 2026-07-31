@@ -90,7 +90,7 @@ export interface Injury {
 export interface Party {
   id: EntityId;
   name: string;
-  leaderId: EntityId;
+  leaderId: EntityId | null;
   memberIds: EntityId[];
   rank: AdventurerRank;
   status: PartyStatus;
