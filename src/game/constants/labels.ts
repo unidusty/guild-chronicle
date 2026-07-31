@@ -1,4 +1,4 @@
-import type { Adventurer, AdventurerStatus, Gender, Race, Stats } from "../../types/game";
+import type { Adventurer, AdventurerStatus, Gender, PartyStatus, Race, Stats } from "../../types/game";
 
 export const raceLabels: Record<Race, string> = {
   human: "인간",
@@ -9,6 +9,12 @@ export const raceLabels: Record<Race, string> = {
 export const genderLabels: Record<Gender, string> = {
   male: "남",
   female: "여",
+};
+
+export const partyStatusLabels: Record<PartyStatus, string> = {
+  idle:       "대기",
+  dispatched: "의뢰 수행 중",
+  returning:  "귀환 중",
 };
 
 export const adventurerStatusLabels: Record<AdventurerStatus, string> = {

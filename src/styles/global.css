@@ -124,7 +124,8 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 
 /* ── Page Shell (fullscreen game layout) ────────────────────────── */
 .page-shell { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-.page-shell > .adv-page { flex: 1; min-height: 0; }
+.page-shell > .adv-page,
+.page-shell > .party-page { flex: 1; min-height: 0; }
 
 /* ── Adventurer Page ─────────────────────────────────────────────── */
 .adv-page { display: flex; gap: calc(14px * var(--ui-scale)); align-items: stretch; width: 100%; }
@@ -276,3 +277,43 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .settings-footer { padding: calc(12px * var(--ui-scale)) calc(20px * var(--ui-scale)) calc(16px * var(--ui-scale)); border-top: 1px solid #2a322c; display: flex; justify-content: flex-end; }
 .settings-done { padding: calc(7px * var(--ui-scale)) calc(20px * var(--ui-scale)); border: 1px solid #8a7646; background: transparent; color: #c4a860; font-size: var(--font-small); cursor: pointer; letter-spacing: .04em; transition: background .12s; }
 .settings-done:hover { background: rgba(138,118,70,.1); }
+
+/* ── Party Page ─────────────────────────────────────────────────── */
+.party-page { display: flex; gap: calc(14px * var(--ui-scale)); align-items: stretch; width: 100%; }
+.party-list-col { flex: 1 1 auto; min-width: 0; overflow-y: auto; }
+.party-page.has-detail .party-list-col { flex: 0 0 calc(300px * var(--ui-scale)); overflow-y: auto; }
+.party-detail-col { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.party-empty { padding: 24px 10px; color: #6a736b; font-size: var(--font-small); }
+
+/* Party list cards */
+.party-card-list { display: flex; flex-direction: column; gap: 8px; }
+.party-card { width: 100%; padding: calc(14px * var(--ui-scale)); border: 1px solid #2a322c; background: #181f1a; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: calc(9px * var(--ui-scale)); transition: background .1s, border-color .1s; }
+.party-card:hover { background: #1c2620; border-color: #3a4a3c; }
+.party-card.selected { background: #1c2a1f; border-color: #4a6040; }
+.party-card-top { display: flex; align-items: center; justify-content: space-between; }
+.party-card-name { display: flex; align-items: center; gap: 10px; }
+.party-card-name strong { font-family: Georgia, serif; font-size: var(--font-body); color: #e4e5df; }
+.party-card-meta { font-size: var(--font-small); color: #6a736b; }
+.party-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.party-card-quest { font-size: var(--font-tiny); color: #9a8451; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 55%; }
+.party-member-icons { display: flex; gap: 4px; align-items: center; }
+.portrait.portrait-sm { width: calc(26px * var(--ui-scale)); height: calc(26px * var(--ui-scale)); font-size: 9px; }
+.portrait.portrait-md { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); font-size: 13px; flex-shrink: 0; }
+
+/* Party detail panel */
+.party-detail { position: relative; flex-direction: column; padding: 0; overflow: hidden; flex: 1; min-height: 0; }
+.party-detail-header { display: flex; align-items: center; justify-content: space-between; padding: calc(20px * var(--ui-scale)) calc(52px * var(--ui-scale)) calc(16px * var(--ui-scale)) calc(24px * var(--ui-scale)); border-bottom: 1px solid #2a322c; flex-shrink: 0; }
+.party-detail-title { display: flex; align-items: center; gap: calc(12px * var(--ui-scale)); }
+.party-rank { font-family: Georgia, serif; font-size: calc(20px * var(--ui-scale)); font-weight: 700; }
+.party-name-heading { margin: 0; font-size: calc(22px * var(--ui-scale)); color: #eaebe5; }
+.party-detail-body { flex: 1; overflow-y: auto; padding: calc(20px * var(--ui-scale)) calc(24px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(22px * var(--ui-scale)); }
+.party-members-section,
+.party-quest-section,
+.party-meta-section { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.party-member-list { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
+.party-member-row { display: flex; align-items: center; gap: calc(12px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #2a322c; background: #181f1a; }
+.party-member-row.is-leader { border-color: #3d4a38; background: #1c261d; }
+.party-member-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.party-member-name-row { display: flex; align-items: center; gap: 8px; }
+.party-member-name-row strong { font-size: var(--font-body); color: #e4e5df; }
+.leader-badge { padding: 2px 7px; border: 1px solid #7a6840; color: #c4a860; font-size: var(--font-tiny); letter-spacing: .04em; }
