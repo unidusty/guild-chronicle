@@ -14,16 +14,15 @@ export const initialGameState: GameState = {
     partyIds: ["party-silverhawk", "party-bluelantern", "party-ironforge"],
   },
   classes: {
-    // 기존 샘플 데이터용 직업
-    swordsman: { id: "swordsman", name: "검사",   role: "vanguard", primaryStats: ["strength", "endurance"] },
-    ranger:    { id: "ranger",    name: "정찰자", role: "scout",    primaryStats: ["agility", "perception"] },
-    guardian:  { id: "guardian",  name: "수호자", role: "vanguard", primaryStats: ["endurance", "willpower"] },
-    healer:    { id: "healer",    name: "치유사", role: "support",  primaryStats: ["intelligence", "willpower"] },
-    // 영입 시스템 직업
-    warrior: { id: "warrior", name: "전사",   role: "vanguard", primaryStats: ["strength", "endurance"] },
-    mage:    { id: "mage",    name: "마법사", role: "damage",   primaryStats: ["intelligence", "perception"] },
-    priest:  { id: "priest",  name: "성직자", role: "support",  primaryStats: ["intelligence", "willpower"] },
-    rogue:   { id: "rogue",   name: "도적",   role: "damage",   primaryStats: ["agility", "perception"] },
+    warrior:  { id: "warrior",  name: "전사",   role: "vanguard", primaryStats: ["strength", "endurance"] },
+    swordsman:{ id: "swordsman",name: "검사",   role: "vanguard", primaryStats: ["strength", "endurance"] },
+    spearman: { id: "spearman", name: "창병",   role: "vanguard", primaryStats: ["strength", "agility"] },
+    archer:   { id: "archer",   name: "궁수",   role: "scout",    primaryStats: ["agility", "perception"] },
+    mage:     { id: "mage",     name: "마법사", role: "damage",   primaryStats: ["intelligence", "perception"] },
+    paladin:  { id: "paladin",  name: "성기사", role: "vanguard", primaryStats: ["endurance", "willpower"] },
+    rogue:    { id: "rogue",    name: "도적",   role: "damage",   primaryStats: ["agility", "perception"] },
+    priest:   { id: "priest",   name: "사제",   role: "support",  primaryStats: ["intelligence", "willpower"] },
+    guardian: { id: "guardian", name: "수호자", role: "vanguard", primaryStats: ["endurance", "willpower"] },
   },
   injuries: {
     "injury-ella-bruise": {
@@ -48,7 +47,7 @@ export const initialGameState: GameState = {
     },
     "adv-lien": {
       id: "adv-lien", name: "리엔 아르벨", race: "elf", gender: "male", age: 91,
-      classId: "ranger", rank: "B", portrait: "/portraits/elf/male/elf_m_archer_01.webp",
+      classId: "archer", rank: "B", portrait: "/portraits/elf/male/elf_m_archer_01.webp",
       stats: { strength: 8, agility: 15, endurance: 9, intelligence: 11, perception: 16, willpower: 10 },
       potential: 79, traits: [{ id: "trait-keen-eye", revealed: true }], belonging: 68,
       status: "dispatched", partyId: "party-silverhawk", currentQuestId: "quest-caravan",
@@ -70,7 +69,7 @@ export const initialGameState: GameState = {
     },
     "adv-marien": {
       id: "adv-marien", name: "마리엔 로우", race: "human", gender: "female", age: 29,
-      classId: "healer", rank: "C", portrait: "/portraits/human/female/human_f_priest_01.webp",
+      classId: "priest", rank: "C", portrait: "/portraits/human/female/human_f_priest_01.webp",
       stats: { strength: 5, agility: 8, endurance: 8, intelligence: 15, perception: 11, willpower: 14 },
       potential: 73, traits: [{ id: "trait-calm", revealed: true }], belonging: 72,
       status: "dispatched", partyId: "party-bluelantern", currentQuestId: "quest-missing",
@@ -92,7 +91,7 @@ export const initialGameState: GameState = {
     },
     "adv-serin": {
       id: "adv-serin", name: "세리아 에린", race: "elf", gender: "female", age: 78,
-      classId: "ranger", rank: "D", portrait: "/portraits/elf/female/elf_f_archer_01.webp",
+      classId: "archer", rank: "D", portrait: "/portraits/elf/female/elf_f_archer_01.webp",
       stats: { strength: 6, agility: 16, endurance: 7, intelligence: 10, perception: 15, willpower: 9 },
       potential: 71, traits: [{ id: "trait-keen-eye", revealed: true }], belonging: 41,
       status: "idle", partyId: null, currentQuestId: null,

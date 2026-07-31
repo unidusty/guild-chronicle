@@ -1,14 +1,9 @@
 import { assetManifest } from "../../generated/assetManifest";
 import type { Race, Gender } from "../../types/game";
 
-// Maps game classId → portrait classIds to try (in order).
-// Handles: different naming (ranger→archer, healer→priest)
-// and filename typos (swordsman has both "swordsman" and "swordman" files).
+// swordsman portrait files have a typo variant ("swordman") — check both.
 const CLASS_PORTRAIT_IDS: Record<string, string[]> = {
   swordsman: ["swordsman", "swordman"],
-  ranger:    ["archer", "ranger"],
-  healer:    ["priest", "healer"],
-  scout:     ["archer", "rogue"],
 };
 
 function resolvePortraitClassIds(classId: string): string[] {

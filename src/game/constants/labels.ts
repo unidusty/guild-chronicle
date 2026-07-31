@@ -41,6 +41,18 @@ export const statLabels: Record<keyof Stats, string> = {
   willpower:    "의지",
 };
 
+export const jobLabels: Record<string, string> = {
+  warrior:  "전사",
+  swordsman:"검사",
+  spearman: "창병",
+  archer:   "궁수",
+  mage:     "마법사",
+  paladin:  "성기사",
+  rogue:    "도적",
+  priest:   "사제",
+  guardian: "수호자",
+};
+
 export const roleLabels: Record<"vanguard" | "damage" | "support" | "scout", string> = {
   vanguard: "전위",
   damage:   "딜러",

@@ -21,7 +21,7 @@ const RACES: Race[] = ["human", "elf", "dwarf"];
 const GENDERS: Gender[] = ["male", "female"];
 
 // 영입 화면에서 제공하는 직업 목록 (gameState.classes의 키와 일치해야 함)
-const RECRUIT_CLASS_IDS = ["warrior", "ranger", "mage", "priest", "rogue"] as const;
+const RECRUIT_CLASS_IDS = ["warrior", "archer", "mage", "priest", "rogue"] as const;
 
 const AGE_RANGE: Record<Race, [number, number]> = {
   human: [17, 45],
