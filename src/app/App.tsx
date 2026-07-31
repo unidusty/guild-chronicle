@@ -2,7 +2,8 @@ import { useState } from "react";
 import { initialGameState } from "../data/gameState";
 import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetrics, getRosterRows } from "../game/simulation/selectors";
 import AdventurersPage from "../features/adventurers/AdventurersPage";
-import { useBgm } from "../lib/bgm";
+import SettingsModal from "../components/SettingsModal";
+import { useAudio, playHover, playSelect } from "../lib/audio";
 
 type Page = "dashboard" | "adventurers";
 interface NavItem { label: string; page: Page | null; }
@@ -17,19 +18,23 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const reportPresentation = {
-  medical: { icon: "!", tone: "danger" },
-  emergency: { icon: "Q", tone: "gold" },
+  medical:     { icon: "!", tone: "danger" },
+  emergency:   { icon: "Q", tone: "gold" },
   recruitment: { icon: "+", tone: "green" },
 } as const;
 
 export default function App() {
-  const { muted, toggleMute } = useBgm();
+  const audio = useAudio();
   const [state] = useState(initialGameState);
   const [page, setPage] = useState<Page>("dashboard");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const metrics = getGuildMetrics(state);
-  const roster = getRosterRows(state);
+  const metrics     = getGuildMetrics(state);
+  const roster      = getRosterRows(state);
   const activeQuests = getActiveQuestRows(state);
+
+  function openSettings() { playSelect(); setSettingsOpen(true); }
+  function closeSettings() { setSettingsOpen(false); }
 
   return (
     <div className="app-shell">
@@ -41,18 +46,20 @@ export default function App() {
             <button
               className={item.page === page ? "nav-item active" : "nav-item"}
               key={item.label}
-              onClick={() => item.page && setPage(item.page)}
+              onMouseEnter={playHover}
+              onClick={() => { if (item.page) { playSelect(); setPage(item.page); } }}
             >
               {item.label}
             </button>
           ))}
         </nav>
         <button
-          className={`mute-btn${muted ? " muted" : ""}`}
-          onClick={toggleMute}
-          title={muted ? "BGM 켜기" : "BGM 끄기"}
+          className="settings-btn"
+          aria-label="설정 열기"
+          onMouseEnter={playHover}
+          onClick={openSettings}
         >
-          {muted ? "♬ OFF" : "♬"}
+          설정
         </button>
         <div className="sidebar-note"><span>오늘</span><strong>{formatGameDate(state.currentDate)}</strong></div>
       </aside>
@@ -62,7 +69,10 @@ export default function App() {
           <>
             <header className="topbar">
               <div><p className="eyebrow">WESTWIND GUILD · HEAD OFFICE</p><h1>{state.guild.name} 운영 보고서</h1></div>
-              <div className="top-actions"><button>게임 저장</button><button className="primary">하루 진행</button></div>
+              <div className="top-actions">
+                <button onMouseEnter={playHover}>게임 저장</button>
+                <button className="primary" onMouseEnter={playHover} onClick={playSelect}>하루 진행</button>
+              </div>
             </header>
 
             <section className="metric-grid">
@@ -77,7 +87,7 @@ export default function App() {
               <article className="panel roster-panel">
                 <div className="panel-heading">
                   <div><p className="eyebrow">ACTIVE ROSTER</p><h2>오늘의 모험가 현황</h2></div>
-                  <button className="text-button">전체 명단 →</button>
+                  <button className="text-button" onMouseEnter={playHover}>전체 명단 →</button>
                 </div>
                 <div className="table-wrap">
                   <table>
@@ -111,7 +121,7 @@ export default function App() {
                   {state.reports.map((report) => {
                     const ui = reportPresentation[report.kind];
                     return (
-                      <button className="report" key={report.id}>
+                      <button className="report" key={report.id} onMouseEnter={playHover} onClick={playSelect}>
                         <span className={`report-icon ${ui.tone}`}>{ui.icon}</span>
                         <span><strong>{report.title}</strong><small>{report.description}</small></span>
                         <b>›</b>
@@ -141,7 +151,7 @@ export default function App() {
               <article className="panel chronicle-panel">
                 <div className="panel-heading">
                   <div><p className="eyebrow">CHRONICLE</p><h2>최근 연대기</h2></div>
-                  <button className="text-button">기록 열기 →</button>
+                  <button className="text-button" onMouseEnter={playHover}>기록 열기 →</button>
                 </div>
                 <div className="timeline">
                   {state.chronicle.map((entry) => (
@@ -158,6 +168,20 @@ export default function App() {
           <AdventurersPage state={state} />
         )}
       </main>
+
+      {settingsOpen && (
+        <SettingsModal
+          bgmVolume={audio.bgmVolume}
+          sfxVolume={audio.sfxVolume}
+          bgmMuted={audio.bgmMuted}
+          sfxMuted={audio.sfxMuted}
+          onBgmVolume={audio.setBgmVolume}
+          onSfxVolume={audio.setSfxVolume}
+          onBgmMute={audio.toggleBgmMute}
+          onSfxMute={audio.toggleSfxMute}
+          onClose={closeSettings}
+        />
+      )}
     </div>
   );
 }

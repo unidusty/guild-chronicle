@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Adventurer, GameState, Stats } from "../../types/game";
+import { playHover, playSelect } from "../../lib/audio";
 import {
   adventurerStatusLabels,
   genderLabels,
@@ -77,7 +78,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
 
   return (
     <div className="panel adv-detail">
-      <button className="detail-close" onClick={onClose} aria-label="닫기">×</button>
+      <button className="detail-close" onMouseEnter={playHover} onClick={() => { playSelect(); onClose(); }} aria-label="닫기">×</button>
 
       {/* ── 좌측 캐릭터 카드 ── */}
       <div className="adv-char-card">
@@ -153,7 +154,8 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             <button
               key={tab.id}
               className={`adv-tab${activeTab === tab.id ? " active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
+              onMouseEnter={playHover}
+              onClick={() => { playSelect(); setActiveTab(tab.id); }}
             >
               {tab.label}
             </button>

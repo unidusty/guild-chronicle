@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { EntityId, GameState } from "../../types/game";
+import { playHover, playSelect } from "../../lib/audio";
 import {
   adventurerStatusLabels,
   getPotentialGrade,
@@ -92,7 +93,8 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
                   <tr
                     key={adv.id}
                     className={`adv-row${selectedId === adv.id ? " selected" : ""}`}
-                    onClick={() => onSelect(adv.id)}
+                    onMouseEnter={playHover}
+                    onClick={() => { playSelect(); onSelect(adv.id); }}
                   >
                     <td>
                       <div className="person">
