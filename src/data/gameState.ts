@@ -441,6 +441,11 @@ const _rawState: GameState = {
   pendingResults: [],
   warehouse: {},
   saleTransactions: [],
+  recruitment: {
+    applicants: [],
+    history: [],
+    lastGeneratedDay: null,
+  },
 };
 
 export const initialGameState: GameState = (() => {

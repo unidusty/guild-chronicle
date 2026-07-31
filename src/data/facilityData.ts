@@ -1,7 +1,15 @@
+export interface RecruitmentLevelConfig {
+  dailyChance: number;
+  minApplicants: number;
+  maxApplicants: number;
+  capacity: number;
+}
+
 export interface FacilityLevelDef {
   cost: number;
   constructionDays: number;
   effects: string[];
+  recruitment?: RecruitmentLevelConfig;
 }
 
 export interface FacilityDef {
@@ -40,9 +48,12 @@ export const FACILITY_DEFS: Record<string, FacilityDef> = {
   "facility-recruitment": {
     id: "facility-recruitment",
     levels: [
-      { cost: 2000, constructionDays: 3,  effects: ["신규 지원자 등장", "가입 심사 기능 해금"] },
-      { cost: 4000, constructionDays: 7,  effects: ["지원자 수 증가"] },
-      { cost: 9000, constructionDays: 14, effects: ["희귀 직업 확률 증가"] },
+      { cost: 2000, constructionDays: 3,  effects: ["신규 지원자 등장", "가입 심사 기능 해금"],
+        recruitment: { dailyChance: 0.35, minApplicants: 1, maxApplicants: 1, capacity: 3 } },
+      { cost: 4000, constructionDays: 7,  effects: ["지원자 수 증가"],
+        recruitment: { dailyChance: 0.55, minApplicants: 1, maxApplicants: 2, capacity: 5 } },
+      { cost: 9000, constructionDays: 14, effects: ["희귀 직업 확률 증가"],
+        recruitment: { dailyChance: 0.75, minApplicants: 1, maxApplicants: 3, capacity: 8 } },
     ],
   },
 };

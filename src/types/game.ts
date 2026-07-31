@@ -203,7 +203,11 @@ export type DailyReportItemKind =
   | "quest_completed"
   | "facility_completed"
   | "injury_recovered"
-  | "training_completed";
+  | "training_completed"
+  | "recruitment_accepted"
+  | "recruitment_rejected"
+  | "recruitment_expired"
+  | "recruitment_new_applicants";
 
 export interface DailyReportItem {
   kind: DailyReportItemKind;
@@ -215,6 +219,55 @@ export interface DailyReport {
   previousDate: GameDate;
   nextDate: GameDate;
   items: DailyReportItem[];
+}
+
+// ── Recruitment ──────────────────────────────────────────────────────────────
+
+export type RecruitmentApplicantStatus =
+  | "pending"
+  | "held"
+  | "accepted"
+  | "rejected"
+  | "expired";
+
+export interface RecruitmentApplicant {
+  id: string;
+  name: string;
+  race: Race;
+  gender: Gender;
+  age: number;
+  classId: EntityId;
+  portrait: string | null;
+  stats: Stats;
+  personalityLabel: string;
+  motivation: string;
+  firstImpression: string;
+  // hidden from player UI
+  hiddenPotential: number;
+  hiddenTraits: string[];
+  hiddenGrowthType: string;
+  hiddenLoyaltyTendency: number;
+  // state
+  status: RecruitmentApplicantStatus;
+  appliedAt: GameDate;
+  appliedDay: number;       // toAbsoluteDay(appliedAt) for fast comparison
+  expiresDay: number;       // appliedDay + EXPIRY_DAYS
+  holdUntilDay: number | null;
+}
+
+export interface RecruitmentHistoryItem {
+  id: string;
+  applicantName: string;
+  classId: EntityId;
+  action: "accepted" | "rejected" | "held" | "expired";
+  day: number;              // absolute day of action
+  adventurerId?: string;    // if accepted
+}
+
+export interface RecruitmentState {
+  applicants: RecruitmentApplicant[];
+  history: RecruitmentHistoryItem[];
+  lastGeneratedDay: number | null;
 }
 
 export interface Guild {
@@ -263,4 +316,5 @@ export interface GameState {
   pendingResults: QuestCompletionResult[];
   warehouse: Record<EntityId, number>;
   saleTransactions: SaleTransaction[];
+  recruitment: RecruitmentState;
 }

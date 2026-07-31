@@ -8,6 +8,7 @@ import {
   getRosterRows,
 } from "../../game/simulation/selectors";
 import FacilitiesPage from "../facilities/FacilitiesPage";
+import RecruitmentTab from "../recruitment/RecruitmentTab";
 import { playHover, playSelect } from "../../lib/audio";
 
 type GuildTab = "dashboard" | "facilities" | "recruitment";
@@ -37,6 +38,9 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
   const recruitmentFacility = state.facilities["facility-recruitment"];
   const recruitmentStatus = recruitmentFacility?.status ?? "unbuilt";
   const hasRecruitmentRoom = (recruitmentFacility?.level ?? 0) > 0;
+  const pendingApplicantCount = state.recruitment.applicants.filter(
+    (a) => a.status === "pending" || a.status === "held",
+  ).length;
 
   function handleTabChange(t: GuildTab) {
     playSelect();
@@ -89,6 +93,9 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
           가입 심사
           {(recruitmentStatus === "constructing" || recruitmentStatus === "upgrading") && (
             <span className="gh-tab-badge">공사 중</span>
+          )}
+          {hasRecruitmentRoom && pendingApplicantCount > 0 && (
+            <span className="gh-tab-badge">{pendingApplicantCount}</span>
           )}
         </button>
       </div>
@@ -163,9 +170,23 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
                   <p className="eyebrow">MASTER'S DESK</p>
                   <h2>결재 대기</h2>
                 </div>
-                <span className="count">{state.reports.length}</span>
+                <span className="count">{state.reports.length + (pendingApplicantCount > 0 ? 1 : 0)}</span>
               </div>
               <div className="report-list">
+                {pendingApplicantCount > 0 && (
+                  <button
+                    className="report"
+                    onMouseEnter={playHover}
+                    onClick={() => { playSelect(); handleTabChange("recruitment"); }}
+                  >
+                    <span className="report-icon green">+</span>
+                    <span>
+                      <strong>가입 심사 대기</strong>
+                      <small>지원자 {pendingApplicantCount}명이 심사를 기다리고 있습니다.</small>
+                    </span>
+                    <b>›</b>
+                  </button>
+                )}
                 {state.reports.map((report) => {
                   const ui = reportPresentation[report.kind];
                   return (
@@ -252,57 +273,8 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
 
       {/* Recruitment tab */}
       {tab === "recruitment" && (
-        <RecruitmentTab
-          status={recruitmentStatus}
-          facility={recruitmentFacility}
-        />
+        <RecruitmentTab state={state} onStateChange={onStateChange} />
       )}
-    </div>
-  );
-}
-
-function RecruitmentTab({
-  status,
-  facility,
-}: {
-  status: string;
-  facility: ReturnType<typeof Object.values>[number] | undefined;
-}) {
-  if (status === "unbuilt") {
-    return (
-      <div className="gh-recruitment-placeholder locked">
-        <p className="gh-recruitment-lock-icon">🔒</p>
-        <p className="gh-recruitment-lock-msg">가입 심사실이 건설되지 않았습니다.</p>
-        <p className="gh-recruitment-lock-hint">시설 탭에서 가입 심사실을 건설하세요.</p>
-      </div>
-    );
-  }
-
-  if (status === "constructing" || status === "upgrading") {
-    const f = facility as { constructionProgressDays: number; constructionDurationDays: number; targetLevel: number | null } | undefined;
-    const pct = f && f.constructionDurationDays > 0
-      ? Math.round((f.constructionProgressDays / f.constructionDurationDays) * 100)
-      : 0;
-    const remaining = f ? f.constructionDurationDays - f.constructionProgressDays : 0;
-    return (
-      <div className="gh-recruitment-placeholder">
-        <p className="gh-recruitment-lock-msg">
-          {status === "constructing"
-            ? `가입 심사실을 건설하고 있습니다. (Lv${f?.targetLevel ?? 1})`
-            : `가입 심사실을 업그레이드하고 있습니다. (Lv${f?.targetLevel ?? "?"})`}
-        </p>
-        <div className="gh-recruitment-progress-bar">
-          <div className="gh-recruitment-progress-fill" style={{ width: `${pct}%` }} />
-        </div>
-        <p className="gh-recruitment-lock-hint">{pct}% 완료 · {remaining}일 남음</p>
-      </div>
-    );
-  }
-
-  // Built
-  return (
-    <div className="gh-recruitment-placeholder">
-      <p className="gh-recruitment-lock-msg">가입 심사 시스템은 다음 업데이트에서 구현됩니다.</p>
     </div>
   );
 }
