@@ -1,33 +1,51 @@
 import { assetManifest } from "../../generated/assetManifest";
 import type { Race, Gender } from "../../types/game";
 
+// Maps game classId → portrait classIds to try (in order).
+// Handles: different naming (ranger→archer, healer→priest)
+// and filename typos (swordsman has both "swordsman" and "swordman" files).
+const CLASS_PORTRAIT_IDS: Record<string, string[]> = {
+  swordsman: ["swordsman", "swordman"],
+  ranger:    ["archer", "ranger"],
+  healer:    ["priest", "healer"],
+  scout:     ["archer", "rogue"],
+};
+
+function resolvePortraitClassIds(classId: string): string[] {
+  return CLASS_PORTRAIT_IDS[classId] ?? [classId];
+}
+
 export function getPortraitsByRaceGender(race: Race, gender: Gender) {
   return assetManifest.portraits.filter((p) => p.race === race && p.gender === gender);
 }
 
-// portraitId는 `${race}-${gender}-${basename}` 형식으로 전역 유일.
-// race/gender 인자는 방어적 검증용: 저장 데이터와 초상화 불일치를 조기 탐지.
-export function getPortraitPath(portraitId: string | null, race: Race, gender: Gender): string | null {
-  if (!portraitId) return null;
-  const entry = assetManifest.portraits.find((p) => p.id === portraitId);
-  if (!entry) return null;
-  if (entry.race !== race || entry.gender !== gender) {
-    console.warn(
-      `[portraits] Mismatch: "${portraitId}" is ${entry.race}/${entry.gender}, adventurer is ${race}/${gender}`
-    );
-    return null;
+export function getPortraitsByClass(race: Race, gender: Gender, classId: string) {
+  const all = getPortraitsByRaceGender(race, gender);
+  const candidates = resolvePortraitClassIds(classId);
+  for (const cid of candidates) {
+    const matched = all.filter((p) => p.classId === cid);
+    if (matched.length > 0) return matched;
   }
-  return entry.path;
+  return all; // fallback: any portrait for this race+gender
 }
 
-export function getRandomPortraitId(race: Race, gender: Gender): string | null {
-  const available = getPortraitsByRaceGender(race, gender);
-  if (available.length === 0) return null;
-  return available[Math.floor(Math.random() * available.length)].id;
+export function getRandomPortraitPath(race: Race, gender: Gender, classId?: string): string | null {
+  const pool = classId
+    ? getPortraitsByClass(race, gender, classId)
+    : getPortraitsByRaceGender(race, gender);
+  if (pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)].path;
 }
 
-export function getRandomPortraitPath(race: Race, gender: Gender): string | null {
-  const available = getPortraitsByRaceGender(race, gender);
-  if (available.length === 0) return null;
-  return available[Math.floor(Math.random() * available.length)].path;
+export function getRandomPortraitId(race: Race, gender: Gender, classId?: string): string | null {
+  const pool = classId
+    ? getPortraitsByClass(race, gender, classId)
+    : getPortraitsByRaceGender(race, gender);
+  if (pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)].id;
+}
+
+// Resolves a stored portrait path — just returns it directly since we store paths.
+export function getPortraitPath(path: string | null): string | null {
+  return path;
 }

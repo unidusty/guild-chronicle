@@ -1,12 +1,16 @@
 import { useState } from "react";
-import type { EntityId, GameState } from "../../types/game";
+import type { AdventurerRank, EntityId, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { dangerLevelLabel, questCategoryLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
+import { canAssignParty } from "../../game/simulation/quests";
 
 interface Props {
   questId: EntityId;
   state: GameState;
+  onAssign: (partyId: EntityId) => void;
 }
+
+const RANK_ORDER: AdventurerRank[] = ["F", "E", "D", "C", "B", "A", "S"];
 
 function formatGold(n: number) {
   return new Intl.NumberFormat("ko-KR").format(n) + " G";
@@ -18,8 +22,8 @@ function expireText(days: number): string {
   return `${days}일 후 마감`;
 }
 
-export default function QuestDetail({ questId, state }: Props) {
-  const [showNotice, setShowNotice] = useState(false);
+export default function QuestDetail({ questId, state, onAssign }: Props) {
+  const [showPicker, setShowPicker] = useState(false);
 
   const quest = state.quests[questId];
   if (!quest) return null;
@@ -27,10 +31,25 @@ export default function QuestDetail({ questId, state }: Props) {
   const region = state.regions[quest.regionId];
   const isDispatched = quest.status === "assigned" || quest.status === "in_progress";
   const isAvailable = quest.status === "available";
+  const assignedParty = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
 
-  function handleAssign() {
+  const availableParties = Object.values(state.parties)
+    .filter((p) => p.status === "idle" && p.activeQuestId === null)
+    .sort((a, b) => {
+      const rankDiff = RANK_ORDER.indexOf(b.rank) - RANK_ORDER.indexOf(a.rank);
+      if (rankDiff !== 0) return rankDiff;
+      return a.name.localeCompare(b.name, "ko");
+    });
+
+  function handleOpenPicker() {
     playSelect();
-    setShowNotice(true);
+    setShowPicker((v) => !v);
+  }
+
+  function handleAssign(partyId: EntityId) {
+    playSelect();
+    onAssign(partyId);
+    setShowPicker(false);
   }
 
   const dangerClass = `danger-level-${Math.max(1, Math.min(5, quest.dangerLevel))}`;
@@ -69,7 +88,7 @@ export default function QuestDetail({ questId, state }: Props) {
             <div className="quest-info-item"><label>권장 인원</label><span>{quest.recommendedPartySize}명</span></div>
             <div className="quest-info-item"><label>접수 기한</label><span>{expireText(quest.expiresInDays)}</span></div>
             {isDispatched && quest.remainingDays > 0 && (
-              <div className="quest-info-item"><label>남은 일수</label><span>{quest.remainingDays}일</span></div>
+              <div className="quest-info-item"><label>남은 기간</label><span>{quest.remainingDays}일</span></div>
             )}
           </div>
         </section>
@@ -92,25 +111,59 @@ export default function QuestDetail({ questId, state }: Props) {
 
         <section className="quest-assign-section">
           <p className="char-section-label">파티 배정</p>
+
           {isDispatched ? (
-            <p className="quest-assign-status">현재 수행 중인 의뢰입니다.</p>
-          ) : (
+            <div className="quest-assigned-display">
+              <span className="quiet">담당 파티</span>
+              <strong className="quest-assigned-name">{assignedParty?.name ?? "—"}</strong>
+            </div>
+          ) : isAvailable ? (
             <>
               <button
-                className="quest-assign-btn"
+                className={`quest-assign-btn${showPicker ? " active" : ""}`}
                 onMouseEnter={playHover}
-                onClick={handleAssign}
-                disabled={!isAvailable}
+                onClick={handleOpenPicker}
               >
-                파티 배정
+                {showPicker ? "▲ 닫기" : "▼ 파티 선택"}
               </button>
-              {showNotice && (
-                <p className="quest-assign-notice">파티 배정 기능은 013-B에서 추가됩니다.</p>
-              )}
-              {!isAvailable && !isDispatched && (
-                <p className="quest-assign-notice">이 의뢰는 현재 배정할 수 없습니다.</p>
+
+              {showPicker && (
+                <div className="quest-party-picker">
+                  {availableParties.length === 0 ? (
+                    <p className="quest-party-none">대기 중인 파티가 없습니다.</p>
+                  ) : (
+                    availableParties.map((party) => {
+                      const eligible = canAssignParty(party.rank, quest.grade);
+                      const memberCount = party.memberIds.length;
+                      return (
+                        <div key={party.id} className={`quest-party-row${eligible ? "" : " ineligible"}`}>
+                          <span className="rank">{party.rank}</span>
+                          <div className="quest-party-row-info">
+                            <span className="quest-party-row-name">{party.name}</span>
+                            <span className="quest-party-row-meta">
+                              {memberCount > 0 ? `${memberCount}명` : "파티원 없음"}
+                              {!eligible && (
+                                <span className="quest-party-rank-warn"> · 랭크 부족 (의뢰 {quest.grade}랭크)</span>
+                              )}
+                            </span>
+                          </div>
+                          <button
+                            className="member-action-btn"
+                            disabled={!eligible || memberCount === 0}
+                            onMouseEnter={playHover}
+                            onClick={() => handleAssign(party.id)}
+                          >
+                            배정
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               )}
             </>
+          ) : (
+            <p className="quest-assign-status">이 의뢰는 현재 배정할 수 없습니다.</p>
           )}
         </section>
       </div>

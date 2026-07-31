@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import type { EntityId, GameState } from "../../types/game";
+import { assignQuest } from "../../game/simulation/quests";
 import QuestList, { type RankFilter, type StatusFilter } from "./QuestList";
 import QuestDetail from "./QuestDetail";
 
 interface Props {
   state: GameState;
+  onStateChange: Dispatch<SetStateAction<GameState>>;
 }
 
 const RANK_ORDER = ["F", "E", "D", "C", "B", "A", "S"] as const;
 
-export default function QuestBoardPage({ state }: Props) {
+export default function QuestBoardPage({ state, onStateChange }: Props) {
   const [selectedId, setSelectedId] = useState<EntityId | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [rankFilter, setRankFilter] = useState<RankFilter>("all");
@@ -32,7 +35,6 @@ export default function QuestBoardPage({ state }: Props) {
 
   const filteredQuests = getFiltered();
 
-  // When filter changes, auto-select first visible quest if current is no longer visible
   useEffect(() => {
     const visible = getFiltered();
     if (!selectedId || !visible.some((q) => q.id === selectedId)) {
@@ -41,7 +43,6 @@ export default function QuestBoardPage({ state }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, rankFilter, state.quests]);
 
-  // Initialize on first render
   useEffect(() => {
     if (!selectedId) {
       const visible = getFiltered();
@@ -49,6 +50,11 @@ export default function QuestBoardPage({ state }: Props) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function handleAssign(partyId: EntityId) {
+    if (!selectedId) return;
+    onStateChange((s) => assignQuest(s, selectedId, partyId));
+  }
 
   return (
     <div className="page-shell">
@@ -77,6 +83,7 @@ export default function QuestBoardPage({ state }: Props) {
               key={selectedId}
               questId={selectedId}
               state={state}
+              onAssign={handleAssign}
             />
           ) : (
             <div className="quest-select-prompt">

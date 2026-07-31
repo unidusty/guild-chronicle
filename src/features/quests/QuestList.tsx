@@ -93,11 +93,15 @@ export default function QuestList({ state, filteredQuests, selectedId, onSelect,
                   <span className="quest-card-reward">{formatGold(quest.rewardGold)}</span>
                 </div>
                 <div className="quest-card-footer">
-                  <span className="quest-card-duration">{quest.durationDays}일 소요</span>
+                  <span className="quest-card-duration">
+                    {(quest.status === "assigned" || quest.status === "in_progress")
+                      ? `남은 기간 ${quest.remainingDays}일`
+                      : `${quest.durationDays}일 소요`}
+                  </span>
                   <div className="quest-card-badges">
                     {isUrgent && <span className="quest-type-badge urgent">{questTypeLabels.urgent}</span>}
                     {isRaid   && <span className="quest-type-badge raid">{questTypeLabels.raid} · 공격대</span>}
-                    {quest.expiresInDays > 0 && quest.expiresInDays <= 3 && (
+                    {quest.status === "available" && quest.expiresInDays > 0 && quest.expiresInDays <= 3 && (
                       <span className="quest-expire-warn">{quest.expiresInDays}일 후 마감</span>
                     )}
                   </div>

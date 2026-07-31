@@ -37,7 +37,7 @@ export const initialGameState: GameState = {
   adventurers: {
     "adv-ella": {
       id: "adv-ella", name: "엘라 빈터", race: "human", gender: "female", age: 24,
-      classId: "swordsman", rank: "B", portrait: "/portraits/human/male/knight/human_m_knight_01.webp",
+      classId: "swordsman", rank: "B", portrait: "/portraits/human/female/human_f_swordman_01.webp",
       stats: { strength: 13, agility: 11, endurance: 12, intelligence: 7, perception: 9, willpower: 14 },
       potential: 82, traits: [{ id: "trait-brave", revealed: true }], belonging: 76,
       status: "recovering", partyId: null, currentQuestId: null,
@@ -48,7 +48,7 @@ export const initialGameState: GameState = {
     },
     "adv-lien": {
       id: "adv-lien", name: "리엔 아르벨", race: "elf", gender: "male", age: 91,
-      classId: "ranger", rank: "B", portrait: "/portraits/elf/male/scout/elf_m_scout_01.webp",
+      classId: "ranger", rank: "B", portrait: "/portraits/elf/male/elf_m_archer_01.webp",
       stats: { strength: 8, agility: 15, endurance: 9, intelligence: 11, perception: 16, willpower: 10 },
       potential: 79, traits: [{ id: "trait-keen-eye", revealed: true }], belonging: 68,
       status: "dispatched", partyId: "party-silverhawk", currentQuestId: "quest-caravan",
@@ -59,7 +59,7 @@ export const initialGameState: GameState = {
     },
     "adv-dorgan": {
       id: "adv-dorgan", name: "도르간 맥주먹", race: "dwarf", gender: "male", age: 57,
-      classId: "guardian", rank: "C", portrait: "/portraits/dwarf/male/guardian/dwarf_m_guardian_01.webp",
+      classId: "guardian", rank: "C", portrait: "/portraits/dwarf/male/dwarf_m_guardian_01.webp",
       stats: { strength: 12, agility: 6, endurance: 15, intelligence: 8, perception: 8, willpower: 13 },
       potential: 66, traits: [{ id: "trait-stubborn", revealed: true }], belonging: 84,
       status: "training", partyId: null, currentQuestId: null,
@@ -70,7 +70,7 @@ export const initialGameState: GameState = {
     },
     "adv-marien": {
       id: "adv-marien", name: "마리엔 로우", race: "human", gender: "female", age: 29,
-      classId: "healer", rank: "C", portrait: "/portraits/human/female/healer/human_f_healer_01.webp",
+      classId: "healer", rank: "C", portrait: "/portraits/human/female/human_f_priest_01.webp",
       stats: { strength: 5, agility: 8, endurance: 8, intelligence: 15, perception: 11, willpower: 14 },
       potential: 73, traits: [{ id: "trait-calm", revealed: true }], belonging: 72,
       status: "dispatched", partyId: "party-bluelantern", currentQuestId: "quest-missing",
@@ -81,7 +81,7 @@ export const initialGameState: GameState = {
     },
     "adv-theo": {
       id: "adv-theo", name: "테오 베인", race: "human", gender: "male", age: 31,
-      classId: "warrior", rank: "C", portrait: "/portraits/human/male/knight/human_m_knight_01.webp",
+      classId: "warrior", rank: "C", portrait: "/portraits/human/male/human_m_warrior_01.webp",
       stats: { strength: 14, agility: 9, endurance: 13, intelligence: 7, perception: 8, willpower: 11 },
       potential: 58, traits: [{ id: "trait-brave", revealed: true }, { id: "trait-reckless", revealed: true }], belonging: 62,
       status: "idle", partyId: "party-ironforge", currentQuestId: null,
@@ -92,7 +92,7 @@ export const initialGameState: GameState = {
     },
     "adv-serin": {
       id: "adv-serin", name: "세리아 에린", race: "elf", gender: "female", age: 78,
-      classId: "ranger", rank: "D", portrait: null,
+      classId: "ranger", rank: "D", portrait: "/portraits/elf/female/elf_f_archer_01.webp",
       stats: { strength: 6, agility: 16, endurance: 7, intelligence: 10, perception: 15, willpower: 9 },
       potential: 71, traits: [{ id: "trait-keen-eye", revealed: true }], belonging: 41,
       status: "idle", partyId: null, currentQuestId: null,
@@ -103,7 +103,7 @@ export const initialGameState: GameState = {
     },
     "adv-braen": {
       id: "adv-braen", name: "브록 쇠망치", race: "dwarf", gender: "male", age: 45,
-      classId: "guardian", rank: "C", portrait: "/portraits/dwarf/male/guardian/dwarf_m_guardian_01.webp",
+      classId: "guardian", rank: "C", portrait: "/portraits/dwarf/male/dwarf_m_guardian_01.webp",
       stats: { strength: 12, agility: 6, endurance: 16, intelligence: 8, perception: 8, willpower: 12 },
       potential: 63, traits: [{ id: "trait-loyal", revealed: true }, { id: "trait-disciplined", revealed: true }], belonging: 73,
       status: "idle", partyId: "party-ironforge", currentQuestId: null,
@@ -114,7 +114,7 @@ export const initialGameState: GameState = {
     },
     "adv-vess": {
       id: "adv-vess", name: "가렛 포드", race: "human", gender: "male", age: 25,
-      classId: "mage", rank: "D", portrait: "/portraits/human/male/knight/human_m_knight_01.webp",
+      classId: "mage", rank: "D", portrait: "/portraits/human/male/human_m_mage_01.webp",
       stats: { strength: 6, agility: 9, endurance: 7, intelligence: 14, perception: 11, willpower: 14 },
       potential: 77, traits: [{ id: "trait-curious", revealed: true }, { id: "trait-ambitious", revealed: true }], belonging: 35,
       status: "idle", partyId: null, currentQuestId: null,
@@ -125,7 +125,7 @@ export const initialGameState: GameState = {
     },
     "adv-caelum": {
       id: "adv-caelum", name: "카엘린 린델", race: "elf", gender: "male", age: 103,
-      classId: "mage", rank: "C", portrait: "/portraits/elf/male/scout/elf_m_scout_01.webp",
+      classId: "mage", rank: "C", portrait: "/portraits/elf/male/elf_m_mage_01.webp",
       stats: { strength: 6, agility: 12, endurance: 7, intelligence: 15, perception: 14, willpower: 14 },
       potential: 80, traits: [{ id: "trait-perceptive", revealed: true }, { id: "trait-cautious", revealed: true }], belonging: 60,
       status: "idle", partyId: null, currentQuestId: null,
@@ -136,7 +136,7 @@ export const initialGameState: GameState = {
     },
     "adv-rina": {
       id: "adv-rina", name: "리나 노르", race: "human", gender: "female", age: 23,
-      classId: "priest", rank: "D", portrait: "/portraits/human/female/healer/human_f_healer_01.webp",
+      classId: "priest", rank: "D", portrait: "/portraits/human/female/human_f_priest_02.webp",
       stats: { strength: 7, agility: 9, endurance: 9, intelligence: 13, perception: 10, willpower: 15 },
       potential: 69, traits: [{ id: "trait-empathic", revealed: true }], belonging: 52,
       status: "idle", partyId: "party-ironforge", currentQuestId: null,
@@ -158,7 +158,7 @@ export const initialGameState: GameState = {
     },
     "adv-mael": {
       id: "adv-mael", name: "드레이 마쉬", race: "human", gender: "male", age: 19,
-      classId: "rogue", rank: "D", portrait: "/portraits/human/male/knight/human_m_knight_01.webp",
+      classId: "rogue", rank: "D", portrait: "/portraits/human/male/human_m_rogue_01.webp",
       stats: { strength: 8, agility: 14, endurance: 9, intelligence: 10, perception: 13, willpower: 8 },
       potential: 65, traits: [{ id: "trait-reckless", revealed: true }], belonging: 38,
       status: "idle", partyId: null, currentQuestId: null,

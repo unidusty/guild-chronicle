@@ -186,7 +186,7 @@ export default function App() {
         ) : page === "parties" ? (
           <PartiesPage state={state} onStateChange={setState} />
         ) : page === "quests" ? (
-          <QuestBoardPage state={state} />
+          <QuestBoardPage state={state} onStateChange={setState} />
         ) : null}
       </main>
 

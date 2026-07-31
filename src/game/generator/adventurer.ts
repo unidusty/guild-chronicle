@@ -128,7 +128,7 @@ export function generateAdventurer(
     age:              roll(ageMin, ageMax),
     classId,
     rank:             "F",
-    portrait:         getRandomPortraitPath(race, gender),
+    portrait:         getRandomPortraitPath(race, gender, classId),
     stats,
     potential:        roll(30, 90),
     traits:           pickTraits(roll(1, 3)),
