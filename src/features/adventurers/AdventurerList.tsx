@@ -3,7 +3,6 @@ import type { EntityId, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import {
   adventurerStatusLabels,
-  getPotentialGrade,
   getStatusTone,
   raceLabels,
 } from "../../game/constants/labels";
@@ -77,14 +76,12 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
                 <th>모험가</th>
                 <th>직업</th>
                 <th>등급</th>
-                <th>잠재력</th>
                 <th>상태</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((adv) => {
                 const cls = state.classes[adv.classId];
-                const potGrade = getPotentialGrade(adv.potential);
                 const statusTone = getStatusTone(adv);
                 const initials = adv.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
                 const portraitPath = adv.portrait;
@@ -109,7 +106,6 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
                     </td>
                     <td>{cls?.name ?? "미정"}</td>
                     <td><span className="adv-rank-badge">{adv.rank}</span></td>
-                    <td><span className={`pot-badge pot-${potGrade.toLowerCase()}`}>{potGrade}</span></td>
                     <td><span className={`status ${statusTone}`}>{adventurerStatusLabels[adv.status]}</span></td>
                   </tr>
                 );

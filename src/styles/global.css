@@ -97,12 +97,6 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .candidate-name-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .candidate-name { font-family: Georgia, serif; font-size: calc(17px * var(--ui-scale)); color: #ddd8ce; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* 잠재력 배지 */
-.pot-badge { display: inline-flex; align-items: center; justify-content: center; width: calc(26px * var(--ui-scale)); height: calc(26px * var(--ui-scale)); border: 1px solid; font-family: Georgia, serif; font-size: calc(13px * var(--ui-scale)); font-weight: 700; flex-shrink: 0; }
-.pot-s { color: #e8c87a; border-color: rgba(232,200,122,.45); background: rgba(232,200,122,.07); }
-.pot-a { color: #8db49a; border-color: rgba(141,180,154,.4);  background: rgba(141,180,154,.06); }
-.pot-b { color: #9ca5ae; border-color: rgba(156,165,174,.35); background: rgba(156,165,174,.05); }
-.pot-c { color: #7a8078; border-color: rgba(122,128,120,.3);  background: transparent; }
-.pot-d { color: #5a5e5a; border-color: rgba(90,94,90,.25);    background: transparent; }
 /* 종족·나이·직업 */
 .candidate-meta  { font-size: var(--font-small); color: #67736a; line-height: 1; }
 .candidate-class { font-size: var(--font-small); color: #a08c55; letter-spacing: .03em; }
@@ -231,7 +225,9 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .combat-rating-list { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
 .combat-rating-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); min-height: calc(20px * var(--ui-scale)); }
 .combat-rating-label { font-size: var(--font-small); color: #5e6a60; width: calc(52px * var(--ui-scale)); flex-shrink: 0; letter-spacing: .02em; }
-.star-rating { color: #c4a860; font-size: calc(14px * var(--ui-scale)); letter-spacing: 1px; }
+.star-rating { display: inline-flex; gap: calc(2px * var(--ui-scale)); font-size: calc(14px * var(--ui-scale)); }
+.star.filled { color: #c4a860; }
+.star.empty  { color: rgba(200, 196, 182, 0.5); }
 /* 전투 성향 — 바 */
 .tendency-list { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
 .tendency-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); min-height: calc(20px * var(--ui-scale)); }

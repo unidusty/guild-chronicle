@@ -50,7 +50,9 @@ const COMBAT_TENDENCY_LABELS: Record<CombatTendencyKey, string> = {
 function StarRating({ value }: { value: number }) {
   return (
     <span className="star-rating" aria-label={`${value}성`}>
-      {"★".repeat(value)}{"☆".repeat(5 - value)}
+      {Array.from({ length: 5 }, (_, i) => (
+        <span key={i} className={i < value ? "star filled" : "star empty"}>★</span>
+      ))}
     </span>
   );
 }
