@@ -40,6 +40,31 @@ export function getRandomPortraitId(race: Race, gender: Gender, classId?: string
   return pool[Math.floor(Math.random() * pool.length)].id;
 }
 
+// Picks a portrait for race/gender/classId, preferring paths not in usedPaths.
+// Fallback order: same class (unused) → same class (any) → any same race/gender (unused)
+//               → any same race/gender (any) → null
+export function getPortraitAvoiding(
+  race: Race,
+  gender: Gender,
+  classId: string,
+  usedPaths: Set<string>,
+): string | null {
+  const pick = (arr: { path: string }[]) =>
+    arr[Math.floor(Math.random() * arr.length)].path;
+
+  const byClass = getPortraitsByClass(race, gender, classId);
+  const byClassUnused = byClass.filter((p) => !usedPaths.has(p.path));
+  if (byClassUnused.length > 0) return pick(byClassUnused);
+  if (byClass.length > 0)       return pick(byClass);
+
+  const all = getPortraitsByRaceGender(race, gender);
+  const allUnused = all.filter((p) => !usedPaths.has(p.path));
+  if (allUnused.length > 0) return pick(allUnused);
+  if (all.length > 0)       return pick(all);
+
+  return null;
+}
+
 // Resolves a stored portrait path — just returns it directly since we store paths.
 export function getPortraitPath(path: string | null): string | null {
   return path;

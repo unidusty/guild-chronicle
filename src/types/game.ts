@@ -1,4 +1,12 @@
 export type EntityId = string;
+export type LootCategory = "monster" | "herb" | "mineral" | "misc";
+
+export interface LootItem {
+  id: EntityId;
+  name: string;
+  category: LootCategory;
+  baseValue: number;
+}
 
 export type Race = "human" | "elf" | "dwarf";
 export type Gender = "male" | "female";
@@ -118,6 +126,11 @@ export interface Party {
   totalActivityDays: number;
 }
 
+export interface LootDrop {
+  itemId: EntityId;
+  quantity: number;
+}
+
 export interface QuestCompletionResult {
   questId: EntityId;
   questTitle: string;
@@ -128,6 +141,7 @@ export interface QuestCompletionResult {
   durationDays: number;
   rewardGold: number;
   completedAt: GameDate;
+  loot: LootDrop[];
 }
 
 export interface Quest {
@@ -210,4 +224,5 @@ export interface GameState {
   chronicle: ChronicleEntry[];
   reports: DecisionReport[];
   pendingResults: QuestCompletionResult[];
+  warehouse: Record<EntityId, number>;
 }

@@ -1,4 +1,5 @@
-import type { ChronicleEntry, GameDate, GameState, QuestCompletionResult } from "../../types/game";
+import type { ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult } from "../../types/game";
+import { LOOT_TABLE } from "../../data/lootData";
 
 // ── Date arithmetic ─────────────────────────────────────────────────────────
 
@@ -13,6 +14,34 @@ export function advanceDate(date: GameDate): GameDate {
   return { year: next === "spring" ? date.year + 1 : date.year, season: next, day: 1 };
 }
 
+// ── Loot generation ──────────────────────────────────────────────────────────
+
+const LOOT_IDS = Object.keys(LOOT_TABLE);
+
+function randInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateQuestLoot(): LootDrop[] {
+  const count  = randInt(1, 3);
+  const result: LootDrop[] = [];
+  const used   = new Set<string>();
+
+  for (let i = 0; i < count; i++) {
+    let itemId = LOOT_IDS[Math.floor(Math.random() * LOOT_IDS.length)];
+    let attempts = 0;
+    while (used.has(itemId) && attempts < 20) {
+      itemId = LOOT_IDS[Math.floor(Math.random() * LOOT_IDS.length)];
+      attempts++;
+    }
+    if (!used.has(itemId)) {
+      used.add(itemId);
+      result.push({ itemId, quantity: randInt(1, 5) });
+    }
+  }
+  return result;
+}
+
 // ── Quest & adventurer update ────────────────────────────────────────────────
 
 const DAILY_PROGRESS = 15;
@@ -23,6 +52,7 @@ function updateQuests(state: GameState): GameState {
   const quests      = { ...state.quests };
   const adventurers = { ...state.adventurers };
   const parties     = { ...state.parties };
+  const warehouse   = { ...state.warehouse };
   const date        = state.currentDate;
 
   for (const quest of Object.values(state.quests)) {
@@ -56,6 +86,11 @@ function updateQuests(state: GameState): GameState {
           }
         }
 
+        const loot = generateQuestLoot();
+        for (const { itemId, quantity } of loot) {
+          warehouse[itemId] = (warehouse[itemId] ?? 0) + quantity;
+        }
+
         newResults.push({
           questId:        quest.id,
           questTitle:     quest.title,
@@ -66,6 +101,7 @@ function updateQuests(state: GameState): GameState {
           durationDays:   quest.durationDays,
           rewardGold:     quest.rewardGold,
           completedAt:    date,
+          loot,
         });
 
         newEntries.push({
@@ -92,6 +128,7 @@ function updateQuests(state: GameState): GameState {
     quests,
     adventurers,
     parties,
+    warehouse,
     chronicle: [...newEntries, ...state.chronicle],
     pendingResults: [...state.pendingResults, ...newResults],
   };

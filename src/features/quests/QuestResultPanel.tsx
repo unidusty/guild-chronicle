@@ -1,6 +1,7 @@
 import type { GameDate, GameState, QuestCompletionResult } from "../../types/game";
 import { playSelect } from "../../lib/audio";
 import { seasonLabels } from "../../game/constants/labels";
+import { LOOT_TABLE } from "../../data/lootData";
 
 interface Props {
   results: QuestCompletionResult[];
@@ -63,6 +64,18 @@ export default function QuestResultPanel({ results, state, onDismiss }: Props) {
                     <label>의뢰 보상</label>
                     <span className="result-reward">{formatGold(r.rewardGold)}</span>
                   </div>
+                  {r.loot.length > 0 && (
+                    <div className="result-info-row result-loot-row">
+                      <label>획득 전리품</label>
+                      <div className="result-loot-list">
+                        {r.loot.map(({ itemId, quantity }) => (
+                          <span key={itemId} className="result-loot-item">
+                            {LOOT_TABLE[itemId]?.name ?? itemId} ×{quantity}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             );

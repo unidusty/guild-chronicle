@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually. Run: npm run manifest
-// Generated: 2026-07-31T06:25:36.184Z
+// Generated: 2026-07-31T07:00:06.803Z
 // Filename rule: {race}_{m|f}_{classId}_{number}.ext
 // ID format: `{race}-{gender}-{basename}` — globally unique in manifest.
 // Base/mod conflict: mod overrides base.
@@ -21,7 +21,7 @@ export interface AssetManifest {
 }
 
 export const assetManifest: AssetManifest = {
-  generatedAt: "2026-07-31T06:25:36.184Z",
+  generatedAt: "2026-07-31T07:00:06.803Z",
   portraits: [
     {
       "id": "human-male-human_m_archer_01",
@@ -312,6 +312,14 @@ export const assetManifest: AssetManifest = {
       "source": "base"
     },
     {
+      "id": "dwarf-male-dwarf_m_guardian_01",
+      "path": "/portraits/dwarf/male/dwarf_m_guardian_01.webp",
+      "race": "dwarf",
+      "gender": "male",
+      "classId": "guardian",
+      "source": "base"
+    },
+    {
       "id": "dwarf-male-dwarf_m_mage_01",
       "path": "/portraits/dwarf/male/dwarf_m_mage_01.webp",
       "race": "dwarf",
@@ -360,19 +368,11 @@ export const assetManifest: AssetManifest = {
       "source": "base"
     },
     {
-      "id": "dwarf-male-dwarf_m_swordman_02",
-      "path": "/portraits/dwarf/male/dwarf_m_swordman_02.webp",
+      "id": "dwarf-male-dwarf_m_warrior_01",
+      "path": "/portraits/dwarf/male/dwarf_m_warrior_01.webp",
       "race": "dwarf",
       "gender": "male",
-      "classId": "swordman",
-      "source": "base"
-    },
-    {
-      "id": "dwarf-male-dwarf_m_swordman_03",
-      "path": "/portraits/dwarf/male/dwarf_m_swordman_03.webp",
-      "race": "dwarf",
-      "gender": "male",
-      "classId": "swordman",
+      "classId": "warrior",
       "source": "base"
     },
     {
@@ -440,11 +440,11 @@ export const assetManifest: AssetManifest = {
       "source": "base"
     },
     {
-      "id": "dwarf-female-dwarf_f_swordman_02",
-      "path": "/portraits/dwarf/female/dwarf_f_swordman_02.webp",
+      "id": "dwarf-female-dwarf_f_warrior_01",
+      "path": "/portraits/dwarf/female/dwarf_f_warrior_01.webp",
       "race": "dwarf",
       "gender": "female",
-      "classId": "swordman",
+      "classId": "warrior",
       "source": "base"
     }
   ],
