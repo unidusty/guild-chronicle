@@ -1,5 +1,5 @@
 :root {
-  --ui-scale: 1;
+  --ui-scale: 1.25;
   /* typography tokens — 100% 기준: 최소 12px, 본문 15px, 주요 값 16px */
   --font-tiny:       calc(12px * var(--ui-scale));
   --font-small:      calc(14px * var(--ui-scale));
@@ -32,19 +32,15 @@ button { font: inherit; }
 .brand-copy span { margin-top: 3px; color: #7f897f; font-size: var(--font-tiny); }
 nav { display: grid; gap: 4px; margin-top: 38px; }
 .nav-item { width: 100%; padding: calc(15px * var(--ui-scale)) 12px; border: 0; border-left: 2px solid transparent; background: transparent; color: #8f9890; text-align: left; cursor: pointer; font-size: var(--font-body); }
-.nav-item span { display: inline-block; width: 32px; color: #545d55; font-size: var(--font-tiny); }
 .nav-item.active { color: #eee9dc; border-left-color: #b79b5a; background: linear-gradient(90deg, #252b25, transparent); font-size: var(--font-important); }
 .sidebar-note { position: absolute; left: 18px; right: 18px; bottom: 28px; padding-top: 18px; border-top: 1px solid #30372f; }
 .sidebar-note span, .sidebar-note strong { display: block; }
 .sidebar-note span { color: #727b73; font-size: var(--font-tiny); text-transform: uppercase; }
 .sidebar-note strong { margin-top: 7px; font-size: var(--font-small); font-weight: 500; }
 /* UI 배율 선택기 */
-.scale-selector { position: absolute; left: 18px; right: 18px; bottom: 110px; }
-.scale-selector-label { display: block; font-size: var(--font-tiny); color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
-.scale-btns { display: flex; gap: 3px; }
-.scale-btn { flex: 1; padding: 7px 0; border: 1px solid #2a322c; background: transparent; color: #666e67; font-size: var(--font-tiny); cursor: pointer; letter-spacing: .02em; transition: border-color .15s, color .15s; }
-.scale-btn:hover { border-color: #454d46; color: #9ca49c; }
-.scale-btn.active { border-color: #8a7646; color: #c4a860; background: rgba(138,118,70,.08); }
+.mute-btn { position: absolute; left: 18px; right: 18px; bottom: 104px; padding: 7px 12px; border: 1px solid #2a322c; background: transparent; color: #666e67; font-size: var(--font-tiny); cursor: pointer; letter-spacing: .06em; text-align: left; transition: border-color .15s, color .15s; }
+.mute-btn:hover { border-color: #454d46; color: #9ca49c; }
+.mute-btn.muted { color: #4a5a4a; border-color: #222a24; }
 main { flex: 1; min-width: 0; height: 100%; overflow-y: auto; display: flex; flex-direction: column; padding: 34px 40px 48px; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
 .eyebrow { margin: 0 0 7px; color: #9c8757; font-size: var(--font-tiny); font-weight: 700; letter-spacing: .15em; }

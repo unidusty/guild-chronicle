@@ -1,12 +1,8 @@
 import { useState } from "react";
-import type { Adventurer } from "../types/game";
 import { initialGameState } from "../data/gameState";
-import { generateCandidates } from "../game/generator/adventurer";
 import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetrics, getRosterRows } from "../game/simulation/selectors";
-import RecruitmentPanel from "../features/recruitment/RecruitmentPanel";
 import AdventurersPage from "../features/adventurers/AdventurersPage";
-import { UI_SCALES, UI_SCALE_LABELS, useUiScale } from "../lib/uiScale";
-import type { UiScale } from "../lib/uiScale";
+import { useBgm } from "../lib/bgm";
 
 type Page = "dashboard" | "adventurers";
 interface NavItem { label: string; page: Page | null; }
@@ -27,43 +23,13 @@ const reportPresentation = {
 } as const;
 
 export default function App() {
-  const [uiScale, setUiScale] = useUiScale();
-  const [state, setState] = useState(initialGameState);
-  const [candidates, setCandidates] = useState(() =>
-    generateCandidates(3, initialGameState.classes, initialGameState.currentDate,
-      new Set(Object.keys(initialGameState.adventurers)))
-  );
-  const [recruited, setRecruited] = useState(false);
+  const { muted, toggleMute } = useBgm();
+  const [state] = useState(initialGameState);
   const [page, setPage] = useState<Page>("dashboard");
 
   const metrics = getGuildMetrics(state);
   const roster = getRosterRows(state);
   const activeQuests = getActiveQuestRows(state);
-
-  function handleRecruit(adventurer: Adventurer) {
-    setState((prev) => ({
-      ...prev,
-      guild: {
-        ...prev.guild,
-        adventurerIds: [...prev.guild.adventurerIds, adventurer.id],
-      },
-      adventurers: {
-        ...prev.adventurers,
-        [adventurer.id]: adventurer,
-      },
-    }));
-    setCandidates((prev) => prev.filter((c) => c.id !== adventurer.id));
-    setRecruited(true);
-  }
-
-  function handleRefresh() {
-    const allIds = new Set([
-      ...Object.keys(state.adventurers),
-      ...candidates.map((c) => c.id),
-    ]);
-    setCandidates(generateCandidates(3, state.classes, state.currentDate, allIds));
-    setRecruited(false);
-  }
 
   return (
     <div className="app-shell">
@@ -71,31 +37,24 @@ export default function App() {
         <div className="brand-mark">GC</div>
         <div className="brand-copy"><strong>Guild Chronicle</strong><span>길드 연대기</span></div>
         <nav>
-          {NAV_ITEMS.map((item, index) => (
+          {NAV_ITEMS.map((item) => (
             <button
               className={item.page === page ? "nav-item active" : "nav-item"}
               key={item.label}
               onClick={() => item.page && setPage(item.page)}
             >
-              <span>{String(index + 1).padStart(2, "0")}</span>{item.label}
+              {item.label}
             </button>
           ))}
         </nav>
-        <div className="scale-selector">
-          <span className="scale-selector-label">UI 배율</span>
-          <div className="scale-btns">
-            {UI_SCALES.map((s) => (
-              <button
-                key={s}
-                className={`scale-btn${uiScale === s ? " active" : ""}`}
-                onClick={() => setUiScale(s as UiScale)}
-              >
-                {UI_SCALE_LABELS[s]}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="sidebar-note"><span>현재 날짜</span><strong>{formatGameDate(state.currentDate)}</strong></div>
+        <button
+          className={`mute-btn${muted ? " muted" : ""}`}
+          onClick={toggleMute}
+          title={muted ? "BGM 켜기" : "BGM 끄기"}
+        >
+          {muted ? "♬ OFF" : "♬"}
+        </button>
+        <div className="sidebar-note"><span>오늘</span><strong>{formatGameDate(state.currentDate)}</strong></div>
       </aside>
 
       <main>
@@ -194,14 +153,6 @@ export default function App() {
                 </div>
               </article>
             </section>
-
-            <RecruitmentPanel
-              candidates={candidates}
-              classes={state.classes}
-              recruited={recruited}
-              onRecruit={handleRecruit}
-              onRefresh={handleRefresh}
-            />
           </>
         ) : (
           <AdventurersPage state={state} />
