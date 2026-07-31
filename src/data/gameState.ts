@@ -37,7 +37,7 @@ export const initialGameState: GameState = {
   adventurers: {
     "adv-ella": {
       id: "adv-ella", name: "엘라 빈터", race: "human", gender: "female", age: 24,
-      classId: "swordsman", rank: "B", portraitId: null,
+      classId: "swordsman", rank: "B", portrait: "/portraits/human/male/knight/human_m_knight_01.webp",
       stats: { strength: 13, agility: 11, endurance: 12, intelligence: 7, perception: 9, willpower: 14 },
       potential: 82, traits: [{ id: "trait-brave", revealed: true }], belonging: 76,
       status: "recovering", partyId: null, currentQuestId: null,
@@ -48,7 +48,7 @@ export const initialGameState: GameState = {
     },
     "adv-lien": {
       id: "adv-lien", name: "리엔 아르벨", race: "elf", gender: "male", age: 91,
-      classId: "ranger", rank: "B", portraitId: null,
+      classId: "ranger", rank: "B", portrait: "/portraits/elf/male/scout/elf_m_scout_01.webp",
       stats: { strength: 8, agility: 15, endurance: 9, intelligence: 11, perception: 16, willpower: 10 },
       potential: 79, traits: [{ id: "trait-keen-eye", revealed: true }], belonging: 68,
       status: "dispatched", partyId: "party-silverhawk", currentQuestId: "quest-caravan",
@@ -59,7 +59,7 @@ export const initialGameState: GameState = {
     },
     "adv-dorgan": {
       id: "adv-dorgan", name: "도르간 맥주먹", race: "dwarf", gender: "male", age: 57,
-      classId: "guardian", rank: "C", portraitId: null,
+      classId: "guardian", rank: "C", portrait: "/portraits/dwarf/male/guardian/dwarf_m_guardian_01.webp",
       stats: { strength: 12, agility: 6, endurance: 15, intelligence: 8, perception: 8, willpower: 13 },
       potential: 66, traits: [{ id: "trait-stubborn", revealed: true }], belonging: 84,
       status: "training", partyId: null, currentQuestId: null,
@@ -70,7 +70,7 @@ export const initialGameState: GameState = {
     },
     "adv-marien": {
       id: "adv-marien", name: "마리엔 로우", race: "human", gender: "female", age: 29,
-      classId: "healer", rank: "C", portraitId: null,
+      classId: "healer", rank: "C", portrait: "/portraits/human/female/healer/human_f_healer_01.webp",
       stats: { strength: 5, agility: 8, endurance: 8, intelligence: 15, perception: 11, willpower: 14 },
       potential: 73, traits: [{ id: "trait-calm", revealed: true }], belonging: 72,
       status: "dispatched", partyId: "party-bluelantern", currentQuestId: "quest-missing",
@@ -119,6 +119,66 @@ export const initialGameState: GameState = {
       id: "chronicle-317-0811-ella", date: { year: 317, season: "summer", day: 11 }, scope: "adventurer",
       category: "quest", title: "위험 속의 구조", description: "엘라 빈터가 첫 B등급 의뢰에서 부상당한 동료를 구출했다.",
       relatedEntityIds: ["adv-ella"],
+    },
+    {
+      id: "chronicle-317-0810-ella-injury", date: { year: 317, season: "summer", day: 10 }, scope: "adventurer",
+      category: "injury", title: "갈비뼈 타박상", description: "산적과의 교전 중 부상을 입어 치료실에서 회복 중이다.",
+      relatedEntityIds: ["adv-ella"],
+    },
+    {
+      id: "chronicle-317-0806-ella-rank", date: { year: 317, season: "summer", day: 6 }, scope: "adventurer",
+      category: "growth", title: "B등급 승급", description: "엘라 빈터가 연속 성공 의뢰를 인정받아 B등급으로 승급했다.",
+      relatedEntityIds: ["adv-ella"],
+    },
+    {
+      id: "chronicle-315-0401-ella-join", date: { year: 315, season: "spring", day: 4 }, scope: "adventurer",
+      category: "join", title: "길드 입단", description: "왕도 출신의 검사 엘라 빈터가 서풍 길드에 입단했다.",
+      relatedEntityIds: ["adv-ella"],
+    },
+    {
+      id: "chronicle-317-0811-lien-quest", date: { year: 317, season: "summer", day: 11 }, scope: "adventurer",
+      category: "quest", title: "상단 호위 출발", description: "리엔 아르벨이 은빛매 파티를 이끌고 회색등성이 호위 의뢰에 출발했다.",
+      relatedEntityIds: ["adv-lien"],
+    },
+    {
+      id: "chronicle-317-0802-lien-growth", date: { year: 317, season: "summer", day: 2 }, scope: "adventurer",
+      category: "growth", title: "정밀 사격 숙련", description: "리엔 아르벨의 원거리 명중률이 눈에 띄게 향상되었다.",
+      relatedEntityIds: ["adv-lien"],
+    },
+    {
+      id: "chronicle-314-1119-lien-join", date: { year: 314, season: "autumn", day: 19 }, scope: "adventurer",
+      category: "join", title: "길드 입단", description: "숲 마을 출신의 정찰자 리엔 아르벨이 서풍 길드에 입단했다.",
+      relatedEntityIds: ["adv-lien"],
+    },
+    {
+      id: "chronicle-317-0809-dorgan-train", date: { year: 317, season: "summer", day: 9 }, scope: "adventurer",
+      category: "growth", title: "훈련장 집중 수련", description: "도르간 맥주먹이 훈련장에서 방어 기법을 갈고닦고 있다.",
+      relatedEntityIds: ["adv-dorgan"],
+    },
+    {
+      id: "chronicle-317-0804-dorgan-quest", date: { year: 317, season: "summer", day: 4 }, scope: "adventurer",
+      category: "quest", title: "광산 구조 임무 완료", description: "도르간이 단독으로 붕괴된 광산에서 생존자 2명을 구출했다.",
+      relatedEntityIds: ["adv-dorgan"],
+    },
+    {
+      id: "chronicle-316-0202-dorgan-join", date: { year: 316, season: "winter", day: 2 }, scope: "adventurer",
+      category: "join", title: "길드 입단", description: "광산 도시 출신의 수호자 도르간 맥주먹이 서풍 길드에 입단했다.",
+      relatedEntityIds: ["adv-dorgan"],
+    },
+    {
+      id: "chronicle-317-0812-marien-return", date: { year: 317, season: "summer", day: 12 }, scope: "adventurer",
+      category: "quest", title: "수색 의뢰 귀환 예정", description: "마리엔 로우의 파티가 서부 수로 실종자 수색을 마치고 귀환 중이다.",
+      relatedEntityIds: ["adv-marien"],
+    },
+    {
+      id: "chronicle-317-0805-marien-growth", date: { year: 317, season: "summer", day: 5 }, scope: "adventurer",
+      category: "growth", title: "치유술 심화", description: "마리엔 로우가 야전 치료 기술을 한 단계 발전시켰다.",
+      relatedEntityIds: ["adv-marien"],
+    },
+    {
+      id: "chronicle-316-1111-marien-join", date: { year: 316, season: "summer", day: 11 }, scope: "adventurer",
+      category: "join", title: "길드 입단", description: "농촌 출신의 치유사 마리엔 로우가 서풍 길드에 입단했다.",
+      relatedEntityIds: ["adv-marien"],
     },
     {
       id: "chronicle-317-0809-reputation", date: { year: 317, season: "summer", day: 9 }, scope: "guild",

@@ -1,5 +1,4 @@
 import type { Adventurer, AdventurerClass, EntityId, Stats } from "../../types/game";
-import { getPortraitPath } from "../../game/assets/portraits";
 import { getPotentialGrade, genderLabels, raceLabels, statLabels } from "../../game/constants/labels";
 import { getTraitName } from "../../game/generator/traits";
 
@@ -52,7 +51,7 @@ function CandidateCard({ adventurer: c, classes, disabled, onRecruit }: CardProp
   const cls = classes[c.classId];
   const potGrade = getPotentialGrade(c.potential);
   const initials = c.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
-  const portraitPath = getPortraitPath(c.portraitId, c.race, c.gender);
+  const portraitPath = c.portrait;
   const primaryStats = new Set(cls?.primaryStats ?? []);
 
   return (

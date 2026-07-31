@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { EntityId, GameState } from "../../types/game";
-import { getPortraitPath } from "../../game/assets/portraits";
 import {
   adventurerStatusLabels,
   getPotentialGrade,
@@ -87,7 +86,7 @@ export default function AdventurerList({ state, selectedId, onSelect }: Props) {
                 const potGrade = getPotentialGrade(adv.potential);
                 const statusTone = getStatusTone(adv);
                 const initials = adv.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
-                const portraitPath = getPortraitPath(adv.portraitId, adv.race, adv.gender);
+                const portraitPath = adv.portrait;
 
                 return (
                   <tr

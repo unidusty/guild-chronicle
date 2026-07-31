@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Adventurer, GameState, Stats } from "../../types/game";
-import { getPortraitPath } from "../../game/assets/portraits";
 import {
   adventurerStatusLabels,
   genderLabels,
@@ -68,7 +67,7 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
   const statusTone = getStatusTone(adv);
   const locationLabel = getAdventurerLocationLabel(adv, state);
   const initials = adv.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase();
-  const portraitPath = getPortraitPath(adv.portraitId, adv.race, adv.gender);
+  const portraitPath = adv.portrait;
   const primaryStats = new Set(cls?.primaryStats ?? []);
   const keyTraits = adv.traits.slice(0, 3);
   const chronicle = getAdventurerChronicle(state, adv.id, 5);

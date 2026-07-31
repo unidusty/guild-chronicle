@@ -1,5 +1,5 @@
 import type { Adventurer, AdventurerClass, CombatRatings, CombatTendencies, EntityId, GameDate, Race, Gender, Stats } from "../../types/game";
-import { getPortraitsByRaceGender } from "../assets/portraits";
+import { getRandomPortraitPath } from "../assets/portraits";
 import { generateName } from "./names";
 import { pickTraits } from "./traits";
 import { clamp, pick, roll } from "./util";
@@ -100,11 +100,6 @@ export function deriveCombatTendencies(stats: Stats): CombatTendencies {
   };
 }
 
-function pickPortraitId(race: Race, gender: Gender): string | null {
-  const available = getPortraitsByRaceGender(race, gender);
-  if (available.length === 0) return null;
-  return available[Math.floor(Math.random() * available.length)].id;
-}
 
 export function generateAdventurer(
   classes: Record<EntityId, AdventurerClass>,
@@ -133,7 +128,7 @@ export function generateAdventurer(
     age:              roll(ageMin, ageMax),
     classId,
     rank:             "D",
-    portraitId:       pickPortraitId(race, gender),
+    portrait:         getRandomPortraitPath(race, gender),
     stats,
     potential:        roll(30, 90),
     traits:           pickTraits(roll(1, 3)),

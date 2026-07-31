@@ -25,3 +25,9 @@ export function getRandomPortraitId(race: Race, gender: Gender): string | null {
   if (available.length === 0) return null;
   return available[Math.floor(Math.random() * available.length)].id;
 }
+
+export function getRandomPortraitPath(race: Race, gender: Gender): string | null {
+  const available = getPortraitsByRaceGender(race, gender);
+  if (available.length === 0) return null;
+  return available[Math.floor(Math.random() * available.length)].path;
+}

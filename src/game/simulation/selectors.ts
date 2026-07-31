@@ -1,6 +1,5 @@
 import type { Adventurer, ChronicleEntry, EntityId, GameDate, GameState } from "../../types/game";
 import { adventurerStatusLabels, raceLabels, seasonLabels } from "../constants/labels";
-import { getPortraitPath } from "../assets/portraits";
 
 const PERSONALITY_ADJ: Record<string, string> = {
   "책임감 강함": "책임감 강한",
@@ -80,7 +79,7 @@ export function getRosterRows(state: GameState) {
       assignment,
       status: adventurerStatusLabels[adventurer.status],
       statusTone: adventurer.status === "dispatched" ? "active" : adventurer.injuryIds.length > 0 ? "warning" : "idle",
-      portraitPath: getPortraitPath(adventurer.portraitId, adventurer.race, adventurer.gender),
+      portraitPath: adventurer.portrait,
     };
   });
 }

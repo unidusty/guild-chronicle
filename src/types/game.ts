@@ -54,7 +54,7 @@ export interface Adventurer {
   age: number;
   classId: EntityId;
   rank: AdventurerRank;
-  portraitId: string | null;
+  portrait: string | null;
   stats: Stats;
   potential: number;
   traits: TraitRef[];

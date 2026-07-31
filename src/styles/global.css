@@ -171,24 +171,24 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* 반신 초상화 — 전체 폭, position:relative(오버레이용), 공간 부족 시 수축 */
 .portrait.bust { position: relative; width: 100%; height: calc(372px * var(--ui-scale)); font-size: calc(64px * var(--ui-scale)); flex-shrink: 1; }
 /* 그라데이션 오버레이 — 이름/등급/직업 표시 */
-.portrait-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: calc(72px * var(--ui-scale)) calc(12px * var(--ui-scale)) calc(10px * var(--ui-scale)); background: linear-gradient(to bottom, transparent 0%, rgba(21,28,23,.5) 28%, rgba(21,28,23,.92) 65%, #151c17 100%); display: flex; flex-direction: column; gap: calc(3px * var(--ui-scale)); }
+.portrait-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: calc(72px * var(--ui-scale)) calc(12px * var(--ui-scale)) calc(2px * var(--ui-scale)); background: linear-gradient(to bottom, transparent 0%, rgba(21,28,23,.5) 28%, rgba(21,28,23,.92) 65%, #151c17 100%); display: flex; flex-direction: column; gap: calc(3px * var(--ui-scale)); }
 .portrait-name-row { display: flex; align-items: center; justify-content: space-between; gap: calc(8px * var(--ui-scale)); }
 .char-name { font-family: Georgia, serif; font-size: calc(22px * var(--ui-scale)); font-weight: 500; color: #eaebe5; margin: 0; text-shadow: 0 1px 6px rgba(0,0,0,.9); }
 .char-class-meta { font-size: calc(13px * var(--ui-scale)); color: #b8a470; font-weight: 400; margin: 0; text-shadow: 0 1px 4px rgba(0,0,0,.9); }
 .adv-rank-badge { display: inline-flex; align-items: center; justify-content: center; padding: calc(3px * var(--ui-scale)) calc(9px * var(--ui-scale)); border: 1px solid #8a7646; color: #cbb06f; font-family: Georgia, serif; font-size: calc(14px * var(--ui-scale)); font-weight: 700; background: rgba(15,20,16,.65); flex-shrink: 0; }
 /* 하단 정보 영역 — 패딩 및 gap 관리 */
-.char-card-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); padding: calc(12px * var(--ui-scale)) calc(14px * var(--ui-scale)) calc(14px * var(--ui-scale)); }
+.char-card-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)) calc(12px * var(--ui-scale)); }
 .char-status-block,
 .char-party-block,
 .char-belonging,
 .char-key-traits { flex-shrink: 0; }
-.char-status-block { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.char-status-block { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
 .char-status-row { display: flex; align-items: center; gap: 10px; }
 .char-status-row > label { font-size: var(--font-tiny); color: #5e6a60; letter-spacing: .06em; text-transform: uppercase; width: calc(36px * var(--ui-scale)); flex-shrink: 0; }
 .char-location { font-size: calc(15px * var(--ui-scale)); color: #8a948a; }
 .char-condition { font-size: calc(15px * var(--ui-scale)); color: #8a948a; }
 .char-condition.warning { color: #d5a178; }
-.char-party-block { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); padding-top: calc(10px * var(--ui-scale)); border-top: 1px solid #2a322c; }
+.char-party-block { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); padding-top: calc(8px * var(--ui-scale)); border-top: 1px solid #2a322c; }
 .char-belonging-header { display: flex; justify-content: space-between; align-items: center; font-size: var(--font-tiny); color: #5e6a60; margin-bottom: calc(7px * var(--ui-scale)); letter-spacing: .04em; }
 .char-belonging-val { color: #9a8a65; font-size: calc(15px * var(--ui-scale)); font-weight: 600; }
 .belonging-bar { height: calc(7px * var(--ui-scale)); background: #222a24; }
@@ -196,7 +196,7 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* 대표 특성 — margin-top:auto 로 카드 하단 고정 */
 .char-key-traits { padding-top: 12px; border-top: 1px solid #2a322c; margin-top: auto; }
 .char-key-traits .trait-tag { font-size: var(--font-small); padding: 5px 10px; }
-.char-section-label { font-size: var(--font-tiny); color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 8px; }
+.char-section-label { font-size: var(--font-tiny); color: #5e6a60; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 6px; }
 
 /* 우측 — 탭 + 콘텐츠 래퍼 */
 .adv-detail-right { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
