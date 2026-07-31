@@ -54,6 +54,7 @@ function updateQuests(state: GameState): GameState {
   const parties     = { ...state.parties };
   const warehouse   = { ...state.warehouse };
   const date        = state.currentDate;
+  let   goldEarned  = 0;
 
   for (const quest of Object.values(state.quests)) {
     if (quest.status !== "assigned") continue;
@@ -61,7 +62,8 @@ function updateQuests(state: GameState): GameState {
     const remaining = quest.remainingDays - 1;
 
     if (remaining <= 0) {
-      quests[quest.id] = { ...quest, remainingDays: 0, progress: 100, status: "completed" };
+      // Remove completed quest from the board
+      delete quests[quest.id];
 
       const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
       if (party) {
@@ -90,6 +92,8 @@ function updateQuests(state: GameState): GameState {
         for (const { itemId, quantity } of loot) {
           warehouse[itemId] = (warehouse[itemId] ?? 0) + quantity;
         }
+
+        goldEarned += quest.rewardGold;
 
         newResults.push({
           questId:        quest.id,
@@ -125,11 +129,12 @@ function updateQuests(state: GameState): GameState {
 
   return {
     ...state,
+    guild:         goldEarned > 0 ? { ...state.guild, gold: state.guild.gold + goldEarned } : state.guild,
     quests,
     adventurers,
     parties,
     warehouse,
-    chronicle: [...newEntries, ...state.chronicle],
+    chronicle:      [...newEntries, ...state.chronicle],
     pendingResults: [...state.pendingResults, ...newResults],
   };
 }

@@ -9,7 +9,6 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "all",       label: "전체" },
   { value: "available", label: "접수 가능" },
   { value: "active",    label: "수행 중" },
-  { value: "completed", label: "완료" },
 ];
 
 const RANK_OPTIONS: Array<"all" | AdventurerRank> = ["all", "S", "A", "B", "C", "D", "E", "F"];

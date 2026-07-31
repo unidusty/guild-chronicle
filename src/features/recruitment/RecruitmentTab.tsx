@@ -86,9 +86,12 @@ function ActiveRecruitmentTab({ state, onStateChange }: Props) {
 
     onStateChange((prev) => fn(prev, id));
 
-    // Deselect if accepted/rejected (they leave the active list)
+    // After accept/reject, auto-select the next pending applicant
     if (kind === "accept" || kind === "reject") {
-      setSelectedId(null);
+      const remaining = state.recruitment.applicants.filter(
+        (a) => a.id !== id && (a.status === "pending" || a.status === "held"),
+      );
+      setSelectedId(remaining.length > 0 ? remaining[0].id : null);
     }
   }
 

@@ -1,4 +1,4 @@
-import type { DailyReport, DailyReportItem, GameState } from "../../types/game";
+import type { ChronicleEntry, DailyReport, DailyReportItem, GameState } from "../../types/game";
 import { advanceDay } from "./advance";
 import { advanceFacilityConstruction } from "./facilities";
 import {
@@ -31,8 +31,23 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
   ).length;
 
   // 1. Advance facility construction
-  const { state: afterFacilities, completed: completedFacilities } =
+  const { state: afterFacilitiesRaw, completed: completedFacilities } =
     advanceFacilityConstruction(state);
+
+  // Add chronicle entries for newly completed facilities
+  let afterFacilities = afterFacilitiesRaw;
+  if (completedFacilities.length > 0) {
+    const facilityEntries: ChronicleEntry[] = completedFacilities.map((f) => ({
+      id: `chr-facility-${f.id}-${previousDate.year}-${previousDate.season}-${previousDate.day}`,
+      date: previousDate,
+      scope: "guild" as const,
+      category: "facility" as const,
+      title: `${f.name} 완공`,
+      description: `${f.name} 공사가 완료되어 운영을 시작했습니다.`,
+      relatedEntityIds: [state.guild.id],
+    }));
+    afterFacilities = { ...afterFacilities, chronicle: [...facilityEntries, ...afterFacilities.chronicle] };
+  }
 
   // 2. Expire applicants (based on today's date, before increment)
   const { state: afterExpire, expired: expiredApplicants } = expireApplicants(afterFacilities);
@@ -48,40 +63,10 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
 
   const newState = afterGenerate;
 
-  // 6. Collect report items
+  // 6. Collect report items (order: new → accepted → rejected → expired → facility → quest → injury → training)
   const items: DailyReportItem[] = [];
 
-  // Accepted applicants
-  for (const h of todayAccepted) {
-    const adv = h.adventurerId ? newState.adventurers[h.adventurerId] : null;
-    items.push({
-      kind: "recruitment_accepted",
-      title: `신규 입단 — ${h.applicantName}`,
-      description: adv
-        ? `${h.applicantName}이(가) 서풍 길드에 입단했습니다.`
-        : `${h.applicantName}이(가) 합류를 승인 받았습니다.`,
-    });
-  }
-
-  // Rejected applicants (grouped)
-  if (todayRejectedCount > 0) {
-    items.push({
-      kind: "recruitment_rejected",
-      title: `지원자 ${todayRejectedCount}명 반려`,
-      description: `오늘 ${todayRejectedCount}명의 지원을 거절했습니다.`,
-    });
-  }
-
-  // Expired applicants
-  for (const a of expiredApplicants) {
-    items.push({
-      kind: "recruitment_expired",
-      title: `지원 기간 만료 — ${a.name}`,
-      description: `${a.name}의 지원이 심사 기간 내 처리되지 않아 만료되었습니다.`,
-    });
-  }
-
-  // New applicants arrived
+  // New applicants arrived (next day's applicants)
   if (newApplicants.length > 0) {
     items.push({
       kind: "recruitment_new_applicants",
@@ -90,12 +75,30 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     });
   }
 
-  // Completed quests
-  for (const result of newState.pendingResults.slice(prevPendingCount)) {
+  // Accepted applicants (player actions from today)
+  for (const h of todayAccepted) {
     items.push({
-      kind: "quest_completed",
-      title: `의뢰 완료 — ${result.questTitle}`,
-      description: `${result.partyName}이(가) 귀환했습니다.`,
+      kind: "recruitment_accepted",
+      title: `가입 승인 — ${h.applicantName}`,
+      description: `${h.applicantName}이(가) 서풍 길드 정식 모험가로 등록되었습니다.`,
+    });
+  }
+
+  // Rejected applicants (grouped)
+  if (todayRejectedCount > 0) {
+    items.push({
+      kind: "recruitment_rejected",
+      title: `지원 반려 ${todayRejectedCount}건`,
+      description: `오늘 ${todayRejectedCount}명의 지원을 거절했습니다.`,
+    });
+  }
+
+  // Expired applicants
+  for (const a of expiredApplicants) {
+    items.push({
+      kind: "recruitment_expired",
+      title: `지원 만료 — ${a.name}`,
+      description: `${a.name}의 지원이 심사 기간 내 처리되지 않아 만료되었습니다.`,
     });
   }
 
@@ -104,7 +107,16 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     items.push({
       kind: "facility_completed",
       title: `시설 완공 — ${f.name}`,
-      description: `${f.name} 공사가 완료되었습니다.`,
+      description: `${f.name} 공사가 완료되어 운영을 시작했습니다.`,
+    });
+  }
+
+  // Completed quests
+  for (const result of newState.pendingResults.slice(prevPendingCount)) {
+    items.push({
+      kind: "quest_completed",
+      title: `의뢰 완료 — ${result.questTitle}`,
+      description: `${result.partyName}이(가) 귀환했습니다. 보상: ${new Intl.NumberFormat("ko-KR").format(result.rewardGold)} G`,
     });
   }
 
@@ -117,7 +129,7 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
         items.push({
           kind: "injury_recovered",
           title: `부상 회복 — ${adv.name}`,
-          description: `${injury.name}이(가) 완치되었습니다.`,
+          description: `${injury.name}이(가) 완치되어 활동을 재개할 수 있습니다.`,
         });
       }
     }
@@ -130,7 +142,7 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
       items.push({
         kind: "training_completed",
         title: `훈련 완료 — ${adv.name}`,
-        description: `${adv.name}이(가) 훈련을 마쳤습니다.`,
+        description: `${adv.name}이(가) 훈련을 마치고 대기 상태로 복귀했습니다.`,
       });
     }
   }

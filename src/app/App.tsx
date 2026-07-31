@@ -9,7 +9,10 @@ import QuestResultPanel from "../features/quests/QuestResultPanel";
 import WarehousePage from "../features/warehouse/WarehousePage";
 import DayEndOverlay from "../features/dayEnd/DayEndOverlay";
 import SettingsModal from "../components/SettingsModal";
+import DevPanel from "../features/devTools/DevPanel";
 import { useAudio, playHover, playSelect } from "../lib/audio";
+
+const DEV_MODE = import.meta.env.DEV;
 
 type Page = "guildHall" | "adventurers" | "parties" | "quests" | "warehouse";
 
@@ -129,6 +132,10 @@ export default function App() {
           onSfxMute={audio.toggleSfxMute}
           onClose={closeSettings}
         />
+      )}
+
+      {DEV_MODE && (
+        <DevPanel state={state} onStateChange={setState} />
       )}
     </div>
   );

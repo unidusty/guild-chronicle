@@ -433,10 +433,6 @@ const _rawState: GameState = {
       id: "report-rescue-mine", kind: "emergency", title: "긴급 구조 의뢰",
       description: "북부 광산에서 다른 길드가 지원을 요청했다.", relatedEntityIds: [], priority: "critical",
     },
-    {
-      id: "report-recruits", kind: "recruitment", title: "신입 가입 심사",
-      description: "오늘 도착한 지원자 2명을 검토한다.", relatedEntityIds: [], priority: "normal",
-    },
   ],
   pendingResults: [],
   warehouse: {},
