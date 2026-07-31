@@ -4,6 +4,7 @@ import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetric
 import AdventurersPage from "../features/adventurers/AdventurersPage";
 import SettingsModal from "../components/SettingsModal";
 import { useAudio, playHover, playSelect } from "../lib/audio";
+import { advanceDay } from "../game/simulation/advance";
 
 type Page = "dashboard" | "adventurers";
 interface NavItem { label: string; page: Page | null; }
@@ -25,7 +26,7 @@ const reportPresentation = {
 
 export default function App() {
   const audio = useAudio();
-  const [state] = useState(initialGameState);
+  const [state, setState] = useState(initialGameState);
   const [page, setPage] = useState<Page>("dashboard");
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -33,6 +34,7 @@ export default function App() {
   const roster      = getRosterRows(state);
   const activeQuests = getActiveQuestRows(state);
 
+  function handleAdvanceDay() { playSelect(); setState(advanceDay); }
   function openSettings() { playSelect(); setSettingsOpen(true); }
   function closeSettings() { setSettingsOpen(false); }
 
@@ -71,7 +73,7 @@ export default function App() {
               <div><p className="eyebrow">WESTWIND GUILD · HEAD OFFICE</p><h1>{state.guild.name} 운영 보고서</h1></div>
               <div className="top-actions">
                 <button onMouseEnter={playHover}>게임 저장</button>
-                <button className="primary" onMouseEnter={playHover} onClick={playSelect}>하루 진행</button>
+                <button className="primary" onMouseEnter={playHover} onClick={handleAdvanceDay}>하루 진행</button>
               </div>
             </header>
 
