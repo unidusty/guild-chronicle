@@ -33,6 +33,7 @@ export function assignQuest(state: GameState, questId: EntityId, partyId: Entity
     ...party,
     status: "dispatched" as const,
     activeQuestId: questId,
+    questsDispatched: party.questsDispatched + 1,
   };
 
   const adventurers = { ...state.adventurers };
@@ -42,6 +43,7 @@ export function assignQuest(state: GameState, questId: EntityId, partyId: Entity
         ...adventurers[memberId],
         status: "dispatched" as const,
         currentQuestId: questId,
+        questsDispatched: adventurers[memberId].questsDispatched + 1,
       };
     }
   }

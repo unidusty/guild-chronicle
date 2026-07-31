@@ -4,6 +4,7 @@ import { formatGameDate, formatShortGameDate, getActiveQuestRows, getGuildMetric
 import AdventurersPage from "../features/adventurers/AdventurersPage";
 import PartiesPage from "../features/parties/PartiesPage";
 import QuestBoardPage from "../features/quests/QuestBoardPage";
+import QuestResultPanel from "../features/quests/QuestResultPanel";
 import SettingsModal from "../components/SettingsModal";
 import { useAudio, playHover, playSelect } from "../lib/audio";
 import { advanceDay } from "../game/simulation/advance";
@@ -189,6 +190,14 @@ export default function App() {
           <QuestBoardPage state={state} onStateChange={setState} />
         ) : null}
       </main>
+
+      {state.pendingResults.length > 0 && (
+        <QuestResultPanel
+          results={state.pendingResults}
+          state={state}
+          onDismiss={() => setState((s) => ({ ...s, pendingResults: [] }))}
+        />
+      )}
 
       {settingsOpen && (
         <SettingsModal

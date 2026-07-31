@@ -72,6 +72,9 @@ export interface Adventurer {
   background: string;
   combatRatings: CombatRatings;
   combatTendencies: CombatTendencies;
+  questsCompleted: number;
+  questsDispatched: number;
+  totalActivityDays: number;
 }
 
 export interface AdventurerClass {
@@ -110,6 +113,21 @@ export interface Party {
   currentFormationQuestCount: number;
   formationStartDate: GameDate | null;
   formationHistory: PartyHistory[];
+  questsCompleted: number;
+  questsDispatched: number;
+  totalActivityDays: number;
+}
+
+export interface QuestCompletionResult {
+  questId: EntityId;
+  questTitle: string;
+  grade: AdventurerRank;
+  partyId: EntityId;
+  partyName: string;
+  adventurerIds: EntityId[];
+  durationDays: number;
+  rewardGold: number;
+  completedAt: GameDate;
 }
 
 export interface Quest {
@@ -191,4 +209,5 @@ export interface GameState {
   facilities: Record<EntityId, Facility>;
   chronicle: ChronicleEntry[];
   reports: DecisionReport[];
+  pendingResults: QuestCompletionResult[];
 }

@@ -46,6 +46,9 @@ export function createParty(state: GameState, name: string): GameState {
     currentFormationQuestCount: 0,
     formationStartDate: date,
     formationHistory: [],
+    questsCompleted: 0,
+    questsDispatched: 0,
+    totalActivityDays: 0,
   };
   return {
     ...state,

@@ -44,6 +44,7 @@ export const initialGameState: GameState = {
       personality: "책임감 강함", background: "왕도",
       combatRatings:    { attack: 3, defense: 4, evasion: 2, accuracy: 2, survival: 4, leadership: 3 },
       combatTendencies: { melee: 4, ranged: 2, magic: 3, survival: 3, command: 3 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-lien": {
       id: "adv-lien", name: "리엔 아르벨", race: "elf", gender: "male", age: 91,
@@ -55,6 +56,7 @@ export const initialGameState: GameState = {
       personality: "과묵함", background: "숲 마을",
       combatRatings:    { attack: 3, defense: 2, evasion: 5, accuracy: 5, survival: 2, leadership: 3 },
       combatTendencies: { melee: 2, ranged: 5, magic: 3, survival: 2, command: 3 },
+      questsCompleted: 0, questsDispatched: 1, totalActivityDays: 0,
     },
     "adv-dorgan": {
       id: "adv-dorgan", name: "도르간 맥주먹", race: "dwarf", gender: "male", age: 57,
@@ -66,6 +68,7 @@ export const initialGameState: GameState = {
       personality: "거침없음", background: "광산 도시",
       combatRatings:    { attack: 2, defense: 4, evasion: 1, accuracy: 1, survival: 4, leadership: 3 },
       combatTendencies: { melee: 4, ranged: 1, magic: 3, survival: 5, command: 3 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-marien": {
       id: "adv-marien", name: "마리엔 로우", race: "human", gender: "female", age: 29,
@@ -77,6 +80,7 @@ export const initialGameState: GameState = {
       personality: "다정함", background: "농촌",
       combatRatings:    { attack: 1, defense: 3, evasion: 2, accuracy: 2, survival: 3, leadership: 4 },
       combatTendencies: { melee: 1, ranged: 2, magic: 4, survival: 2, command: 4 },
+      questsCompleted: 0, questsDispatched: 1, totalActivityDays: 0,
     },
     "adv-theo": {
       id: "adv-theo", name: "테오 베인", race: "human", gender: "male", age: 31,
@@ -88,6 +92,7 @@ export const initialGameState: GameState = {
       personality: "충동적", background: "군인 가정",
       combatRatings:    { attack: 3, defense: 3, evasion: 2, accuracy: 2, survival: 3, leadership: 2 },
       combatTendencies: { melee: 4, ranged: 2, magic: 2, survival: 4, command: 2 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-serin": {
       id: "adv-serin", name: "세리아 에린", race: "elf", gender: "female", age: 78,
@@ -99,6 +104,7 @@ export const initialGameState: GameState = {
       personality: "낙천적", background: "숲 마을",
       combatRatings:    { attack: 3, defense: 2, evasion: 5, accuracy: 5, survival: 2, leadership: 2 },
       combatTendencies: { melee: 1, ranged: 5, magic: 2, survival: 1, command: 2 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-braen": {
       id: "adv-braen", name: "브록 쇠망치", race: "dwarf", gender: "male", age: 45,
@@ -110,6 +116,7 @@ export const initialGameState: GameState = {
       personality: "의리 있음", background: "광산 도시",
       combatRatings:    { attack: 2, defense: 4, evasion: 1, accuracy: 1, survival: 4, leadership: 2 },
       combatTendencies: { melee: 4, ranged: 1, magic: 2, survival: 5, command: 2 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-vess": {
       id: "adv-vess", name: "가렛 포드", race: "human", gender: "male", age: 25,
@@ -121,6 +128,7 @@ export const initialGameState: GameState = {
       personality: "호기심 많음", background: "수도원",
       combatRatings:    { attack: 2, defense: 3, evasion: 2, accuracy: 2, survival: 3, leadership: 4 },
       combatTendencies: { melee: 1, ranged: 2, magic: 4, survival: 1, command: 4 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-caelum": {
       id: "adv-caelum", name: "카엘린 린델", race: "elf", gender: "male", age: 103,
@@ -132,6 +140,7 @@ export const initialGameState: GameState = {
       personality: "신중함", background: "숲 마을",
       combatRatings:    { attack: 2, defense: 3, evasion: 4, accuracy: 4, survival: 3, leadership: 4 },
       combatTendencies: { melee: 1, ranged: 4, magic: 4, survival: 1, command: 4 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-rina": {
       id: "adv-rina", name: "리나 노르", race: "human", gender: "female", age: 23,
@@ -143,6 +152,7 @@ export const initialGameState: GameState = {
       personality: "다정함", background: "농촌",
       combatRatings:    { attack: 2, defense: 3, evasion: 2, accuracy: 2, survival: 3, leadership: 4 },
       combatTendencies: { melee: 2, ranged: 2, magic: 4, survival: 2, command: 4 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-korra": {
       id: "adv-korra", name: "힐다 철주먹", race: "dwarf", gender: "female", age: 52,
@@ -154,6 +164,7 @@ export const initialGameState: GameState = {
       personality: "거침없음", background: "변경 마을",
       combatRatings:    { attack: 3, defense: 4, evasion: 2, accuracy: 2, survival: 4, leadership: 2 },
       combatTendencies: { melee: 4, ranged: 2, magic: 2, survival: 4, command: 2 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
     "adv-mael": {
       id: "adv-mael", name: "드레이 마쉬", race: "human", gender: "male", age: 19,
@@ -165,6 +176,7 @@ export const initialGameState: GameState = {
       personality: "명랑함", background: "슬럼가",
       combatRatings:    { attack: 3, defense: 2, evasion: 4, accuracy: 4, survival: 2, leadership: 2 },
       combatTendencies: { melee: 2, ranged: 4, magic: 2, survival: 2, command: 2 },
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
   },
   parties: {
@@ -175,6 +187,7 @@ export const initialGameState: GameState = {
       currentFormationDays: 42, currentFormationQuestCount: 8,
       formationStartDate: { year: 317, season: "spring", day: 1 },
       formationHistory: [],
+      questsCompleted: 0, questsDispatched: 1, totalActivityDays: 0,
     },
     "party-bluelantern": {
       id: "party-bluelantern", name: "푸른등불 파티", previousNames: [],
@@ -183,6 +196,7 @@ export const initialGameState: GameState = {
       currentFormationDays: 21, currentFormationQuestCount: 3,
       formationStartDate: { year: 317, season: "spring", day: 21 },
       formationHistory: [],
+      questsCompleted: 0, questsDispatched: 1, totalActivityDays: 0,
     },
     "party-ironforge": {
       id: "party-ironforge", name: "철기 파티", previousNames: [],
@@ -191,6 +205,7 @@ export const initialGameState: GameState = {
       currentFormationDays: 10, currentFormationQuestCount: 1,
       formationStartDate: { year: 317, season: "summer", day: 2 },
       formationHistory: [],
+      questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
     },
   },
   quests: {
@@ -402,4 +417,5 @@ export const initialGameState: GameState = {
       description: "오늘 도착한 지원자 2명을 검토한다.", relatedEntityIds: [], priority: "normal",
     },
   ],
+  pendingResults: [],
 };

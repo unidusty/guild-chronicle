@@ -1,4 +1,4 @@
-import type { ChronicleEntry, GameDate, GameState } from "../../types/game";
+import type { ChronicleEntry, GameDate, GameState, QuestCompletionResult } from "../../types/game";
 
 // ── Date arithmetic ─────────────────────────────────────────────────────────
 
@@ -19,6 +19,7 @@ const DAILY_PROGRESS = 15;
 
 function updateQuests(state: GameState): GameState {
   const newEntries: ChronicleEntry[] = [];
+  const newResults: QuestCompletionResult[] = [];
   const quests      = { ...state.quests };
   const adventurers = { ...state.adventurers };
   const parties     = { ...state.parties };
@@ -39,13 +40,33 @@ function updateQuests(state: GameState): GameState {
           status: "idle",
           activeQuestId: null,
           currentFormationQuestCount: party.currentFormationQuestCount + 1,
+          questsCompleted: party.questsCompleted + 1,
+          totalActivityDays: party.totalActivityDays + quest.durationDays,
         };
 
         for (const memberId of party.memberIds) {
           if (adventurers[memberId]) {
-            adventurers[memberId] = { ...adventurers[memberId], status: "idle", currentQuestId: null };
+            adventurers[memberId] = {
+              ...adventurers[memberId],
+              status: "idle",
+              currentQuestId: null,
+              questsCompleted: adventurers[memberId].questsCompleted + 1,
+              totalActivityDays: adventurers[memberId].totalActivityDays + quest.durationDays,
+            };
           }
         }
+
+        newResults.push({
+          questId:        quest.id,
+          questTitle:     quest.title,
+          grade:          quest.grade,
+          partyId:        party.id,
+          partyName:      party.name,
+          adventurerIds:  [...party.memberIds],
+          durationDays:   quest.durationDays,
+          rewardGold:     quest.rewardGold,
+          completedAt:    date,
+        });
 
         newEntries.push({
           id: `chronicle-complete-${quest.id}-${date.year}-${date.season}-${String(date.day).padStart(2, "0")}`,
@@ -53,7 +74,7 @@ function updateQuests(state: GameState): GameState {
           scope:            "guild",
           category:         "quest",
           title:            `${quest.title} 완료`,
-          description:      `${party.name}가 의뢰를 마치고 길드로 귀환했습니다.`,
+          description:      `${party.name}이(가) 의뢰를 마치고 길드로 귀환했습니다.`,
           relatedEntityIds: [party.id, ...party.memberIds],
         });
       }
@@ -72,6 +93,7 @@ function updateQuests(state: GameState): GameState {
     adventurers,
     parties,
     chronicle: [...newEntries, ...state.chronicle],
+    pendingResults: [...state.pendingResults, ...newResults],
   };
 }
 

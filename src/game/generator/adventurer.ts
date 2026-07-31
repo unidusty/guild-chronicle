@@ -140,10 +140,13 @@ export function generateAdventurer(
     trainingDays:     0,
     joinedAt:         currentDate,
     isArchived:       false,
-    personality:      pick(PERSONALITIES),
-    background:       pick(BACKGROUNDS),
-    combatRatings:    deriveCombatRatings(stats),
-    combatTendencies: deriveCombatTendencies(stats),
+    personality:       pick(PERSONALITIES),
+    background:        pick(BACKGROUNDS),
+    combatRatings:     deriveCombatRatings(stats),
+    combatTendencies:  deriveCombatTendencies(stats),
+    questsCompleted:   0,
+    questsDispatched:  0,
+    totalActivityDays: 0,
   };
 }
 

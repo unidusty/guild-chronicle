@@ -463,6 +463,23 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* Quest select prompt */
 .quest-select-prompt { flex: 1; display: flex; align-items: center; justify-content: center; color: #5e6a60; font-size: var(--font-small); border: 1px solid #2a322c; background: rgba(24,30,26,.4); }
 
+/* Quest result panel */
+.result-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 300; display: flex; align-items: center; justify-content: center; }
+.result-modal { background: #0f1812; border: 1px solid #3a5040; width: calc(420px * var(--ui-scale)); max-width: 90vw; max-height: 80vh; display: flex; flex-direction: column; gap: calc(20px * var(--ui-scale)); padding: calc(28px * var(--ui-scale)); overflow: hidden; animation: modal-in .14s ease; }
+.result-modal-head { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); }
+.result-modal-title { font-size: var(--font-large); color: #c8e0cc; margin: 0; }
+.result-list { display: flex; flex-direction: column; gap: calc(12px * var(--ui-scale)); overflow-y: auto; flex: 1 1 auto; min-height: 0; }
+.result-card { border: 1px solid #2a3c30; background: rgba(20,34,24,.6); padding: calc(14px * var(--ui-scale)) calc(16px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); }
+.result-card-header { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); }
+.result-card-title { flex: 1; font-size: var(--font-base); color: #c0d8c4; font-weight: 500; }
+.result-card-body { display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); }
+.result-info-row { display: flex; gap: calc(12px * var(--ui-scale)); font-size: var(--font-small); align-items: baseline; }
+.result-info-row > label { color: #5e7060; width: calc(68px * var(--ui-scale)); flex-shrink: 0; }
+.result-info-row > span { color: #a0bca4; }
+.result-reward { color: #c8a84a !important; }
+.result-confirm-btn { align-self: flex-end; padding: calc(8px * var(--ui-scale)) calc(28px * var(--ui-scale)); background: #2a4a30; border: 1px solid #4a7050; color: #a0c8a4; font-size: var(--font-small); letter-spacing: .06em; cursor: pointer; transition: background .12s; }
+.result-confirm-btn:hover { background: #3a5c3e; }
+
 /* Dashboard panel improvements */
 .roster-scroll { max-height: calc(224px * var(--ui-scale)); overflow-y: auto; }
 .activity-scroll { max-height: calc(200px * var(--ui-scale)); overflow-y: auto; }
