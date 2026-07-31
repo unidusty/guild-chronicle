@@ -1,7 +1,13 @@
 import { useState } from "react";
-import type { EntityId, GameState } from "../../types/game";
+import type { EntityId, FormationSlot, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { adventurerStatusLabels, getBondStageLabel, getStatusTone, partyStatusLabels } from "../../game/constants/labels";
+import {
+  calcPartyCombatPower,
+  calcSynergy,
+  calcFormationMultiplier,
+} from "../../game/simulation/combatPower";
+import FormationGrid from "./FormationGrid";
 
 interface Props {
   partyId: EntityId;
@@ -12,9 +18,13 @@ interface Props {
   onSetLeader: (adventurerId: EntityId) => void;
   onDelete: () => void;
   onRename: (name: string) => void;
+  onFormationSlot: (slot: FormationSlot, advId: string | null) => void;
 }
 
-export default function PartyDetail({ partyId, state, onClose, onAddMember, onRemoveMember, onSetLeader, onDelete, onRename }: Props) {
+export default function PartyDetail({
+  partyId, state, onClose, onAddMember, onRemoveMember,
+  onSetLeader, onDelete, onRename, onFormationSlot,
+}: Props) {
   const [addingMember, setAddingMember] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [renaming, setRenaming] = useState(false);
@@ -28,6 +38,11 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
   const members = party.memberIds.map((id) => state.adventurers[id]).filter(Boolean);
   const quest = party.activeQuestId ? state.quests[party.activeQuestId] : null;
   const statusTone = isDispatched ? "active" : "idle";
+
+  const combatPower = calcPartyCombatPower(party, members, state.classes);
+  const synergy = calcSynergy(members, state.classes);
+  const formationMult = calcFormationMultiplier(party.formation, members);
+  const formationPct = Math.round((formationMult - 1) * 100);
 
   const eligibleAdventurers = Object.values(state.adventurers)
     .filter((adv) => !adv.isArchived && adv.status === "idle" && adv.partyId === null)
@@ -113,6 +128,27 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
         <span className={`status ${statusTone}`}>{partyStatusLabels[party.status]}</span>
       </div>
 
+      {/* Combat power banner */}
+      <div className="party-power-banner">
+        <div className="party-power-main">
+          <span className="party-power-label">전투력</span>
+          <span className="party-power-value">{combatPower}</span>
+        </div>
+        <div className="party-power-mods">
+          {synergy.bonuses.map((b) => (
+            <span key={b} className="synergy-tag bonus">{b}</span>
+          ))}
+          {synergy.penalties.map((p) => (
+            <span key={p} className="synergy-tag penalty">{p}</span>
+          ))}
+          {members.length > 0 && (
+            <span className={`synergy-tag ${formationPct >= 0 ? "bonus" : "penalty"}`}>
+              진형 {formationPct >= 0 ? `+${formationPct}` : formationPct}%
+            </span>
+          )}
+        </div>
+      </div>
+
       <div className="party-detail-body">
         {isDispatched && (
           <p className="party-locked-notice">의뢰 수행 중 파티는 편성을 변경할 수 없습니다.</p>
@@ -193,6 +229,20 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
           )}
         </section>
 
+        {members.length > 0 && (
+          <section className="party-formation-section">
+            <p className="char-section-label">진형 배치</p>
+            <FormationGrid
+              formation={party.formation}
+              memberIds={party.memberIds}
+              adventurers={state.adventurers}
+              classes={state.classes}
+              disabled={isDispatched}
+              onSlotChange={onFormationSlot}
+            />
+          </section>
+        )}
+
         <section className="party-quest-section">
           <p className="char-section-label">진행 중 의뢰</p>
           {quest ? (
@@ -210,14 +260,16 @@ export default function PartyDetail({ partyId, state, onClose, onAddMember, onRe
         </section>
 
         <section className="party-meta-section">
-          <p className="char-section-label">파티 정보</p>
+          <p className="char-section-label">파티 기록</p>
           <div className="info-card">
             <div className="info-rows">
               <div className="info-row"><label>파티 랭크</label><span className="rank">{party.rank}</span></div>
               <div className="info-row"><label>유대</label><span>{bondLabel}</span></div>
               <div className="info-row"><label>편성 일수</label><span>{party.currentFormationDays}일</span></div>
-              <div className="info-row"><label>완료 의뢰</label><span>{party.currentFormationQuestCount}건</span></div>
-              <div className="info-row"><label>경험치</label><span>{party.experience}</span></div>
+              <div className="info-row"><label>완료 의뢰 (현 편성)</label><span>{party.currentFormationQuestCount}건</span></div>
+              <div className="info-row"><label>총 완료 의뢰</label><span>{party.questsCompleted}건</span></div>
+              <div className="info-row"><label>총 활동 일수</label><span>{party.totalActivityDays}일</span></div>
+              <div className="info-row"><label>총 수익</label><span>{party.totalGoldEarned.toLocaleString("ko-KR")} G</span></div>
             </div>
           </div>
         </section>

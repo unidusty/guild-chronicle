@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { EntityId, GameState, Party } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { partyStatusLabels } from "../../game/constants/labels";
+import { calcPartyCombatPower } from "../../game/simulation/combatPower";
 
 interface Props {
   state: GameState;
@@ -66,6 +67,7 @@ export default function PartyList({ state, selectedId, onSelect, onCreateParty }
             const quest = party.activeQuestId ? state.quests[party.activeQuestId] : null;
             const isSelected = party.id === selectedId;
             const statusTone = party.status === "dispatched" || party.status === "returning" ? "active" : "idle";
+            const power = calcPartyCombatPower(party, members, state.classes);
 
             return (
               <button
@@ -83,6 +85,7 @@ export default function PartyList({ state, selectedId, onSelect, onCreateParty }
                 </div>
                 <div className="party-card-meta">
                   {leader ? `리더 · ${leader.name}` : "리더 미지정"} · {members.length}명
+                  {members.length > 0 && <span className="party-card-power"> · ⚔ {power}</span>}
                 </div>
                 <div className="party-card-bottom">
                   <div className="party-member-icons">

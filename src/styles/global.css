@@ -790,3 +790,49 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .dev-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .dev-actions button { padding: 5px 8px; border: 1px solid #2a4030; background: #1a2a1e; color: #7ab09a; font-size: 11px; cursor: pointer; text-align: left; }
 .dev-actions button:hover { background: #243828; }
+
+/* ── Party Combat Power & Synergy ─────────────────────────────────────────── */
+.party-power-banner { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); padding: calc(12px * var(--ui-scale)) calc(16px * var(--ui-scale)); background: #141c16; border-bottom: 1px solid #252e26; }
+.party-power-main { display: flex; align-items: baseline; gap: calc(10px * var(--ui-scale)); }
+.party-power-label { font-size: var(--font-tiny); color: #6a7e6c; text-transform: uppercase; letter-spacing: .1em; }
+.party-power-value { font-size: calc(22px * var(--ui-scale)); font-family: Georgia, serif; color: #d2bb7e; font-weight: 700; }
+.party-power-mods { display: flex; flex-wrap: wrap; gap: calc(6px * var(--ui-scale)); }
+.synergy-tag { padding: calc(2px * var(--ui-scale)) calc(7px * var(--ui-scale)); font-size: var(--font-tiny); border-radius: 2px; }
+.synergy-tag.bonus { background: #1a2e1e; color: #6ab87a; border: 1px solid #2a4830; }
+.synergy-tag.penalty { background: #2a1a14; color: #b06050; border: 1px solid #481e14; }
+.party-card-power { color: #9c8757; font-size: var(--font-tiny); }
+
+/* ── Formation Grid ─────────────────────────────────────────────────────────── */
+.formation-grid { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.formation-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); }
+.formation-row-label { width: calc(36px * var(--ui-scale)); flex-shrink: 0; font-size: var(--font-tiny); color: #6a7e6c; text-align: right; }
+.formation-slots { display: flex; gap: calc(8px * var(--ui-scale)); }
+.formation-slot-wrap { position: relative; }
+.formation-slot { width: calc(120px * var(--ui-scale)); height: calc(54px * var(--ui-scale)); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 1px solid #2a3a2e; background: #131a15; cursor: pointer; transition: border-color .12s, background .12s; padding: 4px; }
+.formation-slot.empty { color: #4a5e4c; font-size: var(--font-tiny); }
+.formation-slot.occupied { border-color: #354a38; background: #182018; }
+.formation-slot.occupied.pos-good { border-color: #3a6040; background: #182818; }
+.formation-slot.occupied.pos-bad  { border-color: #5a3028; background: #201414; }
+.formation-slot.open { border-color: #6a8060; background: #1e2a1e; }
+.formation-slot.disabled { cursor: default; opacity: 0.7; }
+.formation-slot:hover:not(.disabled) { border-color: #4a6050; }
+.slot-name { font-size: var(--font-tiny); font-weight: 600; color: #c8d0c0; }
+.slot-class { font-size: calc(11px * var(--ui-scale)); color: #6a7e6c; }
+.slot-pos-dot { width: 6px; height: 6px; border-radius: 50%; }
+.formation-slot.pos-good .slot-pos-dot { background: #5aaa6a; }
+.formation-slot.pos-bad  .slot-pos-dot { background: #aa5040; }
+.slot-empty-label { font-size: var(--font-tiny); color: #3a4e3c; }
+.slot-picker { position: absolute; top: 100%; left: 0; z-index: 100; min-width: calc(160px * var(--ui-scale)); background: #141c16; border: 1px solid #2a4030; display: flex; flex-direction: column; margin-top: 3px; }
+.slot-picker-item { display: flex; align-items: center; gap: calc(8px * var(--ui-scale)); padding: calc(7px * var(--ui-scale)) calc(10px * var(--ui-scale)); border: none; background: transparent; color: #b0bab1; font: inherit; font-size: var(--font-small); cursor: pointer; text-align: left; }
+.slot-picker-item:hover { background: #1e2c20; }
+.slot-picker-item.preferred { color: #c8e0c0; }
+.slot-picker-class { margin-left: auto; font-size: var(--font-tiny); color: #6a7e6c; }
+.slot-picker-badge { font-size: calc(10px * var(--ui-scale)); background: #1a3e24; color: #6ab87a; padding: 1px 5px; border: 1px solid #2a5e34; }
+.slot-picker-empty { padding: calc(8px * var(--ui-scale)); font-size: var(--font-tiny); color: #4a5e4c; }
+
+/* ── Quest Success Rate ──────────────────────────────────────────────────────── */
+.quest-challenge-badge { color: #c4a860; }
+.quest-success-rate { font-size: var(--font-small); font-weight: 700; min-width: calc(44px * var(--ui-scale)); text-align: right; }
+.quest-success-rate.high { color: #6ab87a; }
+.quest-success-rate.mid  { color: #c4a860; }
+.quest-success-rate.low  { color: #b06050; }

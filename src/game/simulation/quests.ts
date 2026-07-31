@@ -1,14 +1,12 @@
 import type { AdventurerRank, ChronicleEntry, EntityId, GameState } from "../../types/game";
-
-const RANK_ORDER: AdventurerRank[] = ["F", "E", "D", "C", "B", "A", "S"];
-
-function rankNum(rank: AdventurerRank): number {
-  return RANK_ORDER.indexOf(rank);
-}
+import { rankToNum, isChallengeMode } from "./combatPower";
 
 export function canAssignParty(partyRank: AdventurerRank, questGrade: AdventurerRank): boolean {
-  return rankNum(partyRank) >= rankNum(questGrade);
+  // allow up to 1 rank below (challenge mode); 2+ ranks below is blocked
+  return rankToNum(partyRank) >= rankToNum(questGrade) - 1;
 }
+
+export { isChallengeMode };
 
 export function assignQuest(state: GameState, questId: EntityId, partyId: EntityId): GameState {
   const quest = state.quests[questId];

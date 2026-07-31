@@ -189,6 +189,7 @@ const _rawState: GameState = {
       formationStartDate: { year: 317, season: "spring", day: 1 },
       formationHistory: [],
       questsCompleted: 0, questsDispatched: 1, totalActivityDays: 0,
+      formation: {}, totalGoldEarned: 0,
     },
     "party-bluelantern": {
       id: "party-bluelantern", name: "푸른등불 파티", previousNames: [],
@@ -198,6 +199,7 @@ const _rawState: GameState = {
       formationStartDate: { year: 317, season: "spring", day: 21 },
       formationHistory: [],
       questsCompleted: 0, questsDispatched: 1, totalActivityDays: 0,
+      formation: {}, totalGoldEarned: 0,
     },
     "party-ironforge": {
       id: "party-ironforge", name: "철기 파티", previousNames: [],
@@ -207,6 +209,7 @@ const _rawState: GameState = {
       formationStartDate: { year: 317, season: "summer", day: 2 },
       formationHistory: [],
       questsCompleted: 0, questsDispatched: 0, totalActivityDays: 0,
+      formation: {}, totalGoldEarned: 0,
     },
   },
   quests: {

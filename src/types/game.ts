@@ -1,4 +1,7 @@
 export type EntityId = string;
+export type FormationSlot = "front-1" | "front-2" | "mid-1" | "mid-2" | "back-1" | "back-2";
+export type FormationRow = "front" | "mid" | "back";
+export type Formation = Partial<Record<FormationSlot, EntityId>>;
 export type LootCategory = "monster" | "herb" | "mineral" | "misc";
 
 export interface LootItem {
@@ -124,6 +127,8 @@ export interface Party {
   questsCompleted: number;
   questsDispatched: number;
   totalActivityDays: number;
+  formation: Formation;
+  totalGoldEarned: number;
 }
 
 export interface LootDrop {

@@ -2,7 +2,8 @@ import { useState } from "react";
 import type { AdventurerRank, EntityId, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { dangerLevelLabel, questCategoryLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
-import { canAssignParty } from "../../game/simulation/quests";
+import { canAssignParty, isChallengeMode } from "../../game/simulation/quests";
+import { calcPartyCombatPower, calcQuestSuccessRate, getQuestRecommendedPower } from "../../game/simulation/combatPower";
 
 interface Props {
   questId: EntityId;
@@ -86,6 +87,7 @@ export default function QuestDetail({ questId, state, onAssign }: Props) {
             <div className="quest-info-item"><label>소요 기간</label><span>{quest.durationDays}일</span></div>
             <div className="quest-info-item"><label>위험도</label><span className={dangerClass}>{dangerLevelLabel(quest.dangerLevel)}</span></div>
             <div className="quest-info-item"><label>권장 인원</label><span>{quest.recommendedPartySize}명</span></div>
+            <div className="quest-info-item"><label>권장 전투력</label><span>{getQuestRecommendedPower(quest)}</span></div>
             <div className="quest-info-item"><label>접수 기한</label><span>{expireText(quest.expiresInDays)}</span></div>
             {isDispatched && quest.remainingDays > 0 && (
               <div className="quest-info-item"><label>남은 기간</label><span>{quest.remainingDays}일</span></div>
@@ -135,18 +137,28 @@ export default function QuestDetail({ questId, state, onAssign }: Props) {
                     availableParties.map((party) => {
                       const eligible = canAssignParty(party.rank, quest.grade);
                       const memberCount = party.memberIds.length;
+                      const members = party.memberIds.map((id) => state.adventurers[id]).filter(Boolean);
+                      const power = calcPartyCombatPower(party, members, state.classes);
+                      const successRate = memberCount > 0 ? calcQuestSuccessRate(power, party.rank, quest) : null;
+                      const challenge = isChallengeMode(party.rank, quest.grade);
                       return (
                         <div key={party.id} className={`quest-party-row${eligible ? "" : " ineligible"}`}>
                           <span className="rank">{party.rank}</span>
                           <div className="quest-party-row-info">
                             <span className="quest-party-row-name">{party.name}</span>
                             <span className="quest-party-row-meta">
-                              {memberCount > 0 ? `${memberCount}명` : "파티원 없음"}
+                              {memberCount > 0 ? `${memberCount}명 · ⚔ ${power}` : "파티원 없음"}
+                              {challenge && <span className="quest-challenge-badge"> · 도전</span>}
                               {!eligible && (
                                 <span className="quest-party-rank-warn"> · 랭크 부족 (의뢰 {quest.grade}랭크)</span>
                               )}
                             </span>
                           </div>
+                          {successRate !== null && eligible && (
+                            <span className={`quest-success-rate ${successRate >= 70 ? "high" : successRate >= 45 ? "mid" : "low"}`}>
+                              {successRate}%
+                            </span>
+                          )}
                           <button
                             className="member-action-btn"
                             disabled={!eligible || memberCount === 0}

@@ -74,6 +74,7 @@ function updateQuests(state: GameState): GameState {
           currentFormationQuestCount: party.currentFormationQuestCount + 1,
           questsCompleted: party.questsCompleted + 1,
           totalActivityDays: party.totalActivityDays + quest.durationDays,
+          totalGoldEarned: party.totalGoldEarned + quest.rewardGold,
         };
 
         for (const memberId of party.memberIds) {
