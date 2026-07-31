@@ -156,7 +156,7 @@ export const initialGameState: GameState = {
     },
     "adv-korra": {
       id: "adv-korra", name: "힐다 철주먹", race: "dwarf", gender: "female", age: 52,
-      classId: "warrior", rank: "C", portrait: null,
+      classId: "warrior", rank: "C", portrait: "/portraits/dwarf/female/dwarf_f_guardian_01.webp",
       stats: { strength: 15, agility: 7, endurance: 15, intelligence: 7, perception: 8, willpower: 10 },
       potential: 55, traits: [{ id: "trait-stubborn", revealed: true }, { id: "trait-brave", revealed: true }], belonging: 44,
       status: "idle", partyId: null, currentQuestId: null,
