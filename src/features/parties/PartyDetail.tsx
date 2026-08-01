@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { EntityId, Formation, FormationSlot, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { adventurerStatusLabels, getBondStageLabel, getStatusTone, partyStatusLabels, questStageLabels } from "../../game/constants/labels";
+import { DECISION_LABELS } from "../../game/simulation/questDecisions";
 import {
   calcPartyCombatPower,
   calcSynergy,
@@ -353,6 +354,15 @@ export default function PartyDetail({
                       </span>
                       <span className="party-quest-event-title">{latest.title}</span>
                       <p className="party-quest-event-desc">{latest.description}</p>
+                    </div>
+                  );
+                })()}
+                {prog && prog.decisions.length > 0 && (() => {
+                  const last = prog.decisions[prog.decisions.length - 1];
+                  return (
+                    <div className="party-quest-last-decision">
+                      <span className="party-quest-event-label">최근 결정</span>
+                      <span className="party-quest-decision-val">{DECISION_LABELS[last.decision]}</span>
                     </div>
                   );
                 })()}

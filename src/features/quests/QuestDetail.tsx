@@ -1,19 +1,22 @@
 import { useState } from "react";
-import type { AdventurerRank, EntityId, GameState } from "../../types/game";
+import type { AdventurerRank, EntityId, GameState, QuestDecisionType, QuestEventCategory } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { dangerLevelLabel, questCategoryLabels, questStageLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
-import type { QuestEventCategory } from "../../types/game";
+import { CHOICES_BY_CATEGORY, DECISION_LABELS } from "../../game/simulation/questDecisions";
+import { canAssignParty, isChallengeMode } from "../../game/simulation/quests";
+import { calcPartyCombatPower, calcQuestSuccessRate, getQuestRecommendedPower } from "../../game/simulation/combatPower";
 
 const EVENT_CATEGORY_LABELS: Record<QuestEventCategory, string> = {
   exploration: "탐색", combat: "전투", environment: "환경", reward: "보상", person: "인물", danger: "위험",
 };
-import { canAssignParty, isChallengeMode } from "../../game/simulation/quests";
-import { calcPartyCombatPower, calcQuestSuccessRate, getQuestRecommendedPower } from "../../game/simulation/combatPower";
+
+const DECISION_DANGER: Set<QuestDecisionType> = new Set(["withdraw", "abandon"]);
 
 interface Props {
   questId: EntityId;
   state: GameState;
   onAssign: (partyId: EntityId) => void;
+  onDecide?: (eventId: EntityId, decision: QuestDecisionType, supportPartyId?: EntityId) => void;
 }
 
 const RANK_ORDER: AdventurerRank[] = ["F", "E", "D", "C", "B", "A", "S"];
@@ -28,8 +31,9 @@ function expireText(days: number): string {
   return `${days}일 후 마감`;
 }
 
-export default function QuestDetail({ questId, state, onAssign }: Props) {
+export default function QuestDetail({ questId, state, onAssign, onDecide }: Props) {
   const [showPicker, setShowPicker] = useState(false);
+  const [supportPickerEventId, setSupportPickerEventId] = useState<EntityId | null>(null);
 
   const quest = state.quests[questId];
   if (!quest) return null;
@@ -144,15 +148,89 @@ export default function QuestDetail({ questId, state, onAssign }: Props) {
                 {prog.events.length > 0 ? (
                   <div className="quest-event-log">
                     <p className="quest-event-log-label">현장 보고</p>
-                    {prog.events.slice().reverse().map((ev) => (
-                      <div key={ev.eventId} className={`quest-event-item${!ev.read ? " unread" : ""}`}>
-                        <div className="quest-event-item-header">
-                          <span className="quest-event-category">{EVENT_CATEGORY_LABELS[ev.category]}</span>
-                          <span className="quest-event-title">{!ev.read && <span className="quest-new-dot">● </span>}{ev.title}</span>
+                    {prog.events.slice().reverse().map((ev) => {
+                      const choices = CHOICES_BY_CATEGORY[ev.category];
+                      const idleParties = Object.values(state.parties).filter(
+                        p => p.status === "idle" && p.activeQuestId === null && p.id !== prog.partyId
+                      );
+                      const existingDecision = prog.decisions.find(d => d.eventId === ev.eventId);
+                      return (
+                        <div key={ev.eventId} className={`quest-event-item${!ev.read ? " unread" : ""}`}>
+                          <div className="quest-event-item-header">
+                            <span className="quest-event-category">{EVENT_CATEGORY_LABELS[ev.category]}</span>
+                            <span className="quest-event-title">{!ev.read && <span className="quest-new-dot">● </span>}{ev.title}</span>
+                          </div>
+                          <p className="quest-event-desc">{ev.description}</p>
+                          {existingDecision ? (
+                            <p className="quest-decision-result">
+                              결정: <strong>{DECISION_LABELS[existingDecision.decision]}</strong>
+                              {existingDecision.supportPartyId && (
+                                <> · {state.parties[existingDecision.supportPartyId]?.name}</>
+                              )}
+                            </p>
+                          ) : onDecide && (
+                            <div className="quest-decision-area">
+                              {choices.map((dc) => {
+                                if (dc === "support_dispatch") {
+                                  if (supportPickerEventId === ev.eventId) {
+                                    return (
+                                      <div key={dc} className="quest-support-picker">
+                                        {idleParties.length === 0 ? (
+                                          <span className="quiet">대기 파티 없음</span>
+                                        ) : (
+                                          idleParties.map(p => (
+                                            <button
+                                              key={p.id}
+                                              className="quest-decision-btn"
+                                              onMouseEnter={playHover}
+                                              onClick={() => {
+                                                playSelect();
+                                                setSupportPickerEventId(null);
+                                                onDecide(ev.eventId, "support_dispatch", p.id);
+                                              }}
+                                            >
+                                              {p.name} 파견
+                                            </button>
+                                          ))
+                                        )}
+                                        <button
+                                          className="quest-decision-btn"
+                                          onMouseEnter={playHover}
+                                          onClick={() => { playSelect(); setSupportPickerEventId(null); }}
+                                        >
+                                          취소
+                                        </button>
+                                      </div>
+                                    );
+                                  }
+                                  return (
+                                    <button
+                                      key={dc}
+                                      className={`quest-decision-btn${idleParties.length === 0 ? " disabled" : ""}`}
+                                      disabled={idleParties.length === 0}
+                                      onMouseEnter={playHover}
+                                      onClick={() => { playSelect(); setSupportPickerEventId(ev.eventId); }}
+                                    >
+                                      {DECISION_LABELS[dc]}
+                                    </button>
+                                  );
+                                }
+                                return (
+                                  <button
+                                    key={dc}
+                                    className={`quest-decision-btn${DECISION_DANGER.has(dc) ? " danger" : ""}`}
+                                    onMouseEnter={playHover}
+                                    onClick={() => { playSelect(); onDecide(ev.eventId, dc); }}
+                                  >
+                                    {DECISION_LABELS[dc]}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
-                        <p className="quest-event-desc">{ev.description}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="quest-progress-incident">

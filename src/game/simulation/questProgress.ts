@@ -1,4 +1,6 @@
-import type { EntityId, GameState, QuestProgress, QuestStage } from "../../types/game";
+import type { EntityId, GameState, QuestDecision, QuestProgress, QuestStage } from "../../types/game";
+
+export type { QuestDecision };
 
 export function calcQuestStage(progress: number): QuestStage {
   if (progress < 20) return "traveling";
@@ -26,6 +28,7 @@ export function createQuestProgress(
     hasIncident: false,
     incidentId: null,
     events: [],
+    decisions: [],
   };
 }
 

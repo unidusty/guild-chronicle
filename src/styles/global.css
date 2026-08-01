@@ -955,6 +955,18 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .party-quest-event-title { font-size: var(--font-small); font-weight: 600; color: #9ab098; }
 .party-quest-latest-event.unread .party-quest-event-title { color: #d4b070; }
 .party-quest-event-desc { font-size: var(--font-tiny); color: #5a6e5c; margin: 0; line-height: 1.5; }
+.party-quest-last-decision { margin-top: calc(4px * var(--ui-scale)); padding: calc(5px * var(--ui-scale)) calc(10px * var(--ui-scale)); background: #0a1420; border: 1px solid #1a2e40; border-radius: 2px; display: flex; gap: calc(8px * var(--ui-scale)); align-items: center; }
+.party-quest-decision-val { font-size: var(--font-small); color: #6898b8; font-weight: 600; }
+
+/* Quest decision buttons */
+.quest-decision-area { display: flex; flex-wrap: wrap; gap: calc(5px * var(--ui-scale)); margin-top: calc(8px * var(--ui-scale)); }
+.quest-decision-btn { padding: calc(4px * var(--ui-scale)) calc(10px * var(--ui-scale)); font-size: var(--font-tiny); background: #0f1e0f; border: 1px solid #2a4a2a; color: #7ab07a; border-radius: 2px; cursor: pointer; transition: background 0.1s, border-color 0.1s; }
+.quest-decision-btn:hover { background: #162816; border-color: #3a6a3a; color: #9ad09a; }
+.quest-decision-btn.danger { background: #1a0f0f; border-color: #4a2020; color: #c07878; }
+.quest-decision-btn.danger:hover { background: #2a1212; border-color: #6a2828; color: #e09090; }
+.quest-decision-btn:disabled, .quest-decision-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+.quest-support-picker { display: flex; flex-wrap: wrap; gap: calc(5px * var(--ui-scale)); padding: calc(6px * var(--ui-scale)); background: #091420; border: 1px solid #1a2e40; border-radius: 2px; width: 100%; }
+.quest-decision-result { font-size: var(--font-tiny); color: #6898b8; margin: calc(6px * var(--ui-scale)) 0 0; padding: calc(4px * var(--ui-scale)) calc(8px * var(--ui-scale)); background: #0a1420; border-left: 2px solid #2a4a6a; }
 
 /* GuildHall activity panel header */
 .activity-panel-meta { display: flex; flex-direction: column; align-items: flex-end; gap: calc(3px * var(--ui-scale)); }

@@ -20,6 +20,7 @@ export type QuestStatus = "available" | "assigned" | "in_progress" | "completed"
 export type QuestType = "normal" | "urgent" | "raid";
 export type QuestStage = "traveling" | "searching" | "executing" | "returning";
 export type QuestEventCategory = "exploration" | "combat" | "environment" | "reward" | "person" | "danger";
+export type QuestDecisionType = "continue" | "withdraw" | "support_dispatch" | "extra_explore" | "abandon";
 export type QuestCategory = "escort" | "search" | "hunt" | "delivery" | "rescue" | "exploration";
 export type ChronicleScope = "guild" | "adventurer" | "party" | "world";
 export type ChronicleCategory = "join" | "quest" | "injury" | "growth" | "facility" | "reputation" | "world";
@@ -194,6 +195,16 @@ export interface QuestEvent {
   read: boolean;
 }
 
+export interface QuestDecision {
+  decisionId: EntityId;
+  eventId: EntityId;
+  questId: EntityId;
+  partyId: EntityId;
+  day: number;
+  decision: QuestDecisionType;
+  supportPartyId: EntityId | null;
+}
+
 export interface QuestProgress {
   questId: EntityId;
   partyId: EntityId;
@@ -206,6 +217,7 @@ export interface QuestProgress {
   hasIncident: boolean;
   incidentId: EntityId | null;
   events: QuestEvent[];
+  decisions: QuestDecision[];
 }
 
 export interface Region {
