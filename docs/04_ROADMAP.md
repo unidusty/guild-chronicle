@@ -127,6 +127,18 @@
 - 감정 표현 (`SCENE_TENSION` / `SCENE_RELIEF` / `SCENE_RESOLVE`)
 - UI: `narrative.split("\n\n")` → `<p>` 렌더링 (QuestDetail / QuestChronicleTab)
 
+**018-J** Dynamic Story Engine
+- `hashSeed()` 분리 + `pickAvoidingRecent()` — 최근 사용 문장 회피
+- `buildRecentSegments()` — 직전 10개 로그에서 중복 후보 추출
+- `SEASON_CONTEXT` — 봄·여름·가을·겨울 분위기 문장 (33% 확률 주입)
+- `ENEMY_BEHAVIOR` — 8종 적별 전투 행동 패턴 (산적·고블린·와이번·고룡 등)
+- `CLASS_COMBAT` 4→8개 / `CLASS_EXPLORE` 2→4개 / `CLASS_TRAVEL` 2→4개 직업별 확장
+- `SCENE_COOP` 6→12개 협동 패턴
+- `TRAVEL_DETAIL` 34개 / `EXPLORE_DETAIL` 32개 / `COMBAT_DEVELOPMENT` 50개 / `RETURN_DETAIL` 20개 풀 추가
+- `RARE_SCENES` 12개 — 2% 확률 희귀 장면 (유성, 흰 사슴, 검은 기사, 오로라 등)
+- `generateDailyLog` / `generateIncidentLog` — `existingLogs` 파라미터로 Story Memory 구현
+- `advance.ts`: 기존 로그를 Story Memory로 전달
+
 ---
 
 ## 예정

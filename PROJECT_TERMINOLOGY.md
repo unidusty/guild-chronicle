@@ -239,6 +239,8 @@
 
 `narrative` 필드는 `"\n\n"`으로 문단을 구분하며 UI에서 `<p>` 태그로 렌더링된다. 한 Scene은 2~8 문단, 전투 Scene은 최대 8 문단으로 구성된다.
 
+**018-J Dynamic Story Engine**: `buildRecentSegments()` + `pickAvoidingRecent()`로 직전 10개 로그 문장 회피. 계절 문장 33% 삽입, 희귀 장면 2% 삽입. 이동/탐사/전투/귀환 풀 총 130+ 문장, 적별·직업별 행동 템플릿.
+
 ### 기록 범주 (`AdventureLogCategory`)
 
 | 값 | 표시 | 생성 시점 |

@@ -20,6 +20,7 @@ Guild Chronicle 모험 기록 시스템 설계 기준서. (018-I: Scene 기반�
 2. **결정적 해시** — 같은 `questId + day + category` 조합은 언제나 동일한 템플릿을 선택한다. 리렌더링이나 재계산으로 내러티브가 바뀌지 않는다.
 3. **장면 중심** — 존재하지 않은 사건은 만들지 않는다. 실제 발생한 데이터를 장면으로 재구성한다.
 4. **액터 선택** — 파티원 중 해당 역할(`vanguard` / `damage` / `support` / `scout`)에 맞는 모험가를 우선 선택한다. 한 장면에 2~4명이 등장할 수 있다.
+5. **반복 최소화 (018-J)** — `buildRecentSegments(existingLogs)` + `pickAvoidingRecent()` 로 최근 10개 로그에서 사용된 문장을 피해 다음 문장을 선택한다. 이미 저장된 내러티브는 변경되지 않는다.
 
 ---
 
@@ -116,6 +117,26 @@ interface AdventureLogEntry {
 | 철수 완료 | 3 | 열세 묘사 → 철수 결정 → 귀환 |
 | 실패 완료 | 3 | 실패 선언 → 원인 설명 → 무거운 여운 |
 | 대실패 완료 | 5 | 고전 묘사 → 액터 분투 → 전선 붕괴 → 대실패 선언 → 여운 |
+
+---
+
+## Dynamic Story Engine 추가 상수 (018-J)
+
+| 상수 | 항목 수 | 역할 |
+|------|--------|------|
+| `SEASON_CONTEXT` | 4×5 | 계절별 분위기 문장 (33% 확률 삽입) |
+| `ENEMY_BEHAVIOR` | 8종 × 4~6 | 적별 전투 행동 패턴 |
+| `TRAVEL_DETAIL` | 34 | 이동 중 환경 관찰 |
+| `EXPLORE_DETAIL` | 32 | 탐사 중 발견/관찰 |
+| `COMBAT_DEVELOPMENT` | 50 | 전투 중 상황 전개 |
+| `RETURN_DETAIL` | 20 | 귀환 중 상황 |
+| `RARE_SCENES` | 12 | 2% 확률 희귀 장면 |
+
+**Story Memory 동작:**
+1. `generateDailyLog` / `generateIncidentLog` 호출 시 `existingLogs` 전달
+2. `buildRecentSegments(existingLogs, 10)` — 직전 10개 로그의 문장을 Set으로 구성
+3. `pickAvoidingRecent(pool, seed, recentSegments)` — 이미 사용된 문장을 건너뛰고 선택
+4. 50개 이상 풀에서 선택하므로 자연적으로 반복이 희소해짐
 
 ---
 
