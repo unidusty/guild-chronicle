@@ -872,6 +872,10 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .formation-nav-confirm-body { margin: 0; font-size: var(--font-small); color: #6a7e6c; }
 .formation-nav-confirm-actions { display: flex; gap: calc(8px * var(--ui-scale)); justify-content: flex-end; }
 
+/* Drag overlay (dnd-kit DragOverlay portal) */
+.formation-drag-overlay { opacity: .92; box-shadow: 0 8px 24px rgba(0,0,0,.6); pointer-events: none; cursor: grabbing; }
+.fmc-overlay-hint { font-size: var(--font-tiny); color: #6a7e6c; margin-top: calc(2px * var(--ui-scale)); }
+
 /* ── Quest Success Rate ──────────────────────────────────────────────────────── */
 .quest-challenge-badge { color: #c4a860; }
 .quest-success-rate { font-size: var(--font-small); font-weight: 700; min-width: calc(44px * var(--ui-scale)); text-align: right; }
