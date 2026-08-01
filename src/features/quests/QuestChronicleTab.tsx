@@ -164,7 +164,11 @@ export default function QuestChronicleTab({ state }: Props) {
                       <span className="adv-log-category">{ADV_LOG_CATEGORY_LABELS[entry.category]}</span>
                       <span className="adv-log-date">{formatGameDate(entry.date)}</span>
                     </div>
-                    <p className="adv-log-narrative">{entry.narrative}</p>
+                    <div className="adv-log-narrative">
+                      {entry.narrative.split("\n\n").map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>

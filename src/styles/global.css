@@ -1183,8 +1183,9 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .adv-log-cat-retreat .adv-log-category  { color: #807060; background: #181410; border-color: #2e2a20; }
 .adv-log-date { font-size: var(--font-tiny); color: #3a4e3c; margin-left: auto; }
 
-/* Log narrative text */
-.adv-log-narrative { font-size: var(--font-small); color: #7a9e80; margin: 0; line-height: 1.55; }
+/* Log narrative text — scene paragraphs */
+.adv-log-narrative { display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); color: #7a9e80; }
+.adv-log-narrative p { font-size: var(--font-small); color: inherit; margin: 0; line-height: 1.65; }
 .adv-log-cat-combat .adv-log-narrative    { color: #9a8070; }
 .adv-log-cat-completion .adv-log-narrative { color: #90a888; }
 .adv-log-cat-decision .adv-log-narrative  { color: #7888a8; }

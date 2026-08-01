@@ -33,6 +33,12 @@ function applyVars(template: string, vars: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? k);
 }
 
+// ── Scene builder ─────────────────────────────────────────────────────────────
+
+function buildScene(segments: string[]): string {
+  return segments.filter(s => s.trim().length > 0).join("\n\n");
+}
+
 // ── Actor selection ───────────────────────────────────────────────────────────
 
 type ActorRole = AdventurerClass["role"];
@@ -369,6 +375,132 @@ const COMPLETION_ACTOR: Record<ActorRole, string[]> = {
   scout:    ["{actor}이(가) 정찰과 지원으로 활약하였다.", "{actor}는 정보 수집으로 파티를 이끌었다.", "{actor}이(가) 신속한 판단으로 파티에 기여하였다."],
 };
 
+// ── Scene segment templates ───────────────────────────────────────────────────
+
+const SCENE_OPENING: Partial<Record<QuestCategory, string[]>> & { default: string[] } = {
+  default:     ["파티는 경계를 늦추지 않고 있었다.", "주변은 고요하였다.", "임무가 진행되던 중이었다."],
+  hunt:        ["{region}에 불길한 기운이 감돌고 있었다.", "파티는 목표를 추적하며 천천히 전진하고 있었다.", "주변의 기척이 갑자기 멈추었다.", "{enemy}의 흔적이 점점 가까워지고 있었다."],
+  escort:      ["호위 행렬이 예민한 분위기 속에서 이동하고 있었다.", "{party}는 상단을 호위하며 주변을 경계하고 있었다.", "길목에 이상한 고요함이 흘렀다."],
+  search:      ["{party}는 단서를 쫓아 지역 깊숙이 진입하고 있었다.", "수색이 진행될수록 긴장감이 높아졌다.", "목표물의 흔적이 가까이 있었다."],
+  exploration: ["미지의 지역이 파티 앞에 펼쳐졌다.", "탐사가 깊어질수록 예상치 못한 것들이 나타났다.", "알려지지 않은 구역이 파티를 기다리고 있었다."],
+  rescue:      ["시간이 촉박하였다.", "생존자의 신호가 점점 희미해지고 있었다.", "{party}는 숨 가쁘게 이동하고 있었다."],
+  delivery:    ["의뢰물을 싣고 이동 중이었다.", "평온한 길이 갑자기 위태로워졌다.", "여정은 순조로워 보였지만 긴장을 놓을 수 없었다."],
+};
+
+const SCENE_ENEMY_APPEAR: string[] = [
+  "{enemy}이(가) 모습을 드러냈다.",
+  "{enemy}이(가) 갑작스럽게 나타났다.",
+  "예상보다 가까운 곳에서 {enemy}이(가) 튀어나왔다.",
+  "{enemy}의 기척이 느껴지는 순간, 공격이 시작되었다.",
+  "멀리서 {enemy}의 모습이 나타났다.",
+  "{enemy}은(는) 생각보다 훨씬 강하였다.",
+];
+
+const SCENE_CONFLICT: string[] = [
+  "전투가 시작되었다.",
+  "피아가 뒤섞이며 교전이 벌어졌다.",
+  "파티는 즉각 전투 대형을 갖추었다.",
+  "순식간에 전장이 형성되었다.",
+  "물러설 수 없는 상황이었다.",
+  "일시에 긴장이 고조되었다.",
+];
+
+// Cooperation — uses {actor} and {actor2}
+const SCENE_COOP: string[] = [
+  "{actor}이(가) 공격을 막는 사이, {actor2}이(가) 전열을 정비하였다.",
+  "{actor}이(가) 적의 시선을 끄는 동안, {actor2}이(가) 공격 기회를 잡았다.",
+  "{actor2}의 지원 덕분에 {actor}이(가) 다시 전열을 세울 수 있었다.",
+  "{actor}과(와) {actor2}이(가) 호흡을 맞추며 집중 공격을 퍼부었다.",
+  "{actor}이(가) 선봉에 서고, {actor2}이(가) 후방에서 지원하였다.",
+  "{actor}의 공격에 맞추어 {actor2}이(가) 빈틈을 파고들었다.",
+];
+
+const SCENE_TURNING_POS: string[] = [
+  "전황이 파티에게 유리하게 흘러가기 시작하였다.",
+  "적의 기세가 꺾이기 시작하였다.",
+  "파티가 주도권을 잡아가고 있었다.",
+  "승기가 파티에게 넘어왔다.",
+  "흐름이 바뀌었다.",
+];
+
+const SCENE_TURNING_NEG: string[] = [
+  "상황이 점점 불리해지고 있었다.",
+  "적의 압박이 거세졌다.",
+  "더 이상 버티기 어려운 상황이 되었다.",
+  "파티는 수세에 몰리기 시작하였다.",
+  "전선이 흔들리기 시작하였다.",
+];
+
+const SCENE_TENSION: string[] = [
+  "긴장감이 흘렀다.",
+  "파티원 모두 숨을 죽였다.",
+  "잠깐의 침묵이 흘렀다.",
+  "공기가 무거워졌다.",
+];
+
+const SCENE_RELIEF: string[] = [
+  "안도의 숨이 새어 나왔다.",
+  "위기는 가까스로 넘어갔다.",
+  "파티는 잠시 숨을 돌렸다.",
+  "비로소 긴장이 풀렸다.",
+];
+
+const SCENE_RESOLVE: string[] = [
+  "포기할 수 없었다.",
+  "파티는 굴하지 않았다.",
+  "한 걸음씩 나아가는 것뿐이었다.",
+  "아직 끝나지 않았다.",
+];
+
+const SCENE_STRUGGLE: string[] = [
+  "예상보다 훨씬 강한 상대였다.",
+  "파티는 한계를 느끼기 시작하였다.",
+  "버티는 것만으로도 벅찬 상황이었다.",
+  "전열이 흔들리기 시작하였다.",
+];
+
+const SCENE_VICTORY: string[] = [
+  "마침내 목표가 달성되었다.",
+  "긴 싸움이 끝났다.",
+  "임무가 완료되었다.",
+  "파티는 해냈다.",
+];
+
+const SCENE_AFTERMATH_FAIL: string[] = [
+  "이번 의뢰는 길드에 무거운 교훈을 남겼다.",
+  "길드는 이번 결과를 오래 기억할 것이었다.",
+  "쉽지 않은 귀환이었다.",
+];
+
+const SCENE_RETURN_CLOSE: string[] = [
+  "길드가 기다리고 있었다.",
+  "돌아갈 길이 남아 있었다.",
+  "무사한 귀환이었다.",
+  "파티는 말없이 길드를 향해 걸었다.",
+];
+
+// Support arrival scene segments
+const SUPPORT_STRUGGLE: string[] = [
+  "{party}는 상황을 버티며 지원을 기다리고 있었다.",
+  "전선이 흔들리기 시작할 때였다.",
+  "{party}가 한계에 다가서고 있을 때, 지원대가 도착하였다.",
+  "상황이 좋지 않았다. 지원이 필요하였다.",
+];
+
+const SUPPORT_REACTION: string[] = [
+  "{party}는 안도의 숨을 내쉬었다.",
+  "{party}의 사기가 다시 살아났다.",
+  "지원대의 도착으로 상황이 달라지기 시작하였다.",
+  "힘을 합칠 수 있게 되었다.",
+];
+
+const SUPPORT_COMBINED: string[] = [
+  "두 파티가 힘을 합쳐 반격에 나섰다.",
+  "합류한 두 파티는 적에게 집중 공격을 퍼부었다.",
+  "전력이 결집되면서 전황이 바뀌기 시작하였다.",
+  "함께라면 이길 수 있었다.",
+];
+
 // ── Importance determination ──────────────────────────────────────────────────
 
 function determineImportance(
@@ -412,7 +544,6 @@ function getClassAction(
   const map = context === "combat" ? CLASS_COMBAT : context === "explore" ? CLASS_EXPLORE : CLASS_TRAVEL;
   const pool = map[classId];
   if (pool && pool.length > 0) return pickByHash(pool, seed);
-  // Fallback generic
   const fallbacks: Record<ActionContext, string[]> = {
     combat:  ["{actor}이(가) 활약하였다.", "{actor}는 임무에서 중요한 역할을 하였다."],
     explore: ["{actor}이(가) 탐사를 지원하였다.", "{actor}는 조사를 이어갔다."],
@@ -432,13 +563,25 @@ export function generateDepartureLog(
   date: GameDate,
 ): AdventureLogEntry {
   const seed = `${quest.id}-depart`;
-  const templates = DEPARTURE[quest.type] ?? DEPARTURE.default;
-  const raw = pickByHash(templates, seed);
   const enemy = quest.enemyHint ?? "적";
-  const narrative = applyVars(raw, { party: party.name, region: regionName, quest: quest.title, enemy });
+  const vars = { party: party.name, region: regionName, quest: quest.title, enemy };
 
-  const actor = selectActor(members, classes, ["vanguard", "damage"], seed + "-actor");
-  const actorIds = actor ? [actor.id] : [];
+  // s0: main departure sentence
+  const templates = DEPARTURE[quest.type] ?? DEPARTURE.default;
+  const s0 = applyVars(pickByHash(templates, seed), vars);
+
+  // s1: atmospheric opener for destination
+  const openPool = SCENE_OPENING[quest.type] ?? SCENE_OPENING.default;
+  const s1 = applyVars(pickByHash(openPool, seed + "-open"), vars);
+
+  // s2: actor travel action (always in departure scene)
+  const actorIds: EntityId[] = [];
+  let s2 = "";
+  const actor = selectActor(members, classes, ["vanguard", "scout"], seed + "-actor");
+  if (actor) {
+    s2 = applyVars(getClassAction(actor.classId, "travel", seed + "-act"), { actor: actor.name, party: party.name, region: regionName });
+    actorIds.push(actor.id);
+  }
 
   return {
     id: `al-${quest.id}-depart-${dateKey(date)}`,
@@ -449,7 +592,7 @@ export function generateDepartureLog(
     category: "departure",
     importance: "normal",
     title: "출발",
-    narrative,
+    narrative: buildScene([s0, s1, s2]),
     actorIds,
     targetIds: [],
     tags: [quest.type, "departure"],
@@ -472,53 +615,58 @@ export function generateDailyLog(
   const seed = `${quest.id}-daily-${day}-${stage}`;
   const enemy = quest.enemyHint ?? "";
   const region = regionName || "목적지";
+  const vars = { party: party.name, region, enemy };
 
-  let rawTemplate: string;
+  let s0 = "";
+  let s1 = "";
+  let s2 = "";
   let category: AdventureLogCategory;
   let title: string;
   let actorContext: ActionContext = "travel";
+  const actorIds: EntityId[] = [];
 
   if (stage === "traveling") {
     const pool = TRAVEL[quest.type] ?? TRAVEL.default;
-    rawTemplate = pickByHash(pool, seed);
+    s0 = applyVars(pickByHash(pool, seed), vars);
+    // Actor travel observation (always in scene mode)
+    const actor = selectActor(members, classes, ["scout", "vanguard"], seed + "-actor");
+    if (actor) {
+      s1 = applyVars(getClassAction(actor.classId, "travel", seed + "-act"), { actor: actor.name, ...vars });
+      actorIds.push(actor.id);
+    }
     category = "travel";
     title = "이동";
     actorContext = "travel";
   } else if (stage === "returning") {
-    rawTemplate = pickByHash(RETURN_TMPL, seed);
+    s0 = applyVars(pickByHash(RETURN_TMPL, seed), vars);
+    s1 = pickByHash(SCENE_RETURN_CLOSE, seed + "-close");
     category = "return";
     title = "귀환 중";
     actorContext = "travel";
   } else {
-    // executing — use hunt+enemy template when available
+    // executing
+    const openPool = SCENE_OPENING[quest.type] ?? SCENE_OPENING.default;
+    s0 = applyVars(pickByHash(openPool, seed + "-open"), vars);
+
     if (quest.type === "hunt" && enemy) {
-      rawTemplate = pickByHash(HUNT_ENEMY_EXEC, seed + "-hunt");
+      s1 = applyVars(pickByHash(HUNT_ENEMY_EXEC, seed + "-hunt"), vars);
     } else {
       const pool = EXECUTING[quest.type] ?? EXECUTING.default;
-      rawTemplate = pickByHash(pool, seed);
+      s1 = applyVars(pickByHash(pool, seed), vars);
     }
+
     category = quest.type === "exploration" || quest.type === "search" ? "exploration" : "travel";
     title = "임무 수행";
     actorContext = quest.type === "exploration" || quest.type === "search" ? "explore" : "travel";
-  }
 
-  let narrative = applyVars(rawTemplate, { party: party.name, region, enemy });
-
-  // ~25% of days: add a named actor sentence for variety
-  const actorIds: EntityId[] = [];
-  const addActor = pickByHash([false, false, false, true] as const, seed + "-actor-roll");
-  if (addActor && members.length > 0) {
-    const preferredRoles: ActorRole[] =
-      stage === "executing" && (quest.type === "hunt")
-        ? ["vanguard", "damage"]
-        : stage === "executing" && (quest.type === "exploration" || quest.type === "search")
-        ? ["scout", "support"]
-        : ["scout", "vanguard"];
+    const preferredRoles: ActorRole[] = quest.type === "hunt"
+      ? ["vanguard", "damage"]
+      : quest.type === "exploration" || quest.type === "search"
+      ? ["scout", "support"]
+      : ["scout", "vanguard"];
     const actor = selectActor(members, classes, preferredRoles, seed + "-actor");
     if (actor) {
-      const actionTemplate = getClassAction(actor.classId, actorContext, seed + "-classact");
-      const actionSentence = applyVars(actionTemplate, { actor: actor.name, party: party.name, region, enemy });
-      narrative += ` ${actionSentence}`;
+      s2 = applyVars(getClassAction(actor.classId, actorContext, seed + "-act"), { actor: actor.name, ...vars });
       actorIds.push(actor.id);
     }
   }
@@ -532,7 +680,7 @@ export function generateDailyLog(
     category,
     importance: "normal",
     title,
-    narrative,
+    narrative: buildScene([s0, s1, s2]),
     actorIds,
     targetIds: [],
     tags: [quest.type, stage],
@@ -555,71 +703,134 @@ export function generateIncidentLog(
   const day = prog.currentDay;
   const enemy = quest.enemyHint ?? "";
   const region = regionName || "현장";
+  const vars = { party: party.name, region, enemy };
 
-  // Build situation intro
-  let intro: string;
-  if (event.category === "combat" && enemy) {
-    const pool = ENEMY_COMBAT_INTRO;
-    intro = applyVars(pickByHash(pool, seed + "-intro"), { party: party.name, region, enemy });
-  } else {
-    const introPool = EVENT_INTRO[event.category];
-    intro = pickByHash(introPool, seed + "-intro");
-  }
-
-  // Build actor sentence — prefer class-specific templates
-  let actorSentence = "";
   const actorIds: EntityId[] = [];
   let category: AdventureLogCategory = "incident";
   let importance: AdventureLogImportance = "notable";
+  const segments: string[] = [];
 
   if (event.category === "combat") {
-    const actor = selectActor(members, classes, ["vanguard", "damage", "scout"], seed + "-actor");
-    if (actor) {
-      const cls = classes[actor.classId];
-      const actionTemplate = getClassAction(actor.classId, "combat", seed + "-act");
-      actorSentence = applyVars(actionTemplate, { actor: actor.name });
-      actorIds.push(actor.id);
+    // s0: atmospheric opening
+    const openPool = SCENE_OPENING[quest.type] ?? SCENE_OPENING.default;
+    segments.push(applyVars(pickByHash(openPool, seed + "-open"), vars));
 
-      // Pick a second actor if party is large enough (support role to mention healing/backup)
-      if (members.length >= 3) {
-        const actor2 = selectActor(members, classes, ["support", "scout"], seed + "-actor2", actor.id);
-        if (actor2 && actor2.id !== actor.id) {
-          const cls2 = classes[actor2.classId];
-          const role2 = (cls2?.role ?? "support") as ActorRole;
-          const pool2 = CLASS_COMBAT[actor2.classId] ?? COMBAT_ACTOR[role2];
-          const sentence2 = applyVars(pickByHash(pool2, seed + "-act2"), { actor: actor2.name });
-          actorSentence += ` ${sentence2}`;
-          actorIds.push(actor2.id);
-        }
-      }
-
-      void cls;
+    // s1: enemy appearance or combat intro
+    if (enemy) {
+      segments.push(applyVars(pickByHash(SCENE_ENEMY_APPEAR, seed + "-enemy"), { enemy }));
+    } else {
+      segments.push(applyVars(pickByHash(ENEMY_COMBAT_INTRO, seed + "-intro"), vars));
     }
+
+    // s2: conflict start
+    segments.push(pickByHash(SCENE_CONFLICT, seed + "-conf"));
+
+    // s3: actor 1 — primary combatant
+    const actor1 = selectActor(members, classes, ["vanguard", "damage"], seed + "-a1");
+    if (actor1) {
+      segments.push(applyVars(getClassAction(actor1.classId, "combat", seed + "-a1act"), { actor: actor1.name }));
+      actorIds.push(actor1.id);
+    }
+
+    // s4: actor 2 — support/scout (if party ≥ 3)
+    let actor2: Adventurer | null = null;
+    if (members.length >= 3) {
+      actor2 = selectActor(members, classes, ["support", "scout"], seed + "-a2", actor1?.id);
+      if (actor2) {
+        segments.push(applyVars(getClassAction(actor2.classId, "combat", seed + "-a2act"), { actor: actor2.name }));
+        actorIds.push(actor2.id);
+      }
+    }
+
+    // s5: cooperation (if both actors found)
+    if (actor1 && actor2) {
+      const coopTmpl = pickByHash(SCENE_COOP, seed + "-coop");
+      segments.push(applyVars(coopTmpl, { actor: actor1.name, actor2: actor2.name }));
+    }
+
+    // s6: actor 3 brief mention (if party ≥ 4)
+    if (members.length >= 4 && actor1 && actor2) {
+      const excluded = new Set([actor1.id, actor2.id]);
+      const remaining = members.filter(m => !excluded.has(m.id));
+      if (remaining.length > 0) {
+        const actor3 = pickByHash(remaining, seed + "-a3");
+        const cls3 = classes[actor3.classId];
+        const role3 = (cls3?.role ?? "vanguard") as ActorRole;
+        const pool3 = CLASS_COMBAT[actor3.classId] ?? COMBAT_ACTOR[role3];
+        segments.push(applyVars(pickByHash(pool3, seed + "-a3act"), { actor: actor3.name }));
+        actorIds.push(actor3.id);
+      }
+    }
+
+    // s7: turning point (positive bias when party ≥ 3)
+    const turnPool = members.length >= 3 ? SCENE_TURNING_POS : [...SCENE_TURNING_POS, ...SCENE_TURNING_NEG];
+    segments.push(pickByHash(turnPool, seed + "-turn"));
+
     category = "combat";
     importance = "notable";
+
   } else if (event.category === "danger") {
+    // s0: opening
+    const openPool = SCENE_OPENING[quest.type] ?? SCENE_OPENING.default;
+    segments.push(applyVars(pickByHash(openPool, seed + "-open"), vars));
+
+    // s1: danger description
+    segments.push(pickByHash(EVENT_INTRO.danger, seed + "-intro"));
+
+    // s2: tension
+    segments.push(pickByHash(SCENE_TENSION, seed + "-tension"));
+
+    // s3: actor response
     const actor = selectActor(members, classes, ["vanguard", "support"], seed + "-actor");
     if (actor) {
       const cls = classes[actor.classId];
       const role = (cls?.role ?? "vanguard") as ActorRole;
       const pool = DANGER_ACTOR[role];
-      actorSentence = applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name });
+      segments.push(applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name }));
       actorIds.push(actor.id);
     }
+
+    // s4: turning point
+    segments.push(pickByHash(SCENE_TURNING_POS, seed + "-turn"));
+
     category = "incident";
     importance = "notable";
+
   } else if (event.category === "exploration" || event.category === "reward") {
+    // s0: intro
+    const introPool = EVENT_INTRO[event.category];
+    segments.push(pickByHash(introPool, seed + "-intro"));
+
+    // s1: actor discover action
     const actor = selectActor(members, classes, ["scout", "damage"], seed + "-actor");
     if (actor) {
-      const actionTemplate = getClassAction(actor.classId, "explore", seed + "-act");
-      actorSentence = applyVars(actionTemplate, { actor: actor.name });
+      segments.push(applyVars(getClassAction(actor.classId, "explore", seed + "-act"), { actor: actor.name }));
       actorIds.push(actor.id);
     }
+
+    // s2: result observation
+    segments.push(pickByHash(SCENE_RELIEF, seed + "-relief"));
+
     category = event.category === "reward" ? "discovery" : "exploration";
     importance = "notable";
-  }
 
-  const narrative = actorSentence ? `${intro} ${actorSentence}` : intro;
+  } else {
+    // environment / person / other
+    const introPool = EVENT_INTRO[event.category] ?? EVENT_INTRO.danger;
+    segments.push(pickByHash(introPool, seed + "-intro"));
+
+    const actor = selectActor(members, classes, ["vanguard", "scout"], seed + "-actor");
+    if (actor) {
+      const cls = classes[actor.classId];
+      const role = (cls?.role ?? "vanguard") as ActorRole;
+      const pool = DANGER_ACTOR[role];
+      segments.push(applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name }));
+      actorIds.push(actor.id);
+    }
+
+    category = "incident";
+    importance = "notable";
+  }
 
   return {
     id: `al-${quest.id}-ev-${event.eventId}`,
@@ -630,7 +841,7 @@ export function generateIncidentLog(
     category,
     importance,
     title: event.title,
-    narrative,
+    narrative: buildScene(segments),
     actorIds,
     targetIds: [],
     incidentId: event.eventId,
@@ -650,10 +861,15 @@ export function generateDecisionLog(
 ): AdventureLogEntry {
   const seed = `${quest.id}-dec-${decision.decisionId}`;
   const pool = DECISION_NARRATIVE[decision.decision];
-  let narrative = pickByHash(pool, seed);
+  const s0 = pickByHash(pool, seed);
 
+  let s1 = "";
   if (decision.decision === "support_dispatch" && supportPartyName) {
-    narrative += ` ${supportPartyName} 파티가 현장으로 이동을 시작하였다.`;
+    s1 = `${supportPartyName} 파티가 현장으로 이동을 시작하였다.`;
+  } else if (decision.decision === "withdraw" || decision.decision === "abandon") {
+    s1 = pickByHash(SCENE_TURNING_NEG, seed + "-turn");
+  } else if (decision.decision === "continue") {
+    s1 = pickByHash(SCENE_RESOLVE, seed + "-resolve");
   }
 
   const decisionTitles: Record<QuestDecisionType, string> = {
@@ -676,7 +892,7 @@ export function generateDecisionLog(
     category,
     importance: "notable",
     title: decisionTitles[decision.decision],
-    narrative,
+    narrative: buildScene([s0, s1]),
     actorIds: [],
     targetIds: [],
     decisionId: decision.decisionId,
@@ -694,13 +910,27 @@ export function generateSupportArrivalLog(
   date: GameDate,
 ): AdventureLogEntry {
   const seed = `${quest.id}-support-arrive-${prog.currentDay}`;
-  const templates = [
+
+  // s0: main party struggling
+  const s0 = applyVars(pickByHash(SUPPORT_STRUGGLE, seed + "-struggle"), { party: mainParty.name });
+
+  // s1: support arrival announcement
+  const arrivalTemplates = [
     `${supportPartyName} 파티가 현장에 도착하여 ${mainParty.name}와(과) 합류하였다.`,
     `지원대 ${supportPartyName}이(가) 합류하여 파티의 전력이 강화되었다.`,
     `${supportPartyName}의 지원대가 도착하여 두 파티가 함께 임무를 이어가게 되었다.`,
     `${mainParty.name}의 위기에 달려온 ${supportPartyName}이(가) 마침내 합류하였다.`,
   ];
-  const narrative = pickByHash(templates, seed);
+  const s1 = pickByHash(arrivalTemplates, seed);
+
+  // s2: main party reaction
+  const s2 = applyVars(pickByHash(SUPPORT_REACTION, seed + "-react"), { party: mainParty.name });
+
+  // s3: combined effort
+  const s3 = pickByHash(SUPPORT_COMBINED, seed + "-comb");
+
+  // s4: turning point
+  const s4 = pickByHash(SCENE_TURNING_POS, seed + "-turn");
 
   return {
     id: `al-${quest.id}-support-${prog.currentDay}-${dateKey(date)}`,
@@ -708,10 +938,10 @@ export function generateSupportArrivalLog(
     partyId: mainParty.id,
     date,
     questDay: prog.currentDay,
-    category: "decision",
+    category: "teamwork",
     importance: "notable",
     title: "지원 파티 합류",
-    narrative,
+    narrative: buildScene([s0, s1, s2, s3, s4]),
     actorIds: [],
     targetIds: [],
     tags: [quest.type, "support", "arrival"],
@@ -734,62 +964,116 @@ export function generateCompletionLog(
   const partyName = party?.name ?? "파티";
   const enemy = quest.enemyHint ?? "";
   const region = regionName || "현장";
+  const vars = { party: partyName, quest: quest.title, enemy, region };
 
-  let narrative: string;
   const actorIds: EntityId[] = [];
+  const segments: string[] = [];
 
   if (result.resultGrade === "great_success") {
-    // Heroic great success — use category-specific templates
+    // s0: heroic opening — category-specific
     const heroPool = GREAT_SUCCESS_HERO[quest.type] ?? GREAT_SUCCESS_HERO.default;
-    const heroTmpl = pickByHash(heroPool, seed + "-hero");
-    const baseNarrative = applyVars(heroTmpl, { party: partyName, quest: quest.title, enemy, region });
+    segments.push(applyVars(pickByHash(heroPool, seed + "-hero"), vars));
 
-    // Pick a standout actor for the heroic narrative
-    if (members.length > 0) {
-      const actor = selectActor(members, classes, ["vanguard", "damage", "scout"], seed + "-actor");
-      if (actor) {
-        const cls = classes[actor.classId];
-        const role = (cls?.role ?? "vanguard") as ActorRole;
-        const actorPool = CLASS_COMBAT[actor.classId] ?? COMPLETION_ACTOR[role];
-        const actorSentence = applyVars(pickByHash(actorPool, seed + "-act"), { actor: actor.name, party: partyName });
-        narrative = `${baseNarrative} ${actorSentence}`;
-        actorIds.push(actor.id);
-      } else {
-        narrative = baseNarrative;
-      }
-    } else {
-      narrative = baseNarrative;
+    // s1: primary actor decisive action
+    const actor1 = selectActor(members, classes, ["vanguard", "damage", "scout"], seed + "-a1");
+    if (actor1) {
+      const actorPool = CLASS_COMBAT[actor1.classId] ?? COMPLETION_ACTOR[(classes[actor1.classId]?.role ?? "vanguard") as ActorRole];
+      segments.push(applyVars(pickByHash(actorPool, seed + "-a1act"), { actor: actor1.name, party: partyName }));
+      actorIds.push(actor1.id);
     }
-  } else if (result.resultGrade === "great_failure") {
-    // Heavy great failure
-    const pool = COMPLETION_NARRATIVE.great_failure;
-    narrative = applyVars(pickByHash(pool, seed), { party: partyName, quest: quest.title, enemy, region });
-  } else if (result.resultGrade === "failure") {
-    // Failure with context explaining why
-    const pool = COMPLETION_NARRATIVE.failure;
-    const base = applyVars(pickByHash(pool, seed), { party: partyName, quest: quest.title, enemy, region });
-    const context = pickByHash(FAILURE_CONTEXT, seed + "-ctx");
-    narrative = `${base} ${context}`;
-  } else {
-    // success / narrow_success / retreat
-    const pool = COMPLETION_NARRATIVE[result.resultGrade];
-    const base = applyVars(pickByHash(pool, seed), { party: partyName, quest: quest.title, enemy, region });
 
-    // Add a notable actor mention for successes
-    if (result.success && members.length > 0) {
-      const actor = selectActor(members, classes, ["vanguard", "damage", "support"], seed + "-actor");
-      if (actor) {
-        const cls = classes[actor.classId];
-        const role = (cls?.role ?? "vanguard") as ActorRole;
-        const actorPool = COMPLETION_ACTOR[role];
-        const actorSentence = applyVars(pickByHash(actorPool, seed + "-act"), { actor: actor.name });
-        narrative = `${base} ${actorSentence}`;
-        actorIds.push(actor.id);
-      } else {
-        narrative = base;
+    // s2: secondary actor support moment (if party ≥ 2)
+    if (members.length >= 2) {
+      const actor2 = selectActor(members, classes, ["support", "vanguard"], seed + "-a2", actor1?.id);
+      if (actor2) {
+        const pool2 = COMPLETION_ACTOR[(classes[actor2.classId]?.role ?? "support") as ActorRole];
+        segments.push(applyVars(pickByHash(pool2, seed + "-a2act"), { actor: actor2.name }));
+        actorIds.push(actor2.id);
       }
-    } else {
-      narrative = base;
+    }
+
+    // s3: turning point
+    segments.push(pickByHash(SCENE_TURNING_POS, seed + "-turn"));
+
+    // s4: victory declaration
+    segments.push(pickByHash(SCENE_VICTORY, seed + "-victory"));
+
+    // s5: relief
+    segments.push(pickByHash(SCENE_RELIEF, seed + "-relief"));
+
+  } else if (result.resultGrade === "great_failure") {
+    // s0: struggle opening
+    segments.push(pickByHash(SCENE_STRUGGLE, seed + "-struggle"));
+
+    // s1: actor tried but overwhelmed
+    const actor = selectActor(members, classes, ["vanguard", "damage"], seed + "-actor");
+    if (actor) {
+      const cls = classes[actor.classId];
+      const role = (cls?.role ?? "vanguard") as ActorRole;
+      const pool = CLASS_COMBAT[actor.classId] ?? COMBAT_ACTOR[role];
+      segments.push(applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name, party: partyName }));
+      actorIds.push(actor.id);
+    }
+
+    // s2: turning negative
+    segments.push(pickByHash(SCENE_TURNING_NEG, seed + "-turn"));
+
+    // s3: great failure base sentence
+    segments.push(applyVars(pickByHash(COMPLETION_NARRATIVE.great_failure, seed + "-base"), vars));
+
+    // s4: heavy aftermath
+    segments.push(pickByHash(SCENE_AFTERMATH_FAIL, seed + "-after"));
+
+  } else if (result.resultGrade === "failure") {
+    // s0: failure base
+    segments.push(applyVars(pickByHash(COMPLETION_NARRATIVE.failure, seed + "-base"), vars));
+
+    // s1: failure context (why)
+    segments.push(pickByHash(FAILURE_CONTEXT, seed + "-ctx"));
+
+    // s2: aftermath
+    segments.push(pickByHash(SCENE_AFTERMATH_FAIL, seed + "-after"));
+
+  } else if (result.resultGrade === "narrow_success") {
+    // s0: narrow success base
+    segments.push(applyVars(pickByHash(COMPLETION_NARRATIVE.narrow_success, seed + "-base"), vars));
+
+    // s1: actor who saved the day
+    const actor = selectActor(members, classes, ["vanguard", "damage", "support"], seed + "-actor");
+    if (actor) {
+      const cls = classes[actor.classId];
+      const role = (cls?.role ?? "vanguard") as ActorRole;
+      const pool = COMPLETION_ACTOR[role];
+      segments.push(applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name }));
+      actorIds.push(actor.id);
+    }
+
+    // s2: relief
+    segments.push(pickByHash(SCENE_RELIEF, seed + "-relief"));
+
+  } else if (result.resultGrade === "retreat") {
+    // s0: turning negative (context for why retreat)
+    segments.push(pickByHash(SCENE_TURNING_NEG, seed + "-turn"));
+
+    // s1: retreat decision sentence
+    segments.push(applyVars(pickByHash(COMPLETION_NARRATIVE.retreat, seed + "-base"), vars));
+
+    // s2: resolve / closure
+    segments.push(pickByHash(SCENE_RETURN_CLOSE, seed + "-close"));
+
+  } else {
+    // success
+    // s0: success base
+    segments.push(applyVars(pickByHash(COMPLETION_NARRATIVE.success, seed + "-base"), vars));
+
+    // s1: actor contribution
+    const actor = selectActor(members, classes, ["vanguard", "damage", "support"], seed + "-actor");
+    if (actor) {
+      const cls = classes[actor.classId];
+      const role = (cls?.role ?? "vanguard") as ActorRole;
+      const pool = COMPLETION_ACTOR[role];
+      segments.push(applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name }));
+      actorIds.push(actor.id);
     }
   }
 
@@ -821,7 +1105,7 @@ export function generateCompletionLog(
     category,
     importance,
     title: resultTitles[result.resultGrade] ?? "완료",
-    narrative,
+    narrative: buildScene(segments),
     actorIds,
     targetIds: [],
     tags: [quest.type, result.resultGrade, "completion", ...(enemy ? [enemy] : [])],

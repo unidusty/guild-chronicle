@@ -230,12 +230,14 @@
 
 ---
 
-## 모험 기록 (`AdventureLog`)
+## 모험 기록 (`AdventureLog` / Adventure Scene)
 
 **데이터:** `GameState.adventureLogs: Record<EntityId, AdventureLogEntry[]>` (questId를 키로 사용)  
 **생성:** `src/game/simulation/adventureLog.ts`
 
-의뢰 진행의 날별·사건별 내러티브 기록. 의뢰가 삭제된 후에도 보존된다.
+의뢰 진행의 날별·사건별 장면(Scene) 기록. 의뢰가 삭제된 후에도 보존된다.
+
+`narrative` 필드는 `"\n\n"`으로 문단을 구분하며 UI에서 `<p>` 태그로 렌더링된다. 한 Scene은 2~8 문단, 전투 Scene은 최대 8 문단으로 구성된다.
 
 ### 기록 범주 (`AdventureLogCategory`)
 

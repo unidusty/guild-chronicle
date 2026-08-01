@@ -285,7 +285,7 @@ export default function QuestDetail({ questId, state, onAssign, onDecide }: Prop
         {isDispatched && (() => {
           const logs = (state.adventureLogs ?? {})[quest.id] ?? [];
           if (logs.length === 0) return null;
-          const displayLogs = logs.slice(-12).slice().reverse();
+          const displayLogs = logs.slice(-8).slice().reverse();
           return (
             <section className="quest-detail-section">
               <p className="char-section-label">모험 기록</p>
@@ -300,7 +300,11 @@ export default function QuestDetail({ questId, state, onAssign, onDecide }: Prop
                       <span className="adv-log-category">{ADV_LOG_CATEGORY_LABELS[entry.category]}</span>
                       <span className="adv-log-date">{formatGameDate(entry.date)}</span>
                     </div>
-                    <p className="adv-log-narrative">{entry.narrative}</p>
+                    <div className="adv-log-narrative">
+                      {entry.narrative.split("\n\n").map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))}
+                    </div>
                     {entry.actorIds.length > 0 && (() => {
                       const names = entry.actorIds
                         .map(id => state.adventurers[id]?.name)
