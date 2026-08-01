@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**018-M — Quest Validation & Story Consistency**
+**018-N — Quest Director & Mandatory Flow**
 
 ## 완료
 
@@ -90,6 +90,14 @@
 - 의뢰 미충족 필수 단계 임박 시 관련 이벤트 가중치 1.5~3배 긴급 부스트
 - `FAILURE_CONTEXT_BY_TYPE` — 의뢰 유형별 실패 서사 (hunt·search·rescue·exploration·escort·delivery)
 - `generateCompletionLog` 대실패 — 전투 없을 시 "강적과의 전투 끝에" 서사 자동 제외
+- Quest Director & Mandatory Flow (018-N)
+- `questDirector.ts` — `DirectorState` / `DirectorResult` / `evaluateDirector()` 구현
+- `getDirectorState()` — urgency 레벨 4단계: none / low / high / critical
+- `evaluateDirector()` — critical 시 필수 단계 첫 항목에 맞는 이벤트 강제 생성 (rollEventChance 무시)
+- `advance.ts` — Director → selectEvent fallback 흐름 통합, dev 모드 콘솔 로그
+- Event Memory 5→8개 확장, Story Memory 10→15개 확장 (반복 억제 강화)
+- DevPanel — "Quest Director" 섹션 추가 (긴급도·완료/미완료 필수 단계 표시)
+- `docs/design/QUEST_VALIDATION_GUIDE.md` 신규 작성
 
 ## 현재 데이터 원칙
 

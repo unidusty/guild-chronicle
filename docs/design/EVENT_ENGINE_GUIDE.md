@@ -1,6 +1,6 @@
 # EVENT ENGINE GUIDE
 
-Guild Chronicle Dynamic Event Engine 설계 기준서. (018-K)
+Guild Chronicle Dynamic Event Engine 설계 기준서. (018-N)
 
 ---
 
@@ -42,6 +42,7 @@ interface EventDefinition {
   requiredStage?: QuestStage; // 특정 진행 단계에서만 등장
   boostedByTags?: QuestTag[]; // 일치할 때마다 가중치 +2
   followUpIds?: string[];    // 이 이벤트 후 다음 이벤트 우선 후보
+  allowedQuestTypes?: QuestCategory[]; // 지정된 의뢰 유형에서만 등장 (018-M)
 }
 ```
 
@@ -98,9 +99,11 @@ probability = min(base + dangerBonus + stageBonus, 0.32)
 
 ### 필터링
 
-1. **Event Memory** — `prog.events` 최근 5개의 `title`을 추출하여 동일 이벤트 재발생 차단
+1. **Event Memory** — `prog.events` 최근 8개의 `title`을 추출하여 동일 이벤트 재발생 차단 (018-N: 5→8)
 2. **Stage 필터** — `requiredStage`가 있으면 현재 단계와 일치해야 함
 3. **Tag 필터** — `requiredTags` 전부 존재, `blockedTags` 없어야 함
+4. **Returning 필터** — `returning` 단계에서는 `environment` / `danger` 이외 차단 (018-M)
+5. **Quest Type 필터** — `allowedQuestTypes`가 있으면 현재 의뢰 유형이 포함돼야 함 (018-M)
 
 ### 가중치 계산
 
@@ -110,6 +113,7 @@ if rarity == "rare":  weight = 0.5
 if rarity == "epic":  weight = 0.1
 for each boostedByTag matching tags: weight += 2
 if followUpBias has def.id: weight × 2  (Event Chain)
+weight × getMandatoryUrgencyMultiplier(...)  (018-M 긴급 부스트)
 ```
 
 ### Event Chain
@@ -131,15 +135,23 @@ buildQuestEvent(questId, partyId, day, def): QuestEvent
 
 ---
 
-## advance.ts 연동
+## advance.ts 연동 (018-N 이후)
 
 ```typescript
-// 하루 진행 시
-const tags     = deriveTags(quest, date, state.regions[quest.regionId]);
-const eventDef = quest.assignedPartyId ? selectEvent(quest, updated, date, tags) : null;
-if (eventDef && quest.assignedPartyId) {
-  const event = buildQuestEvent(quest.id, quest.assignedPartyId, absDay(date), eventDef);
-  // ... 기존 incident 처리
+// 하루 진행 시 — Quest Director 우선, fallback selectEvent
+const tags = deriveTags(quest, date, state.regions[quest.regionId]);
+let eventDef: EventDefinition | null = null;
+if (quest.assignedPartyId) {
+  const directorResult = evaluateDirector(quest, updated, tags);
+  if (directorResult) {
+    eventDef = directorResult.forcedEvent;  // 강제 이벤트 (rollEventChance 무시)
+  } else {
+    eventDef = selectEvent(quest, updated, date, tags);  // 정상 확률 롤
+  }
+}
+if (eventDef) {
+  const event = buildQuestEvent(quest.id, quest.assignedPartyId!, absDay(date), eventDef);
+  // ... incident 처리
 }
 ```
 

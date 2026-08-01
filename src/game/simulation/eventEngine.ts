@@ -987,8 +987,8 @@ export function selectEvent(
 ): EventDefinition | null {
   if (!rollEventChance(quest.dangerLevel, prog.currentStage)) return null;
 
-  // Event Memory: avoid recently seen event titles (last 5)
-  const recentTitles = new Set(prog.events.slice(-5).map(e => e.title));
+  // Event Memory: avoid recently seen event titles (last 8)
+  const recentTitles = new Set(prog.events.slice(-8).map(e => e.title));
 
   // Event Chain: boost follow-up IDs of the last event
   let followUpBias: Set<string> | null = null;

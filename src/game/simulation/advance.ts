@@ -2,6 +2,8 @@ import type { AdventureLogEntry, ChronicleEntry, GameDate, GameState, LootDrop, 
 import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
 import { validateQuestCompletion } from "./questValidation";
+import { evaluateDirector, getDirectorState } from "./questDirector";
+import type { EventDefinition } from "./eventEngine";
 import { deriveTags, selectEvent, buildQuestEvent } from "./eventEngine";
 import { buildQuestResult } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
@@ -227,9 +229,34 @@ function updateQuests(state: GameState): GameState {
           }
         }
 
-        // Roll for random event (only when quest still has days remaining)
-        const tags     = deriveTags(quest, date, state.regions[quest.regionId]);
-        const eventDef = quest.assignedPartyId ? selectEvent(quest, updated, date, tags) : null;
+        // Quest Director: force mandatory events when time is critical; else random roll
+        const tags = deriveTags(quest, date, state.regions[quest.regionId]);
+        let eventDef: EventDefinition | null = null;
+        if (quest.assignedPartyId) {
+          const directorResult = evaluateDirector(quest, updated, tags);
+          if (directorResult) {
+            eventDef = directorResult.forcedEvent;
+            if (import.meta.env.DEV) {
+              console.log(
+                `[Director] ${quest.title} D${updated.currentDay}: ` +
+                `강제 이벤트 "${eventDef.title}" — ${directorResult.reason}`,
+              );
+            }
+          } else {
+            if (import.meta.env.DEV) {
+              const ds = getDirectorState(quest, updated);
+              if (ds.urgencyLevel !== "none") {
+                console.log(
+                  `[Director] ${quest.title} D${updated.currentDay}: ` +
+                  `Stage=${updated.currentStage} Urgency=${ds.urgencyLevel} ` +
+                  `미완료=[${ds.pendingSteps.map(s => s.id).join(",")}] ` +
+                  `귀환까지=${ds.daysUntilReturn}일`,
+                );
+              }
+            }
+            eventDef = selectEvent(quest, updated, date, tags);
+          }
+        }
         if (eventDef && quest.assignedPartyId) {
           const event = buildQuestEvent(quest.id, quest.assignedPartyId, absDay(date), eventDef);
           updated = {

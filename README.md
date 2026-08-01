@@ -4,7 +4,7 @@
 
 ## 현재 버전
 
-**018-M — Quest Validation & Story Consistency**
+**018-N — Quest Director & Mandatory Flow**
 
 ## 실행 방법
 

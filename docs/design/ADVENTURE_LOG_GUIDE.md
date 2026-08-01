@@ -1,6 +1,6 @@
 # ADVENTURE LOG GUIDE
 
-Guild Chronicle 모험 기록 시스템 설계 기준서. (018-L: 지원 파티 현장 통합)
+Guild Chronicle 모험 기록 시스템 설계 기준서. (018-N: Quest Director 통합)
 
 ---
 
@@ -150,9 +150,9 @@ interface AdventureLogEntry {
 | `RETURN_DETAIL` | 20 | 귀환 중 상황 |
 | `RARE_SCENES` | 12 | 2% 확률 희귀 장면 |
 
-**Story Memory 동작:**
+**Story Memory 동작 (018-N: 10→15개 확장):**
 1. `generateDailyLog` / `generateIncidentLog` 호출 시 `existingLogs` 전달
-2. `buildRecentSegments(existingLogs, 10)` — 직전 10개 로그의 문장을 Set으로 구성
+2. `buildRecentSegments(existingLogs, 15)` — 직전 15개 로그의 문장을 Set으로 구성
 3. `pickAvoidingRecent(pool, seed, recentSegments)` — 이미 사용된 문장을 건너뛰고 선택
 4. 50개 이상 풀에서 선택하므로 자연적으로 반복이 희소해짐
 

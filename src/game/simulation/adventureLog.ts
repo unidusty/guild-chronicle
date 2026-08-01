@@ -54,7 +54,7 @@ function buildScene(segments: string[]): string {
 
 // ── Recent segment builder ────────────────────────────────────────────────────
 
-function buildRecentSegments(logs: AdventureLogEntry[], count = 10): Set<string> {
+function buildRecentSegments(logs: AdventureLogEntry[], count = 15): Set<string> {
   const s = new Set<string>();
   for (const log of logs.slice(-count)) {
     for (const seg of log.narrative.split("\n\n")) {

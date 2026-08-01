@@ -6,6 +6,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import type { Facility, GameState } from "../../types/game";
 import { processDayEnd } from "../../game/simulation/dayEnd";
 import { generateDailyApplicants } from "../../game/simulation/recruitment";
+import { getDirectorState } from "../../game/simulation/questDirector";
 
 interface Props {
   state: GameState;
@@ -78,6 +79,20 @@ export default function DevPanel({ state, onStateChange }: Props) {
 
   const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
 
+  const URGENCY_COLOR: Record<string, string> = {
+    none:     "#666",
+    low:      "#8aaa60",
+    high:     "#c8a040",
+    critical: "#c84040",
+  };
+
+  const activeDirectorStates = Object.values(state.questProgress).map(prog => {
+    const quest = state.quests[prog.questId];
+    if (!quest) return null;
+    const ds = getDirectorState(quest, prog);
+    return { quest, prog, ds };
+  }).filter((x): x is NonNullable<typeof x> => x !== null);
+
   return (
     <div className="dev-panel">
       <div className="dev-panel-head">
@@ -95,6 +110,33 @@ export default function DevPanel({ state, onStateChange }: Props) {
         <button onClick={advanceDay}>하루 진행</button>
         <button onClick={completeAllConstruction}>시설 즉시 완료</button>
       </div>
+      {activeDirectorStates.length > 0 && (
+        <div style={{ marginTop: 8, borderTop: "1px solid #333", paddingTop: 8, fontSize: 11 }}>
+          <div style={{ color: "#aaa", marginBottom: 4 }}>Quest Director</div>
+          {activeDirectorStates.map(({ quest, prog, ds }) => (
+            <div key={quest.id} style={{ marginBottom: 6, background: "#1a1a1a", padding: "4px 6px", borderRadius: 3 }}>
+              <div style={{ color: "#c8e0cc", fontWeight: "bold" }}>{quest.title}</div>
+              <div style={{ color: "#888" }}>
+                D{prog.currentDay}/{prog.totalDays} · {prog.currentStage} · 귀환까지 {ds.daysUntilReturn}일
+                &nbsp;·&nbsp;
+                <span style={{ color: URGENCY_COLOR[ds.urgencyLevel] ?? "#666" }}>
+                  {ds.urgencyLevel.toUpperCase()}
+                </span>
+              </div>
+              <div>
+                완료: {ds.fulfilledSteps.length > 0
+                  ? ds.fulfilledSteps.map(s => <span key={s.id} style={{ color: "#7ec87e", marginRight: 4 }}>{s.id}</span>)
+                  : <span style={{ color: "#555" }}>없음</span>}
+              </div>
+              <div>
+                미완료: {ds.pendingSteps.length > 0
+                  ? ds.pendingSteps.map(s => <span key={s.id} style={{ color: URGENCY_COLOR[ds.urgencyLevel], marginRight: 4 }}>{s.id}</span>)
+                  : <span style={{ color: "#555" }}>없음</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

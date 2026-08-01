@@ -1,6 +1,6 @@
 # STORY ENGINE GUIDE
 
-Guild Chronicle Dynamic Story Engine 설계 기준서. (018-L)
+Guild Chronicle Dynamic Story Engine 설계 기준서. (018-N)
 
 ---
 
