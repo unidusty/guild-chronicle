@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { EntityId, Formation, FormationSlot, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
-import { adventurerStatusLabels, getBondStageLabel, getStatusTone, partyStatusLabels } from "../../game/constants/labels";
+import { adventurerStatusLabels, getBondStageLabel, getStatusTone, partyStatusLabels, questStageLabels } from "../../game/constants/labels";
 import {
   calcPartyCombatPower,
   calcSynergy,
@@ -316,16 +316,35 @@ export default function PartyDetail({
 
         <section className="party-quest-section">
           <p className="char-section-label">진행 중 의뢰</p>
-          {quest ? (
-            <div className="info-card">
-              <div className="info-rows">
-                <div className="info-row"><label>의뢰명</label><span>{quest.title}</span></div>
-                <div className="info-row"><label>등급</label><span className="rank">{quest.grade}</span></div>
-                <div className="info-row"><label>남은 일수</label><span>{quest.remainingDays}일</span></div>
-                <div className="info-row"><label>진행률</label><span>{quest.progress}%</span></div>
+          {quest ? (() => {
+            const prog = party.activeQuestId ? state.questProgress[party.activeQuestId] : null;
+            const elapsed = prog ? prog.currentDay : (quest.durationDays - quest.remainingDays);
+            return (
+              <div className="info-card party-active-quest-card">
+                <div className="info-rows">
+                  <div className="info-row"><label>의뢰명</label><span>{quest.title}</span></div>
+                  <div className="info-row"><label>등급</label><span className="rank">{quest.grade}</span></div>
+                  {prog && (
+                    <div className="info-row">
+                      <label>현재 단계</label>
+                      <span className="quest-stage-inline">{questStageLabels[prog.currentStage]}</span>
+                    </div>
+                  )}
+                  <div className="info-row">
+                    <label>진행</label>
+                    <span className="party-quest-days">{elapsed} / {quest.durationDays}일</span>
+                  </div>
+                </div>
+                <div className="party-quest-progress-bar">
+                  <div className="party-quest-progress-fill" style={{ width: `${quest.progress}%` }} />
+                </div>
+                <div className="party-quest-footer">
+                  <span className="quiet">예상 귀환</span>
+                  <span>{quest.remainingDays}일 후</span>
+                </div>
               </div>
-            </div>
-          ) : (
+            );
+          })() : (
             <p className="info-empty">현재 의뢰 없음</p>
           )}
         </section>

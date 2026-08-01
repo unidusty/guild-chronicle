@@ -437,6 +437,22 @@ const _rawState: GameState = {
       description: "북부 광산에서 다른 길드가 지원을 요청했다.", relatedEntityIds: [], priority: "critical",
     },
   ],
+  questProgress: {
+    "quest-caravan": {
+      questId: "quest-caravan", partyId: "party-silverhawk",
+      startDay: 38080, expectedEndDay: 38084,
+      currentDay: 2, totalDays: 4,
+      currentStage: "executing",
+      reportRead: true, hasIncident: false, incidentId: null,
+    },
+    "quest-missing": {
+      questId: "quest-missing", partyId: "party-bluelantern",
+      startDay: 38081, expectedEndDay: 38083,
+      currentDay: 1, totalDays: 2,
+      currentStage: "returning",
+      reportRead: true, hasIncident: false, incidentId: null,
+    },
+  },
   pendingResults: [],
   warehouse: {},
   saleTransactions: [],

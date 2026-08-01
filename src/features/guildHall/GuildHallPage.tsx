@@ -7,6 +7,7 @@ import {
   getGuildMetrics,
   getRosterRows,
 } from "../../game/simulation/selectors";
+import { questStageLabels } from "../../game/constants/labels";
 import FacilitiesPage from "../facilities/FacilitiesPage";
 import RecruitmentTab from "../recruitment/RecruitmentTab";
 import { playHover, playSelect } from "../../lib/audio";
@@ -220,23 +221,32 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
                 <p className="panel-empty">현재 진행 중인 의뢰가 없습니다.</p>
               ) : (
                 <div className="activity-scroll">
-                  {activeQuests.map((quest) => (
-                    <div className="mission" key={quest.id}>
-                      <div>
-                        <span className={`mission-grade ${quest.grade.toLowerCase()}`}>
-                          {quest.grade}
-                        </span>
+                  {activeQuests.slice(0, 5).map((quest) => {
+                    const prog = state.questProgress[quest.id];
+                    const stageLabel = prog ? questStageLabels[prog.currentStage] : null;
+                    const elapsed = prog ? prog.currentDay : (quest.durationDays - quest.remainingDays);
+                    return (
+                      <div className="mission" key={quest.id}>
                         <div>
-                          <strong>{quest.title}</strong>
-                          <small>{quest.partyName} · {quest.returnLabel}</small>
+                          <span className={`mission-grade ${quest.grade.toLowerCase()}`}>
+                            {quest.grade}
+                          </span>
+                          <div>
+                            <strong>{quest.title}</strong>
+                            <small>
+                              {quest.partyName}
+                              {stageLabel && ` · ${stageLabel}`}
+                              {` · ${elapsed} / ${quest.durationDays}일`}
+                            </small>
+                          </div>
                         </div>
+                        <div className="progress">
+                          <i style={{ width: `${quest.progress}%` }} />
+                        </div>
+                        <span>{quest.progress}%</span>
                       </div>
-                      <div className="progress">
-                        <i style={{ width: `${quest.progress}%` }} />
-                      </div>
-                      <span>{quest.progress}%</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </article>

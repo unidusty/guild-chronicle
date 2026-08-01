@@ -18,6 +18,7 @@ export type AdventurerStatus = "idle" | "dispatched" | "injured" | "training" | 
 export type PartyStatus = "idle" | "dispatched" | "returning";
 export type QuestStatus = "available" | "assigned" | "in_progress" | "completed" | "failed" | "expired";
 export type QuestType = "normal" | "urgent" | "raid";
+export type QuestStage = "traveling" | "searching" | "executing" | "returning";
 export type QuestCategory = "escort" | "search" | "hunt" | "delivery" | "rescue" | "exploration";
 export type ChronicleScope = "guild" | "adventurer" | "party" | "world";
 export type ChronicleCategory = "join" | "quest" | "injury" | "growth" | "facility" | "reputation" | "world";
@@ -181,6 +182,19 @@ export interface Quest {
   riskTags: string[];
 }
 
+export interface QuestProgress {
+  questId: EntityId;
+  partyId: EntityId;
+  startDay: number;
+  expectedEndDay: number;
+  currentDay: number;
+  totalDays: number;
+  currentStage: QuestStage;
+  reportRead: boolean;
+  hasIncident: boolean;
+  incidentId: EntityId | null;
+}
+
 export interface Region {
   id: EntityId;
   name: string;
@@ -206,6 +220,7 @@ export interface Facility {
 
 export type DailyReportItemKind =
   | "quest_completed"
+  | "quest_progress_update"
   | "facility_completed"
   | "injury_recovered"
   | "training_completed"
@@ -314,6 +329,7 @@ export interface GameState {
   injuries: Record<EntityId, Injury>;
   parties: Record<EntityId, Party>;
   quests: Record<EntityId, Quest>;
+  questProgress: Record<EntityId, QuestProgress>;
   regions: Record<EntityId, Region>;
   facilities: Record<EntityId, Facility>;
   chronicle: ChronicleEntry[];

@@ -1,5 +1,7 @@
 import type { AdventurerRank, ChronicleEntry, EntityId, GameState } from "../../types/game";
 import { rankToNum, isChallengeMode } from "./combatPower";
+import { createQuestProgress } from "./questProgress";
+import { toAbsoluteDay } from "./recruitment";
 
 export function canAssignParty(partyRank: AdventurerRank, questGrade: AdventurerRank): boolean {
   // allow up to 1 rank below (challenge mode); 2+ ranks below is blocked
@@ -56,11 +58,16 @@ export function assignQuest(state: GameState, questId: EntityId, partyId: Entity
     relatedEntityIds: [party.id, ...party.memberIds],
   };
 
+  const startDay = toAbsoluteDay(date);
+  const expectedEndDay = startDay + quest.durationDays;
+  const progress = createQuestProgress(questId, partyId, startDay, expectedEndDay, quest.durationDays);
+
   return {
     ...state,
     quests: { ...state.quests, [questId]: updatedQuest },
     parties: { ...state.parties, [partyId]: updatedParty },
     adventurers,
     chronicle: [chronicle, ...state.chronicle],
+    questProgress: { ...state.questProgress, [questId]: progress },
   };
 }

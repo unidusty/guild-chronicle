@@ -1,5 +1,6 @@
-import type { ChronicleEntry, DailyReport, DailyReportItem, GameState } from "../../types/game";
+import type { ChronicleEntry, DailyReport, DailyReportItem, GameState, QuestProgress } from "../../types/game";
 import { advanceDay } from "./advance";
+import { questStageLabels } from "../constants/labels";
 import { advanceFacilityConstruction } from "./facilities";
 import {
   expireApplicants,
@@ -147,8 +148,34 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     }
   }
 
+  // Active quest progress reports
+  const activeProgressList = Object.values(newState.questProgress);
+  for (const prog of activeProgressList) {
+    const quest = newState.quests[prog.questId];
+    const party = newState.parties[prog.partyId];
+    if (!quest || !party) continue;
+    const stageLabel = questStageLabels[prog.currentStage];
+    const elapsed = prog.currentDay;
+    const isNew = !prog.reportRead;
+    items.push({
+      kind: "quest_progress_update",
+      title: `${isNew ? "● " : ""}진행 보고 — ${party.name}`,
+      description: `${quest.title} · ${stageLabel} · ${elapsed} / ${prog.totalDays}일`,
+    });
+  }
+
+  // Mark all quest progress as read in the final state
+  let finalState = newState;
+  if (activeProgressList.length > 0) {
+    const clearedProgress: Record<string, QuestProgress> = {};
+    for (const [id, prog] of Object.entries(newState.questProgress)) {
+      clearedProgress[id] = { ...prog, reportRead: true };
+    }
+    finalState = { ...newState, questProgress: clearedProgress };
+  }
+
   return {
-    newState,
-    report: { previousDate, nextDate: newState.currentDate, items },
+    newState: finalState,
+    report: { previousDate, nextDate: finalState.currentDate, items },
   };
 }

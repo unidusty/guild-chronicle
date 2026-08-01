@@ -882,3 +882,45 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .quest-success-rate.high { color: #6ab87a; }
 .quest-success-rate.mid  { color: #c4a860; }
 .quest-success-rate.low  { color: #b06050; }
+
+/* ── 018-A: Quest Progress System ───────────────────────────────────────────── */
+
+/* New report dot */
+.quest-new-dot { color: #4a9abb; margin-right: calc(3px * var(--ui-scale)); font-size: var(--font-tiny); }
+
+/* Quest card progress bar (QuestList) */
+.quest-card-progress { padding: calc(6px * var(--ui-scale)) 0 calc(2px * var(--ui-scale)); }
+.quest-card-progress-bar { height: calc(3px * var(--ui-scale)); background: #1a2a1e; border-radius: 2px; overflow: hidden; margin-bottom: calc(4px * var(--ui-scale)); }
+.quest-card-progress-fill { height: 100%; background: #4a7ab5; border-radius: 2px; transition: width .3s; }
+.quest-card-progress-meta { display: flex; justify-content: space-between; align-items: center; }
+.quest-card-stage { font-size: var(--font-tiny); color: #4a9abb; display: flex; align-items: center; gap: calc(2px * var(--ui-scale)); }
+.quest-card-days { font-size: var(--font-tiny); color: #5a6e5c; }
+
+/* Quest detail progress section (QuestDetail) */
+.quest-progress-section { border-left: 2px solid #2a4060; padding-left: calc(10px * var(--ui-scale)); }
+.quest-progress-info { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.quest-progress-stage-row { display: flex; justify-content: space-between; align-items: center; }
+.quest-progress-stage-label { font-size: var(--font-small); font-weight: 600; color: #4a9abb; }
+.quest-progress-days { font-size: var(--font-small); color: #6a7e6c; }
+.quest-progress-bar-wrap { display: flex; align-items: center; gap: calc(8px * var(--ui-scale)); }
+.quest-progress-bar { flex: 1; height: calc(6px * var(--ui-scale)); background: #1a2a1e; border-radius: 3px; overflow: hidden; }
+.quest-progress-fill { height: 100%; background: #4a7ab5; border-radius: 3px; transition: width .3s; }
+.quest-progress-pct { font-size: var(--font-tiny); color: #6a7e6c; min-width: calc(28px * var(--ui-scale)); text-align: right; }
+.quest-progress-remain { font-size: var(--font-small); color: #8a9e8c; }
+.quest-progress-remain strong { color: #c8d8cc; }
+.quest-progress-incident { font-size: var(--font-small); color: #5a6e5c; }
+
+/* Inline stage label (AdventurerDetail, PartyDetail) */
+.quest-stage-inline { color: #4a9abb; font-size: var(--font-small); }
+
+/* Party active quest card (PartyDetail) */
+.party-active-quest-card { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
+.party-quest-days { color: #c8d8cc; }
+.party-quest-progress-bar { height: calc(4px * var(--ui-scale)); background: #1a2a1e; border-radius: 2px; overflow: hidden; margin: calc(2px * var(--ui-scale)) 0; }
+.party-quest-progress-fill { height: 100%; background: #4a7ab5; border-radius: 2px; }
+.party-quest-footer { display: flex; justify-content: space-between; align-items: center; font-size: var(--font-small); color: #5a6e5c; padding-top: calc(2px * var(--ui-scale)); border-top: 1px solid #1a2a1e; }
+.party-quest-footer span:last-child { color: #8a9e8c; }
+
+/* Day-end report: quest progress items */
+.day-end-report-item.quest_progress_update { border-left-color: #2a4060; background: #0f1a14; }
+.day-end-report-item.quest_progress_update strong { color: #6ab0cc; }

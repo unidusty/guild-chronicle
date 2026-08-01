@@ -1,6 +1,6 @@
 import type { AdventurerRank, EntityId, GameState, Quest } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
-import { questStatusLabels, questTypeLabels } from "../../game/constants/labels";
+import { questStageLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
 
 export type StatusFilter = "all" | "available" | "active" | "completed";
 export type RankFilter = "all" | AdventurerRank;
@@ -75,6 +75,7 @@ export default function QuestList({ state, filteredQuests, selectedId, onSelect,
             const isSelected = quest.id === selectedId;
             const isUrgent = quest.questType === "urgent";
             const isRaid = quest.questType === "raid";
+            const isActive = quest.status === "assigned" || quest.status === "in_progress";
             return (
               <button
                 key={quest.id}
@@ -91,10 +92,29 @@ export default function QuestList({ state, filteredQuests, selectedId, onSelect,
                   <span className="quest-card-region">{region?.name ?? "—"}</span>
                   <span className="quest-card-reward">{formatGold(quest.rewardGold)}</span>
                 </div>
+                {isActive && (() => {
+                  const prog = state.questProgress[quest.id];
+                  if (!prog) return null;
+                  const elapsed = prog.currentDay;
+                  return (
+                    <div className="quest-card-progress">
+                      <div className="quest-card-progress-bar">
+                        <div className="quest-card-progress-fill" style={{ width: `${quest.progress}%` }} />
+                      </div>
+                      <div className="quest-card-progress-meta">
+                        <span className="quest-card-stage">
+                          {!prog.reportRead && <span className="quest-new-dot">●</span>}
+                          {questStageLabels[prog.currentStage]}
+                        </span>
+                        <span className="quest-card-days">{elapsed} / {prog.totalDays}일</span>
+                      </div>
+                    </div>
+                  );
+                })()}
                 <div className="quest-card-footer">
                   <span className="quest-card-duration">
-                    {(quest.status === "assigned" || quest.status === "in_progress")
-                      ? `남은 기간 ${quest.remainingDays}일`
+                    {isActive
+                      ? `${quest.remainingDays}일 후 귀환`
                       : `${quest.durationDays}일 소요`}
                   </span>
                   <div className="quest-card-badges">

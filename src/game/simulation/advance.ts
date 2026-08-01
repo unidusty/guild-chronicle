@@ -1,5 +1,6 @@
 import type { ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
+import { calcQuestStage } from "./questProgress";
 
 // ── Date arithmetic ─────────────────────────────────────────────────────────
 
@@ -49,12 +50,13 @@ const DAILY_PROGRESS = 15;
 function updateQuests(state: GameState): GameState {
   const newEntries: ChronicleEntry[] = [];
   const newResults: QuestCompletionResult[] = [];
-  const quests      = { ...state.quests };
-  const adventurers = { ...state.adventurers };
-  const parties     = { ...state.parties };
-  const warehouse   = { ...state.warehouse };
-  const date        = state.currentDate;
-  let   goldEarned  = 0;
+  const quests        = { ...state.quests };
+  const adventurers   = { ...state.adventurers };
+  const parties       = { ...state.parties };
+  const warehouse     = { ...state.warehouse };
+  const questProgress = { ...state.questProgress };
+  const date          = state.currentDate;
+  let   goldEarned    = 0;
 
   for (const quest of Object.values(state.quests)) {
     if (quest.status !== "assigned") continue;
@@ -64,6 +66,7 @@ function updateQuests(state: GameState): GameState {
     if (remaining <= 0) {
       // Remove completed quest from the board
       delete quests[quest.id];
+      delete questProgress[quest.id];
 
       const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
       if (party) {
@@ -120,11 +123,20 @@ function updateQuests(state: GameState): GameState {
         });
       }
     } else {
-      quests[quest.id] = {
-        ...quest,
-        remainingDays: remaining,
-        progress:      Math.min(99, quest.progress + DAILY_PROGRESS),
-      };
+      const newProgress = Math.min(99, quest.progress + DAILY_PROGRESS);
+      quests[quest.id] = { ...quest, remainingDays: remaining, progress: newProgress };
+
+      const existing = questProgress[quest.id];
+      if (existing) {
+        const newStage = calcQuestStage(newProgress);
+        const stageChanged = newStage !== existing.currentStage;
+        questProgress[quest.id] = {
+          ...existing,
+          currentDay:   existing.currentDay + 1,
+          currentStage: newStage,
+          reportRead:   stageChanged ? false : existing.reportRead,
+        };
+      }
     }
   }
 
@@ -135,6 +147,7 @@ function updateQuests(state: GameState): GameState {
     adventurers,
     parties,
     warehouse,
+    questProgress,
     chronicle:      [...newEntries, ...state.chronicle],
     pendingResults: [...state.pendingResults, ...newResults],
   };

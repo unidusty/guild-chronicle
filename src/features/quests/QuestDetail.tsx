@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { AdventurerRank, EntityId, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
-import { dangerLevelLabel, questCategoryLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
+import { dangerLevelLabel, questCategoryLabels, questStageLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
 import { canAssignParty, isChallengeMode } from "../../game/simulation/quests";
 import { calcPartyCombatPower, calcQuestSuccessRate, getQuestRecommendedPower } from "../../game/simulation/combatPower";
 
@@ -110,6 +110,39 @@ export default function QuestDetail({ questId, state, onAssign }: Props) {
             </div>
           </section>
         )}
+
+        {isDispatched && (() => {
+          const prog = state.questProgress[quest.id];
+          if (!prog) return null;
+          const elapsed = prog.currentDay;
+          const pct = quest.progress;
+          return (
+            <section className="quest-detail-section quest-progress-section">
+              <p className="char-section-label">
+                {!prog.reportRead && <span className="quest-new-dot">● </span>}
+                진행 현황
+              </p>
+              <div className="quest-progress-info">
+                <div className="quest-progress-stage-row">
+                  <span className="quest-progress-stage-label">{questStageLabels[prog.currentStage]}</span>
+                  <span className="quest-progress-days">{elapsed} / {prog.totalDays}일</span>
+                </div>
+                <div className="quest-progress-bar-wrap">
+                  <div className="quest-progress-bar">
+                    <div className="quest-progress-fill" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="quest-progress-pct">{pct}%</span>
+                </div>
+                <div className="quest-progress-remain">
+                  예상 귀환 <strong>{quest.remainingDays}일 후</strong>
+                </div>
+                <div className="quest-progress-incident">
+                  특이사항 <span className="quiet">없음</span>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         <section className="quest-assign-section">
           <p className="char-section-label">파티 배정</p>

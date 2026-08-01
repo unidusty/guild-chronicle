@@ -5,6 +5,7 @@ import {
   adventurerStatusLabels,
   genderLabels,
   getStatusTone,
+  questStageLabels,
   raceLabels,
   statLabels,
 } from "../../game/constants/labels";
@@ -124,6 +125,16 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
               <label>의뢰</label>
               <span className="char-location">{currentQuest?.title ?? "없음"}</span>
             </div>
+            {currentQuest && adv.currentQuestId && (() => {
+              const prog = state.questProgress[adv.currentQuestId];
+              if (!prog) return null;
+              return (
+                <div className="char-status-row">
+                  <label>단계</label>
+                  <span className="quest-stage-inline">{questStageLabels[prog.currentStage]}</span>
+                </div>
+              );
+            })()}
           </div>
 
           <div className="char-belonging">

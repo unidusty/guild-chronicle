@@ -1,4 +1,4 @@
-import type { Adventurer, AdventurerStatus, Gender, PartyStatus, QuestCategory, QuestStatus, QuestType, Race, Stats } from "../../types/game";
+import type { Adventurer, AdventurerStatus, Gender, PartyStatus, QuestCategory, QuestStage, QuestStatus, QuestType, Race, Stats } from "../../types/game";
 
 export const raceLabels: Record<Race, string> = {
   human: "인간",
@@ -90,6 +90,13 @@ export const questCategoryLabels: Record<QuestCategory, string> = {
   delivery:    "배달",
   rescue:      "구조",
   exploration: "탐사",
+};
+
+export const questStageLabels: Record<QuestStage, string> = {
+  traveling: "이동 중",
+  searching:  "탐색 중",
+  executing:  "목표 수행 중",
+  returning:  "귀환 중",
 };
 
 export function dangerLevelLabel(level: number): string {
