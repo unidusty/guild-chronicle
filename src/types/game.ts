@@ -221,6 +221,26 @@ export interface QuestProgress {
   decisions: QuestDecision[];
 }
 
+export interface QuestChronicleEntry {
+  id: EntityId;
+  questId: EntityId;
+  questTitle: string;
+  questCategory: QuestCategory;
+  partyId: EntityId | null;
+  partyNameSnapshot: string | null;
+  regionId: EntityId | null;
+  regionNameSnapshot: string | null;
+  completedDate: GameDate;
+  resultGrade: QuestResultGrade;
+  narrative: string;
+  rewardGold: number;
+  memberCountSnapshot: number;
+  incidentCount: number;
+  supportUsed: boolean;
+  extraExplore: boolean;
+  successRate: number;
+}
+
 export interface QuestResult {
   questId: EntityId;
   partyId: EntityId;
@@ -371,6 +391,7 @@ export interface GameState {
   quests: Record<EntityId, Quest>;
   questProgress: Record<EntityId, QuestProgress>;
   questResults: Record<EntityId, QuestResult>;
+  questChronicle: QuestChronicleEntry[];
   regions: Record<EntityId, Region>;
   facilities: Record<EntityId, Facility>;
   chronicle: ChronicleEntry[];

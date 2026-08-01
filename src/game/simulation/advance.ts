@@ -3,6 +3,7 @@ import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
 import { generateQuestEvent, rollEventForQuest } from "./questEvents";
 import { buildQuestResult } from "./questResult";
+import { buildQuestChronicleEntry } from "./questChronicle";
 
 function absDay(date: GameDate): number {
   const si = ["spring", "summer", "autumn", "winter"].indexOf(date.season);
@@ -58,6 +59,7 @@ function updateQuests(state: GameState): GameState {
   const newEntries: ChronicleEntry[] = [];
   const newResults: QuestCompletionResult[] = [];
   const newQuestResults: QuestResult[] = [];
+  const newQuestChronicleEntries: ReturnType<typeof buildQuestChronicleEntry>[] = [];
   const quests        = { ...state.quests };
   const adventurers   = { ...state.adventurers };
   const parties       = { ...state.parties };
@@ -74,10 +76,13 @@ function updateQuests(state: GameState): GameState {
     if (remaining <= 0) {
       const prog = questProgress[quest.id];
 
-      // Build quest result before removing progress
+      // Build quest result and chronicle entry before removing progress
       if (prog && quest.assignedPartyId) {
         const stateSnapshot: GameState = { ...state, parties, adventurers, questProgress };
-        newQuestResults.push(buildQuestResult(quest.assignedPartyId, quest, prog, stateSnapshot, date));
+        const questResult = buildQuestResult(quest.assignedPartyId, quest, prog, stateSnapshot, date);
+        newQuestResults.push(questResult);
+        const snapshotParty = state.parties[quest.assignedPartyId] ?? null;
+        newQuestChronicleEntries.push(buildQuestChronicleEntry(quest, prog, snapshotParty, questResult, state));
       }
 
       // Release support parties from decisions
@@ -190,17 +195,22 @@ function updateQuests(state: GameState): GameState {
     ? { ...state.questResults, ...Object.fromEntries(newQuestResults.map(r => [r.questId, r])) }
     : state.questResults;
 
+  const updatedQuestChronicle = newQuestChronicleEntries.length > 0
+    ? [...newQuestChronicleEntries, ...state.questChronicle]
+    : state.questChronicle;
+
   return {
     ...state,
-    guild:         goldEarned > 0 ? { ...state.guild, gold: state.guild.gold + goldEarned } : state.guild,
+    guild:          goldEarned > 0 ? { ...state.guild, gold: state.guild.gold + goldEarned } : state.guild,
     quests,
     adventurers,
     parties,
     warehouse,
     questProgress,
-    questResults:   updatedQuestResults,
-    chronicle:      [...newEntries, ...state.chronicle],
-    pendingResults: [...state.pendingResults, ...newResults],
+    questResults:    updatedQuestResults,
+    questChronicle:  updatedQuestChronicle,
+    chronicle:       [...newEntries, ...state.chronicle],
+    pendingResults:  [...state.pendingResults, ...newResults],
   };
 }
 

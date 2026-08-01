@@ -982,3 +982,152 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* GuildHall activity panel header */
 .activity-panel-meta { display: flex; flex-direction: column; align-items: flex-end; gap: calc(3px * var(--ui-scale)); }
 .activity-new-report-badge { font-size: var(--font-tiny); color: #c4a060; background: #1e1400; border: 1px solid #3a2800; padding: calc(2px * var(--ui-scale)) calc(6px * var(--ui-scale)); border-radius: 2px; }
+
+/* ── 018-E: Quest Board Redesign ────────────────────────────────────────────── */
+
+/* Per-rank color classes */
+.rank-S { color: #e8c84a; }
+.rank-A { color: #d47840; }
+.rank-B { color: #6898d8; }
+.rank-C { color: #50b0b0; }
+.rank-D { color: #78b868; }
+.rank-E { color: #8a9e8c; }
+.rank-F { color: #5a6e5c; }
+
+/* ── Tab bar ── */
+.qb-tab-bar { display: flex; gap: 0; border-bottom: 1px solid #1e2e20; background: #0e1610; flex-shrink: 0; }
+.qb-tab { position: relative; padding: calc(10px * var(--ui-scale)) calc(18px * var(--ui-scale)); background: transparent; border: none; border-bottom: 2px solid transparent; color: #5a7060; font: inherit; font-size: var(--font-small); cursor: pointer; display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); white-space: nowrap; transition: color .12s, border-color .12s; }
+.qb-tab:hover { color: #9ab09a; }
+.qb-tab.active { color: #c8e0cc; border-bottom-color: #4a7a50; }
+.qb-tab.has-alert { color: #c4a060; }
+.qb-tab.has-alert.active { border-bottom-color: #c4a060; }
+.qb-tab-count { font-size: var(--font-tiny); color: #4a5e4c; background: #141e14; border: 1px solid #1e2e1e; padding: 0 calc(6px * var(--ui-scale)); border-radius: 10px; min-width: calc(18px * var(--ui-scale)); text-align: center; }
+.qb-tab.active .qb-tab-count { color: #6a8e6a; border-color: #2a4030; }
+.qb-tab.has-alert .qb-tab-count { color: #9a7840; border-color: #3a2800; background: #1e1400; }
+.qb-tab-alert { font-size: var(--font-tiny); color: #c4a060; background: #1e1400; border: 1px solid #3a2800; padding: 0 calc(6px * var(--ui-scale)); border-radius: 2px; animation: pulse-amber 1.5s ease-in-out infinite; }
+@keyframes pulse-amber { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+
+/* ── Content area ── */
+.qb-content { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+
+/* ── Available quests tab ── */
+.qb-available { display: flex; flex: 1; min-height: 0; gap: 0; overflow: hidden; }
+.qb-available-main { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow-y: auto; padding: calc(12px * var(--ui-scale)) calc(14px * var(--ui-scale)); gap: calc(10px * var(--ui-scale)); transition: max-width .2s; }
+.qb-available-main.detail-open { max-width: calc(520px * var(--ui-scale)); }
+
+/* Filter bar */
+.qb-available-filter { display: flex; align-items: center; gap: calc(8px * var(--ui-scale)); flex-wrap: wrap; }
+.qb-rank-chips { display: flex; gap: calc(4px * var(--ui-scale)); flex-wrap: wrap; }
+.qb-rank-chip { padding: calc(2px * var(--ui-scale)) calc(8px * var(--ui-scale)); border: 1px solid #2a3a2e; background: transparent; color: #5a6e5c; font: inherit; font-size: var(--font-tiny); font-weight: 700; cursor: pointer; border-radius: 2px; transition: background .1s, color .1s, border-color .1s; }
+.qb-rank-chip:hover { background: #141e14; color: #8a9e8c; }
+.qb-rank-chip.active { background: #1e3020; border-color: #3a6040; color: #c8e0cc; }
+.qb-rank-chip.rank-chip-S { color: #c4a838; } .qb-rank-chip.rank-chip-S:hover, .qb-rank-chip.rank-chip-S.active { color: #e8c84a; border-color: #5a4820; background: #1e1a08; }
+.qb-rank-chip.rank-chip-A { color: #a0602a; } .qb-rank-chip.rank-chip-A:hover, .qb-rank-chip.rank-chip-A.active { color: #d47840; border-color: #5a3818; background: #1e1408; }
+.qb-rank-chip.rank-chip-B { color: #4a6898; } .qb-rank-chip.rank-chip-B:hover, .qb-rank-chip.rank-chip-B.active { color: #6898d8; border-color: #2a4870; background: #0e1628; }
+.qb-rank-chip.rank-chip-C { color: #387888; } .qb-rank-chip.rank-chip-C:hover, .qb-rank-chip.rank-chip-C.active { color: #50b0b0; border-color: #205858; background: #081a1a; }
+.qb-rank-chip.rank-chip-D { color: #507840; } .qb-rank-chip.rank-chip-D:hover, .qb-rank-chip.rank-chip-D.active { color: #78b868; border-color: #385828; background: #101808; }
+.qb-rank-chip.rank-chip-E { color: #5a6e5c; } .qb-rank-chip.rank-chip-E:hover, .qb-rank-chip.rank-chip-E.active { color: #8a9e8c; border-color: #3a4e3c; }
+.qb-rank-chip.rank-chip-F { color: #3a4e3c; } .qb-rank-chip.rank-chip-F:hover, .qb-rank-chip.rank-chip-F.active { color: #5a6e5c; border-color: #2a3a2e; }
+.qb-sort-select { margin-left: auto; padding: calc(3px * var(--ui-scale)) calc(8px * var(--ui-scale)); background: #0e1610; border: 1px solid #2a3a2e; color: #8a9e8c; font: inherit; font-size: var(--font-tiny); cursor: pointer; border-radius: 2px; }
+.qb-sort-select:focus { outline: none; border-color: #3a5040; }
+
+/* Card grid */
+.quest-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(200px * var(--ui-scale)), 1fr)); gap: calc(8px * var(--ui-scale)); align-content: start; }
+.quest-board-card { position: relative; display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); padding: calc(11px * var(--ui-scale)) calc(12px * var(--ui-scale)) calc(9px * var(--ui-scale)); background: #0e1610; border: 1px solid #1e2e1e; text-align: left; font: inherit; cursor: pointer; transition: border-color .12s, background .12s; overflow: hidden; }
+.quest-board-card:hover { border-color: #2e4830; background: #111a12; }
+.quest-board-card.selected { border-color: #4a7050; background: #121e14; box-shadow: 0 0 0 1px #2a4030; }
+.qbc-pin { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: calc(3px * var(--ui-scale)); height: calc(12px * var(--ui-scale)); background: #3a5040; border-radius: 0 0 2px 2px; }
+.quest-board-card.selected .qbc-pin { background: #6a9060; }
+.qbc-header { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); margin-top: calc(4px * var(--ui-scale)); }
+.qbc-grade { font-family: Georgia, serif; font-weight: 700; font-size: calc(14px * var(--ui-scale)); }
+.qbc-urgent-badge { font-size: var(--font-tiny); color: #d07040; background: #1e1000; border: 1px solid #503010; padding: 0 calc(5px * var(--ui-scale)); border-radius: 2px; margin-left: auto; }
+.qbc-title { margin: 0; font-family: Georgia, serif; font-size: calc(13px * var(--ui-scale)); font-weight: 500; color: #c8d8cc; line-height: 1.35; }
+.quest-board-card.selected .qbc-title { color: #e0f0e4; }
+.qbc-type-row { display: flex; align-items: center; gap: calc(4px * var(--ui-scale)); flex-wrap: wrap; }
+.qbc-quest-type { font-size: var(--font-tiny); padding: 0 calc(5px * var(--ui-scale)); border-radius: 2px; }
+.qbc-quest-type.normal { color: #5a7060; background: #0e1610; border: 1px solid #1e2e1e; }
+.qbc-quest-type.urgent { color: #c07040; background: #180e06; border: 1px solid #3a2010; }
+.qbc-quest-type.special { color: #8060c0; background: #100818; border: 1px solid #302040; }
+.qbc-category { font-size: var(--font-tiny); color: #4a6050; }
+.qbc-region { font-size: var(--font-tiny); color: #4a5e4c; margin-left: auto; }
+.qbc-info { display: flex; flex-direction: column; gap: calc(2px * var(--ui-scale)); }
+.qbc-info-row { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--font-tiny); }
+.qbc-info-label { color: #4a5e4c; }
+.qbc-info-value { color: #8a9e8c; }
+.qbc-reward { color: #b89848; font-weight: 600; }
+.qbc-footer { display: flex; align-items: center; justify-content: space-between; padding-top: calc(5px * var(--ui-scale)); border-top: 1px solid #141e14; margin-top: calc(2px * var(--ui-scale)); }
+.qbc-expire-warn { font-size: var(--font-tiny); color: #c07840; }
+
+/* Side detail panel */
+.qb-side-detail { width: calc(340px * var(--ui-scale)); flex-shrink: 0; border-left: 1px solid #1e2e20; overflow-y: auto; background: #0b1210; }
+
+/* Empty state */
+.qb-empty { display: flex; align-items: center; justify-content: center; padding: calc(40px * var(--ui-scale)); color: #3a4e3c; font-size: var(--font-small); text-align: center; }
+.qb-empty p { margin: 0; line-height: 1.6; }
+.qb-empty-detail { flex: 1; }
+
+/* ── Active quests tab ── */
+.qb-active { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+.qb-active-list { display: flex; flex-direction: column; width: calc(280px * var(--ui-scale)); flex-shrink: 0; border-right: 1px solid #1e2e20; overflow-y: auto; background: #0b1210; }
+.qb-active-detail { flex: 1; overflow-y: auto; }
+
+/* Active quest row */
+.aq-row { display: flex; align-items: flex-start; gap: calc(8px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(12px * var(--ui-scale)); border: none; border-bottom: 1px solid #141e14; background: transparent; font: inherit; cursor: pointer; text-align: left; width: 100%; transition: background .1s; }
+.aq-row:hover { background: #111a12; }
+.aq-row.selected { background: #121e14; border-left: 2px solid #4a7050; padding-left: calc(10px * var(--ui-scale)); }
+.aq-row.needs-decision { border-left: 2px solid #c4a060; padding-left: calc(10px * var(--ui-scale)); background: #141008; }
+.aq-row.needs-decision:hover { background: #181408; }
+.aq-row.needs-decision.selected { border-left-color: #e0b860; background: #1a1608; }
+.aq-row.has-incident:not(.needs-decision) { border-left: 2px solid #2a4060; padding-left: calc(10px * var(--ui-scale)); }
+.aq-grade { flex-shrink: 0; width: calc(22px * var(--ui-scale)); height: calc(22px * var(--ui-scale)); display: flex; align-items: center; justify-content: center; border: 1px solid currentColor; font-family: Georgia, serif; font-weight: 700; font-size: calc(12px * var(--ui-scale)); opacity: 0.8; border-radius: 2px; margin-top: calc(2px * var(--ui-scale)); }
+.aq-main { display: flex; flex-direction: column; gap: calc(3px * var(--ui-scale)); flex: 1; min-width: 0; }
+.aq-title { font-size: var(--font-small); font-weight: 600; color: #b0c0b4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.aq-row.needs-decision .aq-title { color: #d4b470; }
+.aq-row.selected .aq-title { color: #d0e8d4; }
+.aq-meta { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); }
+.aq-party-name { font-size: var(--font-tiny); color: #5a7060; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.aq-stage { font-size: var(--font-tiny); color: #4a6a80; margin-left: auto; flex-shrink: 0; }
+.aq-progress-label { font-size: var(--font-tiny); color: #4a5e4c; }
+.aq-progress { height: calc(3px * var(--ui-scale)); background: #141e14; border-radius: 2px; overflow: hidden; }
+.aq-progress-fill { height: 100%; background: #4a7ab5; border-radius: 2px; transition: width .3s; }
+.aq-row.needs-decision .aq-progress-fill { background: #8a6a30; }
+.aq-badges { display: flex; flex-wrap: wrap; gap: calc(3px * var(--ui-scale)); margin-top: calc(2px * var(--ui-scale)); }
+.aq-badge { font-size: var(--font-tiny); padding: 0 calc(5px * var(--ui-scale)); border-radius: 2px; white-space: nowrap; }
+.aq-badge.decision { color: #c4a060; background: #1e1400; border: 1px solid #3a2800; }
+.aq-badge.incident { color: #6a9abb; background: #0a1420; border: 1px solid #1a2e40; }
+.aq-badge.support { color: #c4a060; background: #1a1000; border: 1px solid #3a2800; }
+.aq-badge.support-arrived { color: #6ab868; background: #0a1e0a; border: 1px solid #1a4020; }
+.aq-footer { display: flex; align-items: center; justify-content: space-between; margin-top: calc(2px * var(--ui-scale)); }
+.aq-rate { font-size: var(--font-tiny); font-weight: 700; }
+.aq-rate.high { color: #6ab868; }
+.aq-rate.mid  { color: #c4a060; }
+.aq-rate.low  { color: #c06060; }
+.aq-remaining { font-size: var(--font-tiny); color: #4a5e4c; margin-left: auto; }
+
+/* ── Quest chronicle tab ── */
+.qchron-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+.qchron-filters { display: flex; gap: calc(8px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); border-bottom: 1px solid #1e2e20; flex-shrink: 0; background: #0b1210; }
+.qchron-filter-select { padding: calc(4px * var(--ui-scale)) calc(8px * var(--ui-scale)); background: #0e1610; border: 1px solid #2a3a2e; color: #8a9e8c; font: inherit; font-size: var(--font-tiny); cursor: pointer; border-radius: 2px; }
+.qchron-filter-select:focus { outline: none; border-color: #3a5040; }
+.qchron-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0; }
+.qchron-empty { display: flex; align-items: center; justify-content: center; flex: 1; padding: calc(40px * var(--ui-scale)); color: #3a4e3c; font-size: var(--font-small); text-align: center; }
+.qchron-empty p { margin: 0; line-height: 1.7; }
+.qchron-entry { display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); padding: calc(14px * var(--ui-scale)) calc(18px * var(--ui-scale)); border-bottom: 1px solid #141e14; }
+.qchron-entry:hover { background: #0e1812; }
+.qchron-entry-top { display: flex; align-items: center; gap: calc(8px * var(--ui-scale)); }
+.qchron-date { font-size: var(--font-tiny); color: #4a6050; }
+.qchron-result { font-size: var(--font-tiny); font-weight: 700; padding: calc(1px * var(--ui-scale)) calc(7px * var(--ui-scale)); border-radius: 2px; border: 1px solid currentColor; margin-left: auto; }
+.qchron-result.great_success  { color: #e8c84a; background: #1a1600; border-color: #4a3a00; }
+.qchron-result.success         { color: #6ab868; background: #0a1a0a; border-color: #2a4820; }
+.qchron-result.narrow_success  { color: #78a890; background: #0a1814; border-color: #1e3828; }
+.qchron-result.retreat         { color: #8898b0; background: #0e1420; border-color: #2a3a50; }
+.qchron-result.failure         { color: #a07858; background: #160e08; border-color: #3a2818; }
+.qchron-result.great_failure   { color: #c06060; background: #180808; border-color: #502020; }
+.qchron-title { font-family: Georgia, serif; font-size: calc(14px * var(--ui-scale)); color: #c8d8cc; margin: 0; font-weight: 500; }
+.qchron-narrative { font-size: var(--font-small); color: #6a7e6c; margin: 0; line-height: 1.55; }
+.qchron-facts { display: flex; align-items: center; flex-wrap: wrap; gap: calc(3px * var(--ui-scale)); margin-top: calc(2px * var(--ui-scale)); }
+.qchron-fact { font-size: var(--font-tiny); color: #4a5e4c; }
+.qchron-fact-sep { width: calc(3px * var(--ui-scale)); height: calc(3px * var(--ui-scale)); border-radius: 50%; background: #2a3a2e; flex-shrink: 0; }
+.qchron-reward { color: #8a7838; }
+.qchron-incident { color: #8a6838; }
+.qchron-support { color: #5a7888; }

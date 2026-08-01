@@ -6,7 +6,10 @@ import type {
   QuestDecision,
   QuestDecisionType,
   QuestEventCategory,
+  QuestResult,
 } from "../../types/game";
+import { calcCurrentDangerLevel } from "./questResult";
+import { buildQuestChronicleEntry } from "./questChronicle";
 
 export const DECISION_LABELS: Record<QuestDecisionType, string> = {
   continue:         "계속 진행",
@@ -93,12 +96,29 @@ export function applyQuestDecision(
       relatedEntityIds: party ? [party.id, ...party.memberIds] : [],
     };
 
+    const questResult: QuestResult = {
+      questId:      quest.id,
+      partyId:      prog.partyId,
+      resultGrade:  decision === "withdraw" ? "retreat" : "failure",
+      successRate:  0,
+      success:      false,
+      dangerLevel:  calcCurrentDangerLevel(quest, prog),
+      supportUsed:  prog.decisions.some(d => d.decision === "support_dispatch"),
+      retreat:      decision === "withdraw",
+      extraExplore: prog.decisions.some(d => d.decision === "extra_explore"),
+      completedAt:  date,
+    };
+
+    const questChronicleEntry = buildQuestChronicleEntry(quest, prog, party ?? null, questResult, state);
+
     return {
       ...state,
       quests: { ...state.quests, [questId]: updatedQuest },
       parties: updatedParties,
       adventurers,
       questProgress,
+      questResults: { ...state.questResults, [questId]: questResult },
+      questChronicle: [questChronicleEntry, ...state.questChronicle],
       chronicle: [chronicleEntry, ...state.chronicle],
     };
   }
