@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**018-J — Dynamic Story Engine**
+**018-K — Dynamic Event Engine**
 
 ## 완료
 
@@ -65,6 +65,16 @@
 - 계절 분위기 문장 33% 확률 삽입, 희귀 장면 2% 확률
 - 적별 전투 행동 패턴 8종, 이동 34개·탐사 32개·전투 50개·귀환 20개 풀
 - 직업별 액션 최대 8개 확장, 협동 패턴 12개
+- Dynamic Event Engine — 데이터 기반 이벤트 선택 (018-K)
+- `QuestTag` 타입 시스템 — 지형·적·위험·목표·계절·난이도·테마 (30+ 태그)
+- `EventDefinition` 구조체 — weight, rarity, requiredTags, blockedTags, boostedByTags, followUpIds
+- `EVENT_POOL` 90개 이벤트 (전투 20·탐사 15·환경 15·보상 10·인물 10·위험 10·희귀 10)
+- `deriveTags()` — Quest 기존 필드에서 태그 자동 파생 (Quest 타입 변경 없음)
+- `selectEvent()` — 태그 가중치·Event Memory·Event Chain 통합 선택
+- Event Memory: `prog.events` 최근 5개 title 기반 중복 이벤트 억제
+- Event Chain: `followUpIds`로 후속 이벤트 우선 선택 (가중치 2배)
+- 희귀 이벤트 10개 (rarity: "rare") — 유성우·검은 기사·오로라·고대 정령 등
+- 설계 문서: EVENT_ENGINE_GUIDE.md / STORY_ENGINE_GUIDE.md / RARE_EVENT_GUIDE.md
 
 ## 현재 데이터 원칙
 
@@ -91,7 +101,7 @@
 
 ## 다음 작업
 
-**019 — 길드 재정 및 랜덤 이벤트**
+**019 — 길드 재정 및 세계 이벤트**
 
 
 ## 주의사항

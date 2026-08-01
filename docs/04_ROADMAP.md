@@ -139,6 +139,17 @@
 - `generateDailyLog` / `generateIncidentLog` — `existingLogs` 파라미터로 Story Memory 구현
 - `advance.ts`: 기존 로그를 Story Memory로 전달
 
+**018-K** Dynamic Event Engine
+- `QuestTag` 타입 시스템 — 지형·적·위험·목표·계절·난이도·테마 (30+ 태그)
+- `EventDefinition` 구조체 — id, category, weight, rarity, requiredTags, blockedTags, requiredStage, boostedByTags, followUpIds
+- `EVENT_POOL` 90개 이벤트 (전투 20·탐사 15·환경 15·보상 10·인물 10·위험 10·희귀 10)
+- `deriveTags()` — Quest 기존 필드(type, riskTags, enemyHint, dangerLevel, regionId, season)에서 태그 자동 파생
+- `selectEvent()` — Event Memory(최근 5개 억제) + Event Chain(followUpIds 가중치 2배) + 태그 가중치 통합
+- `buildQuestEvent()` — EventDefinition → QuestEvent 변환
+- 희귀 이벤트 10개 (rarity: "rare") — 유성우·검은 기사·오로라·고대 정령 등
+- `advance.ts` — `rollEventForQuest` + `generateQuestEvent` → 신규 엔진으로 교체
+- 설계 문서 3개: EVENT_ENGINE_GUIDE.md / STORY_ENGINE_GUIDE.md / RARE_EVENT_GUIDE.md
+
 ---
 
 ## 예정

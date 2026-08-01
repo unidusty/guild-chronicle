@@ -1,7 +1,7 @@
 import type { AdventureLogEntry, ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult, QuestResult } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
-import { generateQuestEvent, rollEventForQuest } from "./questEvents";
+import { deriveTags, selectEvent, buildQuestEvent } from "./eventEngine";
 import { buildQuestResult } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
 import { generateDailyLog, generateIncidentLog, generateCompletionLog } from "./adventureLog";
@@ -189,8 +189,10 @@ function updateQuests(state: GameState): GameState {
         };
 
         // Roll for random event (only when quest still has days remaining)
-        if (quest.assignedPartyId && rollEventForQuest(quest.dangerLevel, quest.type, newStage)) {
-          const event = generateQuestEvent(quest.id, quest.assignedPartyId, absDay(date), quest.type);
+        const tags     = deriveTags(quest, date, state.regions[quest.regionId]);
+        const eventDef = quest.assignedPartyId ? selectEvent(quest, updated, date, tags) : null;
+        if (eventDef && quest.assignedPartyId) {
+          const event = buildQuestEvent(quest.id, quest.assignedPartyId, absDay(date), eventDef);
           updated = {
             ...updated,
             hasIncident: true,

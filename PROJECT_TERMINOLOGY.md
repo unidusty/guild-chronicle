@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (018-G) 작성.
+현재 구현 기준 (018-K) 작성.
 
 ---
 
@@ -430,6 +430,47 @@
 | 건설 전 | `FacilityStatus = "unbuilt"` |
 | 공사 중 | `FacilityStatus = "constructing" | "upgrading"` |
 | 운영 중 | `FacilityStatus = "active"` |
+
+---
+
+## 이벤트 엔진 (018-K)
+
+### QuestTag
+
+의뢰 특성을 나타내는 공통 언어 타입. `"카테고리:값"` 형식.
+
+| 카테고리 | 값 |
+|----------|---|
+| `terrain:*` | `forest` `mountain` `dungeon` `plain` `swamp` `coast` `city` `ruins` |
+| `enemy:*` | `undead` `beast` `bandit` `monster` `dragon` `golem` `goblin` `rodent` |
+| `risk:*` | `ambush` `trap` `collapse` `flood` `disease` `hostile` `magic` `curse` |
+| `obj:*` | `hunt` `escort` `search` `rescue` `explore` `deliver` |
+| `season:*` | `spring` `summer` `autumn` `winter` |
+| `diff:*` | `easy` `normal` `hard` `extreme` |
+| `theme:*` | `mystery` `danger` `treasure` `social` |
+
+### EventDefinition
+
+`src/game/simulation/eventEngine.ts`의 `EVENT_POOL` 항목 구조.
+
+| 필드 | 설명 |
+|------|------|
+| `id` | 식별자 (`ev-{category}-{number}`) |
+| `weight` | 기본 선택 가중치 |
+| `rarity` | `"rare"` (weight 0.5) / `"epic"` (weight 0.1) |
+| `requiredTags` | 전부 존재해야 등장 |
+| `blockedTags` | 하나라도 있으면 제외 |
+| `requiredStage` | 특정 Quest 진행 단계에서만 등장 |
+| `boostedByTags` | 일치할 때마다 weight +2 |
+| `followUpIds` | 다음 이벤트 우선 후보 (Event Chain) |
+
+### Event Memory
+
+`prog.events` 최근 5개의 제목을 기록하여 동일 이벤트 단기 반복을 억제.
+
+### Event Chain
+
+마지막 이벤트의 `followUpIds`에 등록된 이벤트가 가중치 2배로 다음 선택에 우선됨.
 
 ---
 
