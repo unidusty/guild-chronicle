@@ -4,7 +4,7 @@
 
 ## 현재 버전
 
-**018-G — 의뢰 시스템 완성**
+**018-L — Adventure System Integration**
 
 ## 실행 방법
 

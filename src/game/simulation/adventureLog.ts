@@ -1041,6 +1041,8 @@ export function generateDailyLog(
   date: GameDate,
   regionName: string = "",
   existingLogs: AdventureLogEntry[] = [],
+  supportParties: Party[] = [],
+  supportMembers: Adventurer[] = [],
 ): AdventureLogEntry | null {
   const stage: QuestStage = prog.currentStage;
   const day = prog.currentDay;
@@ -1127,6 +1129,22 @@ export function generateDailyLog(
     }
   }
 
+  // Support party cooperation segment (when support has arrived)
+  let sSupport = "";
+  if (supportParties.length > 0 && supportMembers.length > 0) {
+    const supActor = selectActor(supportMembers, classes, ["vanguard", "scout", "support"], seed + "-supdaily");
+    if (supActor) {
+      const supParty = supportParties.find(p => p.memberIds.includes(supActor.id)) ?? supportParties[0];
+      const supPool = [
+        `${supParty.name}의 ${supActor.name}이(가) 함께하며 파티를 지원하였다.`,
+        `${supActor.name}이(가) 지원 파티의 일원으로 임무를 함께 수행하였다.`,
+        `${supActor.name}은(는) 지원대로서 ${party.name}의 곁에서 역할을 다하였다.`,
+      ];
+      sSupport = pickByHash(supPool, seed + "-supact");
+      actorIds.push(supActor.id);
+    }
+  }
+
   // Rare scene: 2% chance (1 in 50)
   let rareScene = "";
   if (hashSeed(seed + "-rare") % 50 === 0) {
@@ -1142,7 +1160,7 @@ export function generateDailyLog(
     category,
     importance: "normal",
     title,
-    narrative: buildScene([s0, s1, s2, s3, rareScene]),
+    narrative: buildScene([s0, s1, s2, s3, sSupport, rareScene]),
     actorIds,
     targetIds: [],
     tags: [quest.type, stage],
@@ -1161,6 +1179,8 @@ export function generateIncidentLog(
   date: GameDate,
   regionName: string = "",
   existingLogs: AdventureLogEntry[] = [],
+  supportParties: Party[] = [],
+  supportMembers: Adventurer[] = [],
 ): AdventureLogEntry {
   const seed = `${quest.id}-ev-${event.eventId}`;
   const day = prog.currentDay;
@@ -1233,11 +1253,31 @@ export function generateIncidentLog(
       }
     }
 
+    // Support party combat action (when support has arrived)
+    if (supportParties.length > 0 && supportMembers.length > 0) {
+      const supActor = selectActor(supportMembers, classes, ["vanguard", "damage"], seed + "-supinc");
+      if (supActor) {
+        const supParty = supportParties.find(p => p.memberIds.includes(supActor.id)) ?? supportParties[0];
+        segments.push(applyVars(
+          getClassAction(supActor.classId, "combat", seed + "-supincact"),
+          { actor: supActor.name, party: supParty.name },
+        ));
+        actorIds.push(supActor.id);
+        // Coop with first main actor if present
+        const firstMainActor = actorIds.length > 1 ? members.find(m => m.id === actorIds[0]) : null;
+        if (firstMainActor) {
+          const coopTmpl = pickAvoidingRecent(SCENE_COOP, seed + "-supcoop", recentSegments);
+          segments.push(applyVars(coopTmpl, { actor: firstMainActor.name, actor2: supActor.name }));
+        }
+      }
+    }
+
     // Combat development segment
     segments.push(pickAvoidingRecent(COMBAT_DEVELOPMENT, seed + "-combdev", recentSegments));
 
-    // s7: turning point (positive bias when party ≥ 3)
-    const turnPool = members.length >= 3 ? SCENE_TURNING_POS : [...SCENE_TURNING_POS, ...SCENE_TURNING_NEG];
+    // s7: turning point (positive bias when party ≥ 3 or support present)
+    const allCount = members.length + supportMembers.length;
+    const turnPool = allCount >= 3 ? SCENE_TURNING_POS : [...SCENE_TURNING_POS, ...SCENE_TURNING_NEG];
     segments.push(pickAvoidingRecent(turnPool, seed + "-turn", recentSegments));
 
     category = "combat";
@@ -1380,31 +1420,53 @@ export function generateSupportArrivalLog(
   quest: Quest,
   prog: QuestProgress,
   mainParty: Party,
-  supportPartyName: string,
+  mainMembers: Adventurer[],
+  supportParty: Party,
+  supportMembers: Adventurer[],
+  classes: Record<EntityId, AdventurerClass>,
   date: GameDate,
 ): AdventureLogEntry {
   const seed = `${quest.id}-support-arrive-${prog.currentDay}`;
+  const actorIds: EntityId[] = [];
 
   // s0: main party struggling
   const s0 = applyVars(pickByHash(SUPPORT_STRUGGLE, seed + "-struggle"), { party: mainParty.name });
 
   // s1: support arrival announcement
   const arrivalTemplates = [
-    `${supportPartyName} 파티가 현장에 도착하여 ${mainParty.name}와(과) 합류하였다.`,
-    `지원대 ${supportPartyName}이(가) 합류하여 파티의 전력이 강화되었다.`,
-    `${supportPartyName}의 지원대가 도착하여 두 파티가 함께 임무를 이어가게 되었다.`,
-    `${mainParty.name}의 위기에 달려온 ${supportPartyName}이(가) 마침내 합류하였다.`,
+    `${supportParty.name} 파티가 현장에 도착하여 ${mainParty.name}와(과) 합류하였다.`,
+    `지원대 ${supportParty.name}이(가) 합류하여 파티의 전력이 크게 강화되었다.`,
+    `${supportParty.name}의 지원대가 도착하여 두 파티가 함께 임무를 이어가게 되었다.`,
+    `${mainParty.name}의 위기에 달려온 ${supportParty.name}이(가) 마침내 합류하였다.`,
   ];
   const s1 = pickByHash(arrivalTemplates, seed);
 
-  // s2: main party reaction
-  const s2 = applyVars(pickByHash(SUPPORT_REACTION, seed + "-react"), { party: mainParty.name });
+  // s2: support member action
+  let s2 = applyVars(pickByHash(SUPPORT_REACTION, seed + "-react"), { party: mainParty.name });
+  const supActor = selectActor(supportMembers, classes, ["vanguard", "damage", "scout"], seed + "-sact");
+  if (supActor) {
+    s2 = applyVars(getClassAction(supActor.classId, "combat", seed + "-sact-cbt"), { actor: supActor.name, party: supportParty.name });
+    actorIds.push(supActor.id);
+  }
 
-  // s3: combined effort
-  const s3 = pickByHash(SUPPORT_COMBINED, seed + "-comb");
+  // s3: main member response
+  let s3 = pickByHash(SUPPORT_COMBINED, seed + "-comb");
+  const mainActor = selectActor(mainMembers, classes, ["vanguard", "damage"], seed + "-mact");
+  if (mainActor) {
+    const mainCoopPool = [
+      `{actor}이(가) 지원대와 함께 전선을 재정비하였다.`,
+      `{actor}은(는) 지원대의 도착에 힘을 얻어 전의를 불태웠다.`,
+      `{actor}이(가) 가세하며 두 파티의 협공이 시작되었다.`,
+    ];
+    s3 = applyVars(pickByHash(mainCoopPool, seed + "-mcoop"), { actor: mainActor.name, party: mainParty.name });
+    actorIds.push(mainActor.id);
+  }
 
-  // s4: turning point
-  const s4 = pickByHash(SCENE_TURNING_POS, seed + "-turn");
+  // s4: combined effort
+  const s4 = pickByHash(SUPPORT_COMBINED, seed + "-combined");
+
+  // s5: turning point
+  const s5 = pickByHash(SCENE_TURNING_POS, seed + "-turn");
 
   return {
     id: `al-${quest.id}-support-${prog.currentDay}-${dateKey(date)}`,
@@ -1414,9 +1476,9 @@ export function generateSupportArrivalLog(
     questDay: prog.currentDay,
     category: "teamwork",
     importance: "notable",
-    title: "지원 파티 합류",
-    narrative: buildScene([s0, s1, s2, s3, s4]),
-    actorIds: [],
+    title: `${supportParty.name} 합류`,
+    narrative: buildScene([s0, s1, s2, s3, s4, s5]),
+    actorIds,
     targetIds: [],
     tags: [quest.type, "support", "arrival"],
   };
@@ -1433,6 +1495,7 @@ export function generateCompletionLog(
   classes: Record<EntityId, AdventurerClass>,
   date: GameDate,
   regionName: string = "",
+  supportParties: Party[] = [],
 ): AdventureLogEntry {
   const seed = `${quest.id}-complete`;
   const partyName = party?.name ?? "파티";
@@ -1549,6 +1612,17 @@ export function generateCompletionLog(
       segments.push(applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name }));
       actorIds.push(actor.id);
     }
+  }
+
+  // Support party mention in completion narrative
+  if (supportParties.length > 0 && result.supportUsed) {
+    const names = supportParties.map(p => p.name).join(", ");
+    const supMentions = [
+      `${names} 파티의 지원이 이번 임무의 중요한 전환점이 되었다.`,
+      `지원에 나선 ${names}이(가) 파티와 함께 임무를 마쳤다.`,
+      `${names}의 합류로 전력이 결집되어 임무를 완수할 수 있었다.`,
+    ];
+    segments.push(pickByHash(supMentions, seed + "-supcomp"));
   }
 
   const category: AdventureLogCategory =

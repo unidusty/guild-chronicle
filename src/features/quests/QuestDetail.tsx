@@ -319,6 +319,38 @@ export default function QuestDetail({ questId, state, onAssign, onDecide }: Prop
           );
         })()}
 
+        {isDispatched && (() => {
+          const prog = state.questProgress[quest.id];
+          if (!prog) return null;
+          const supportDecisions = prog.decisions.filter(d => d.decision === "support_dispatch" && d.supportPartyId);
+          if (supportDecisions.length === 0) return null;
+          return (
+            <section className="quest-detail-section">
+              <p className="char-section-label">참여 파티</p>
+              <div className="quest-party-roster">
+                <div className="quest-party-roster-row">
+                  <span className="quiet">주 파티</span>
+                  <strong>{assignedParty?.name ?? "—"}</strong>
+                </div>
+                {supportDecisions.map(d => {
+                  const sp = state.parties[d.supportPartyId!];
+                  const elapsed = prog.currentDay - d.day;
+                  const arrived = elapsed >= 2;
+                  return (
+                    <div key={d.decisionId} className="quest-party-roster-row">
+                      <span className="quiet">지원 파티</span>
+                      <strong>{sp?.name ?? "—"}</strong>
+                      <span className={`qsp-support ${arrived ? "arrived" : "en_route"}`}>
+                        {arrived ? "합류 완료" : "이동 중"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })()}
+
         <section className="quest-assign-section">
           <p className="char-section-label">파티 배정</p>
 

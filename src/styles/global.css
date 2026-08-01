@@ -451,6 +451,12 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .quest-assign-btn.active { border-color: #5a8a5e; background: rgba(60,90,60,.1); color: #a0c8a4; }
 .quest-assigned-display { display: flex; align-items: center; gap: calc(12px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); background: rgba(40,60,44,.35); border: 1px solid #2a3e2e; }
 .quest-assigned-name { color: #c8e0cc; font-size: var(--font-small); }
+.quest-party-roster { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); margin-top: calc(4px * var(--ui-scale)); }
+.quest-party-roster-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); padding: calc(8px * var(--ui-scale)) calc(12px * var(--ui-scale)); background: rgba(40,60,44,.25); border: 1px solid #2a3e2e; font-size: var(--font-small); }
+.quest-party-roster-row strong { color: #c8e0cc; }
+.qsp-support { font-size: var(--font-xsmall); padding: calc(2px * var(--ui-scale)) calc(6px * var(--ui-scale)); border-radius: 2px; }
+.qsp-support.arrived { color: #7ec87e; background: rgba(80,140,80,.15); border: 1px solid #3a6e3a; }
+.qsp-support.en_route { color: #a0a060; background: rgba(120,120,60,.15); border: 1px solid #5a5a30; }
 
 /* Party picker */
 .quest-party-picker { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); margin-top: calc(4px * var(--ui-scale)); max-height: calc(200px * var(--ui-scale)); overflow-y: auto; }

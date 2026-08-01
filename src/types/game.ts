@@ -244,6 +244,7 @@ export interface QuestChronicleEntry {
   memberCountSnapshot: number;
   incidentCount: number;
   supportUsed: boolean;
+  supportPartyIds: EntityId[];
   extraExplore: boolean;
   successRate: number;
 }

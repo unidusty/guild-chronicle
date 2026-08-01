@@ -150,6 +150,17 @@
 - `advance.ts` — `rollEventForQuest` + `generateQuestEvent` → 신규 엔진으로 교체
 - 설계 문서 3개: EVENT_ENGINE_GUIDE.md / STORY_ENGINE_GUIDE.md / RARE_EVENT_GUIDE.md
 
+**018-L** Adventure System Integration
+- 지원 파티 현장 통합 — `SUPPORT_TRAVEL_DAYS = 2` 도착 판정, 도착 당일 `generateSupportArrivalLog` 생성
+- `generateSupportArrivalLog` 전면 개선 — 주 파티원·지원 파티원 모두 액터로 등장, 6문단 Scene
+- `generateDailyLog` 지원 파티 통합 — 도착 후 날에는 지원 파티원이 일별 로그에 등장
+- `generateIncidentLog` 지원 파티 통합 — 전투 Scene에 지원 파티원 합동 공세 삽입
+- `generateCompletionLog` 지원 파티 언급 — 완료 로그에 지원 파티 기여 문단 추가
+- `QuestChronicleEntry.supportPartyIds` 필드 추가 — 실제 참여한 파티 ID 배열
+- 의뢰 상세 UI — "참여 파티" 섹션: 주 파티 + 지원 파티 목록, 합류 완료 / 이동 중 배지
+- `questDecisions.ts` — 철수·포기 시 `generateCompletionLog`에 지원 파티 전달
+- 설계 문서: ADVENTURE_LOG_GUIDE.md / STORY_ENGINE_GUIDE.md 업데이트
+
 ---
 
 ## 예정

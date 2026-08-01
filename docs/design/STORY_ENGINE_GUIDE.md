@@ -1,6 +1,6 @@
 # STORY ENGINE GUIDE
 
-Guild Chronicle Dynamic Story Engine 설계 기준서. (018-J / 018-K)
+Guild Chronicle Dynamic Story Engine 설계 기준서. (018-L)
 
 ---
 
@@ -90,7 +90,7 @@ function buildScene(segments: string[]): string
 | 전투 이벤트 | 5~8 | 분위기 → 적 등장 → 전투 시작 → 액터1 → 액터2 → 협동 → 전황 → 마무리 |
 | 위험 이벤트 | 4~5 | 분위기 → 묘사 → 긴장 → 대응 → 반전 |
 | 결정 | 2 | 결정 내용 → 파티 반응 |
-| 지원 합류 | 5 | 고전 → 도착 → 반응 → 합류 → 반전 |
+| 지원 합류 | 6 | 고전 → 도착 → 지원원 행동 → 주 파티 반응 → 합동 공세 → 전황 반전 |
 | 대성공 완료 | 6 | 영웅담 → 결정타 → 지원 → 전환 → 승리 → 안도 |
 | 간신히 완료 | 3 | 고전 → 구원 → 안도 |
 | 성공 완료 | 2 | 선언 → 기여 |
@@ -106,6 +106,22 @@ function buildScene(segments: string[]): string
 어드벤처 로그 생성 시 활용하여 상황에 맞는 서사 풀을 선택한다.
 
 예: `category: "combat"` + `enemyHint: "고블린"` → `ENEMY_BEHAVIOR["goblin"]` 우선 선택.
+
+---
+
+## 지원 파티 서사 통합 (018-L)
+
+`generateDailyLog`, `generateIncidentLog`, `generateCompletionLog`는 각각 `supportParties: Party[]`, `supportMembers: Adventurer[]`를 추가 파라미터로 받는다.  
+`generateSupportArrivalLog`는 주 파티원(`mainMembers`)과 지원 파티원(`supportMembers`)을 모두 받아 합류 Scene을 생성한다.
+
+| 상황 | 동작 |
+|------|------|
+| 일별 로그, 지원 도착 후 | 지원 파티원 한 명이 `sSupport` 세그먼트로 등장 |
+| 전투 이벤트, 지원 도착 후 | 지원 파티원 공격 + 주 파티원과 협동 문단 삽입 |
+| 지원 합류 당일 | `generateSupportArrivalLog` 전용 호출, 일별 로그 대체 |
+| 완료 로그 | `result.supportUsed` 시 지원 파티 기여 문단 추가 |
+
+제목은 `"${supportParty.name} 합류"` 형식으로 지원 파티 이름을 포함한다.
 
 ---
 

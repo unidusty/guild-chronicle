@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**018-K — Dynamic Event Engine**
+**018-L — Adventure System Integration**
 
 ## 완료
 
@@ -75,6 +75,13 @@
 - Event Chain: `followUpIds`로 후속 이벤트 우선 선택 (가중치 2배)
 - 희귀 이벤트 10개 (rarity: "rare") — 유성우·검은 기사·오로라·고대 정령 등
 - 설계 문서: EVENT_ENGINE_GUIDE.md / STORY_ENGINE_GUIDE.md / RARE_EVENT_GUIDE.md
+- Adventure System Integration — 지원 파티 현장 참전 (018-L)
+- 지원 파티 도착 판정 (`SUPPORT_TRAVEL_DAYS = 2`) + 도착 당일 합류 Scene 생성
+- `generateSupportArrivalLog` — 주 파티 고전 → 지원 파티 등장 → 합류 6문단 서사
+- `generateDailyLog` / `generateIncidentLog` — 도착한 지원 파티원이 이후 로그에 등장
+- `generateCompletionLog` — 지원 파티 기여 문단 추가 (supportUsed 시)
+- `QuestChronicleEntry.supportPartyIds` — 참여한 파티 ID 배열로 연대기에 기록
+- 의뢰 상세 UI "참여 파티" 섹션 — 주 파티 + 지원 파티 현황 (합류 완료 / 이동 중 배지)
 
 ## 현재 데이터 원칙
 
@@ -101,7 +108,7 @@
 
 ## 다음 작업
 
-**019 — 길드 재정 및 세계 이벤트**
+**019 — 길드 재정 및 세계 이벤트 (예정)**
 
 
 ## 주의사항

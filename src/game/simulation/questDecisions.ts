@@ -115,7 +115,11 @@ export function applyQuestDecision(
     // Generate decision + completion adventure logs
     const decLog = generateDecisionLog(quest, decisionEntry, prog, party ?? null, null, date);
     const members = party ? party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][] : [];
-    const compLog = generateCompletionLog(quest, questResult, prog, party ?? null, members, state.classes, date, state.regions[quest.regionId]?.name ?? "");
+    const withdrawSupportParties = prog.decisions
+      .filter(d => d.decision === "support_dispatch" && d.supportPartyId && (prog.currentDay - d.day) >= 2)
+      .map(d => state.parties[d.supportPartyId!])
+      .filter((p): p is typeof p & object => p !== undefined);
+    const compLog = generateCompletionLog(quest, questResult, prog, party ?? null, members, state.classes, date, state.regions[quest.regionId]?.name ?? "", withdrawSupportParties);
     const existingLogs = state.adventureLogs[questId] ?? [];
     const updatedAdventureLogs = {
       ...state.adventureLogs,

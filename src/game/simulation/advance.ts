@@ -4,7 +4,9 @@ import { calcQuestStage } from "./questProgress";
 import { deriveTags, selectEvent, buildQuestEvent } from "./eventEngine";
 import { buildQuestResult } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
-import { generateDailyLog, generateIncidentLog, generateCompletionLog } from "./adventureLog";
+import { generateDailyLog, generateIncidentLog, generateCompletionLog, generateSupportArrivalLog } from "./adventureLog";
+
+const SUPPORT_TRAVEL_DAYS = 2;
 
 function absDay(date: GameDate): number {
   const si = ["spring", "summer", "autumn", "winter"].indexOf(date.season);
@@ -91,11 +93,15 @@ function updateQuests(state: GameState): GameState {
         const snapshotParty = state.parties[quest.assignedPartyId] ?? null;
         newQuestChronicleEntries.push(buildQuestChronicleEntry(quest, prog, snapshotParty, questResult, state));
 
-        // Generate completion adventure log
+        // Generate completion adventure log (with arrived support parties)
         const compMembers = snapshotParty
           ? snapshotParty.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][]
           : [];
-        appendLog(quest.id, generateCompletionLog(quest, questResult, prog, snapshotParty, compMembers, state.classes, date, state.regions[quest.regionId]?.name ?? ""));
+        const compSupportParties = prog.decisions
+          .filter(d => d.decision === "support_dispatch" && d.supportPartyId && (prog.currentDay - d.day) >= SUPPORT_TRAVEL_DAYS)
+          .map(d => state.parties[d.supportPartyId!])
+          .filter((p): p is typeof p & object => p !== undefined);
+        appendLog(quest.id, generateCompletionLog(quest, questResult, prog, snapshotParty, compMembers, state.classes, date, state.regions[quest.regionId]?.name ?? "", compSupportParties));
       }
 
       // Release support parties from decisions
@@ -188,6 +194,32 @@ function updateQuests(state: GameState): GameState {
           reportRead:   stageChanged ? false : existing.reportRead,
         };
 
+        // Compute arrived support parties (for log generation and event selection)
+        const arrivedSupportParties = updated.decisions
+          .filter(d => d.decision === "support_dispatch" && d.supportPartyId && (updated.currentDay - d.day) >= SUPPORT_TRAVEL_DAYS)
+          .map(d => state.parties[d.supportPartyId!])
+          .filter((p): p is typeof p & object => p !== undefined);
+        const arrivedSupportMembers = arrivedSupportParties.flatMap(
+          p => p.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][]
+        );
+
+        // Detect support parties that just arrived today (en_route → arrived)
+        const newlyArrivedDecisions = updated.decisions.filter(d =>
+          d.decision === "support_dispatch" && d.supportPartyId &&
+          (updated.currentDay - d.day) === SUPPORT_TRAVEL_DAYS
+        );
+        for (const decision of newlyArrivedDecisions) {
+          const supParty = state.parties[decision.supportPartyId!];
+          if (supParty && quest.assignedPartyId) {
+            const mainParty = state.parties[quest.assignedPartyId];
+            if (mainParty) {
+              const mainMembers = mainParty.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
+              const supMembers  = supParty.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
+              appendLog(quest.id, generateSupportArrivalLog(quest, updated, mainParty, mainMembers, supParty, supMembers, state.classes, date));
+            }
+          }
+        }
+
         // Roll for random event (only when quest still has days remaining)
         const tags     = deriveTags(quest, date, state.regions[quest.regionId]);
         const eventDef = quest.assignedPartyId ? selectEvent(quest, updated, date, tags) : null;
@@ -200,20 +232,20 @@ function updateQuests(state: GameState): GameState {
             events:      [...existing.events, event],
           };
 
-          // Generate incident adventure log
+          // Generate incident adventure log (with support party if present)
           const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
           if (party) {
             const members = party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
             const existingLogs = (state.adventureLogs ?? {})[quest.id] ?? [];
-            appendLog(quest.id, generateIncidentLog(quest, event, updated, party, members, state.classes, date, state.regions[quest.regionId]?.name ?? "", existingLogs));
+            appendLog(quest.id, generateIncidentLog(quest, event, updated, party, members, state.classes, date, state.regions[quest.regionId]?.name ?? "", existingLogs, arrivedSupportParties, arrivedSupportMembers));
           }
-        } else {
-          // Generate daily routine log
+        } else if (newlyArrivedDecisions.length === 0) {
+          // Generate daily routine log (skip if support just arrived — support log serves as today's entry)
           const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
           if (party) {
             const members = party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
             const existingLogs = (state.adventureLogs ?? {})[quest.id] ?? [];
-            const dailyLog = generateDailyLog(quest, updated, party, members, state.classes, date, state.regions[quest.regionId]?.name ?? "", existingLogs);
+            const dailyLog = generateDailyLog(quest, updated, party, members, state.classes, date, state.regions[quest.regionId]?.name ?? "", existingLogs, arrivedSupportParties, arrivedSupportMembers);
             if (dailyLog) appendLog(quest.id, dailyLog);
           }
         }

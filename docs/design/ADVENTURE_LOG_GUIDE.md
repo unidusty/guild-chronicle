@@ -1,6 +1,6 @@
 # ADVENTURE LOG GUIDE
 
-Guild Chronicle 모험 기록 시스템 설계 기준서. (018-I: Scene 기반으로 전면 개편)
+Guild Chronicle 모험 기록 시스템 설계 기준서. (018-L: 지원 파티 현장 통합)
 
 ---
 
@@ -10,7 +10,8 @@ Guild Chronicle 모험 기록 시스템 설계 기준서. (018-I: Scene 기반�
 플레이어는 의뢰 상세 화면(진행 중)과 의뢰 연대기 탭(완료 후)에서 확인한다.
 
 **018-H**: 로그 기반 시스템 구현 — 이벤트당 1~2문장  
-**018-I**: Scene 기반으로 전환 — 이벤트당 2~8문단, 2~4명 모험가 등장
+**018-I**: Scene 기반으로 전환 — 이벤트당 2~8문단, 2~4명 모험가 등장  
+**018-L**: 지원 파티 현장 통합 — 도착 후 지원 파티원이 모든 로그에 등장
 
 ---
 
@@ -63,7 +64,8 @@ interface AdventureLogEntry {
 | `generateSupportArrivalLog` | 지원 파티 도착 시 | `al-{q}-support-{dateKey}` |
 | `generateCompletionLog` | 의뢰 완료·철수·포기 시 | `al-{q}-complete-{dateKey}` |
 
-이벤트 발생 날은 `generateIncidentLog`만 생성하고 `generateDailyLog`는 생략한다.
+이벤트 발생 날은 `generateIncidentLog`만 생성하고 `generateDailyLog`는 생략한다.  
+지원 파티 도착 날(`currentDay - decision.day === 2`)은 `generateSupportArrivalLog`만 생성하고 `generateDailyLog`는 생략한다.
 
 ---
 
@@ -110,13 +112,29 @@ interface AdventureLogEntry {
 | 위험 사건 (`danger`) | 4~5 | 분위기 → 위험 묘사 → 긴장 → 액터 대응 → 반전 |
 | 탐사·발견 사건 | 3 | 발견 묘사 → 액터 탐사 행동 → 안도 |
 | 결정 (`decision`) | 2 | 결정 내용 → 파티 반응·다음 행동 |
-| 지원 합류 (`teamwork`) | 5 | 고전 묘사 → 지원 도착 → 파티 반응 → 합류 → 전황 반전 |
+| 지원 합류 (`teamwork`) | 6 | 고전 묘사 → 지원 도착 → 지원원 행동 → 주 파티 반응 → 합동 공세 → 전황 반전 |
 | 대성공 완료 | 6 | 영웅담 → 액터1 결정타 → 액터2 지원 → 전황 전환 → 승리 → 안도 |
 | 간신히 완료 | 3 | 고전 묘사 → 구원 액터 → 안도 |
 | 성공 완료 | 2 | 완료 선언 → 액터 기여 |
 | 철수 완료 | 3 | 열세 묘사 → 철수 결정 → 귀환 |
 | 실패 완료 | 3 | 실패 선언 → 원인 설명 → 무거운 여운 |
 | 대실패 완료 | 5 | 고전 묘사 → 액터 분투 → 전선 붕괴 → 대실패 선언 → 여운 |
+
+---
+
+## 지원 파티 통합 (018-L)
+
+`generateDailyLog`, `generateIncidentLog`, `generateCompletionLog`는 각각 `supportParties: Party[]`, `supportMembers: Adventurer[]` 파라미터를 추가로 받는다.  
+`generateSupportArrivalLog`는 주 파티원(`mainMembers`)과 지원 파티원(`supportMembers`)을 모두 받아 두 집단의 모험가를 한 Scene에 등장시킨다.
+
+| 함수 | 지원 파티 동작 |
+|------|--------------|
+| `generateDailyLog` | `supportParties.length > 0`이면 지원 파티원 한 명이 일별 로그에 등장 |
+| `generateIncidentLog` | 전투 Scene에 지원 파티원 공격 + 주 파티원과 협동 문단 삽입 |
+| `generateSupportArrivalLog` | 고전 → 도착 알림 → 지원원 행동 → 주 파티 반응 → 합동 공세 → 전황 반전 (6문단) |
+| `generateCompletionLog` | `result.supportUsed` 시 지원 파티 기여 문단 추가 |
+
+`advance.ts`는 의뢰 진행 루프에서 도착한 지원 파티(`currentDay - decision.day >= SUPPORT_TRAVEL_DAYS`)를 계산해 각 함수에 전달한다.
 
 ---
 

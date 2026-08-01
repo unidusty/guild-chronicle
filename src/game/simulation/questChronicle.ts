@@ -138,6 +138,9 @@ export function buildQuestChronicleEntry(
     memberCountSnapshot: party?.memberIds.length ?? 0,
     incidentCount:     prog?.events.length ?? 0,
     supportUsed:       result.supportUsed,
+    supportPartyIds:   (prog?.decisions ?? [])
+      .filter(d => d.decision === "support_dispatch" && d.supportPartyId)
+      .map(d => d.supportPartyId!),
     extraExplore:      result.extraExplore,
     successRate:       result.successRate,
   };

@@ -1,4 +1,4 @@
-import { useSensor, useSensors, DndContext, DragOverlay, PointerSensor } from "@dnd-kit/core";
+import { useSensor, useSensors, DndContext, DragOverlay, PointerSensor, TouchSensor } from "@dnd-kit/core";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useState } from "react";
@@ -262,7 +262,8 @@ export default function FormationGrid({
   const [activeDrag, setActiveDrag] = useState<DragData | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 100, tolerance: 5 } }),
   );
 
   const assignedIds = new Set(Object.values(formation).filter(Boolean) as string[]);

@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (018-K) 작성.
+현재 구현 기준 (018-L) 작성.
 
 ---
 
@@ -277,7 +277,17 @@
 | 일별 | `al-{questId}-day-{day}-{dateKey}` |
 | 이벤트 | `al-{questId}-ev-{eventId}` |
 | 결정 | `al-{questId}-dec-{decisionId}` |
+| 지원 합류 | `al-{questId}-support-{dateKey}` |
 | 완료 | `al-{questId}-complete-{dateKey}` |
+
+### 지원 파티 시스템 (018-L)
+
+| 용어 | 설명 |
+|------|------|
+| `SUPPORT_TRAVEL_DAYS` | 지원 파티 이동 기간 상수 (= 2일) |
+| 이동 중 (`en_route`) | 결정 후 아직 도착하지 않은 상태 |
+| 합류 완료 (`arrived`) | `currentDay - decision.day >= SUPPORT_TRAVEL_DAYS` |
+| `supportPartyIds` | `QuestChronicleEntry`에 기록되는 참여 파티 ID 배열 |
 
 ---
 
