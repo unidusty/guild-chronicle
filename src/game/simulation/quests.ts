@@ -2,6 +2,7 @@ import type { AdventurerRank, ChronicleEntry, EntityId, GameState } from "../../
 import { rankToNum, isChallengeMode } from "./combatPower";
 import { createQuestProgress } from "./questProgress";
 import { toAbsoluteDay } from "./recruitment";
+import { generateDepartureLog } from "./adventureLog";
 
 export function canAssignParty(partyRank: AdventurerRank, questGrade: AdventurerRank): boolean {
   // allow up to 1 rank below (challenge mode); 2+ ranks below is blocked
@@ -62,6 +63,10 @@ export function assignQuest(state: GameState, questId: EntityId, partyId: Entity
   const expectedEndDay = startDay + quest.durationDays;
   const progress = createQuestProgress(questId, partyId, startDay, expectedEndDay, quest.durationDays);
 
+  const members = party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
+  const regionName = state.regions[quest.regionId]?.name ?? "해당 지역";
+  const departureLog = generateDepartureLog(quest, party, members, state.classes, regionName, date);
+
   return {
     ...state,
     quests: { ...state.quests, [questId]: updatedQuest },
@@ -69,5 +74,9 @@ export function assignQuest(state: GameState, questId: EntityId, partyId: Entity
     adventurers,
     chronicle: [chronicle, ...state.chronicle],
     questProgress: { ...state.questProgress, [questId]: progress },
+    adventureLogs: {
+      ...state.adventureLogs,
+      [questId]: [departureLog],
+    },
   };
 }

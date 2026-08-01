@@ -10,6 +10,7 @@ import type {
 } from "../../types/game";
 import { calcCurrentDangerLevel } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
+import { generateDecisionLog, generateCompletionLog } from "./adventureLog";
 
 export const DECISION_LABELS: Record<QuestDecisionType, string> = {
   continue:         "계속 진행",
@@ -111,6 +112,16 @@ export function applyQuestDecision(
 
     const questChronicleEntry = buildQuestChronicleEntry(quest, prog, party ?? null, questResult, state);
 
+    // Generate decision + completion adventure logs
+    const decLog = generateDecisionLog(quest, decisionEntry, prog, party ?? null, null, date);
+    const members = party ? party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][] : [];
+    const compLog = generateCompletionLog(quest, questResult, prog, party ?? null, members, state.classes, date);
+    const existingLogs = state.adventureLogs[questId] ?? [];
+    const updatedAdventureLogs = {
+      ...state.adventureLogs,
+      [questId]: [...existingLogs, decLog, compLog],
+    };
+
     return {
       ...state,
       quests: { ...state.quests, [questId]: updatedQuest },
@@ -120,6 +131,7 @@ export function applyQuestDecision(
       questResults: { ...state.questResults, [questId]: questResult },
       questChronicle: [questChronicleEntry, ...state.questChronicle],
       chronicle: [chronicleEntry, ...state.chronicle],
+      adventureLogs: updatedAdventureLogs,
     };
   }
 
@@ -130,6 +142,17 @@ export function applyQuestDecision(
     events: prog.events.map(e => e.eventId === eventId ? { ...e, read: true } : e),
     decisions: [...prog.decisions, decisionEntry],
   };
+
+  // Generate decision adventure log entry
+  const decisionLog = generateDecisionLog(
+    quest,
+    decisionEntry,
+    updatedProgress,
+    party ?? null,
+    supportPartyId ? (state.parties[supportPartyId]?.name ?? null) : null,
+    date,
+  );
+  const existingLogsForContinue = state.adventureLogs[questId] ?? [];
 
   // Dispatch support party immediately (they travel, but are committed)
   if (decision === "support_dispatch" && supportPartyId) {
@@ -153,6 +176,7 @@ export function applyQuestDecision(
         },
         adventurers: updatedAdventurers,
         questProgress: { ...state.questProgress, [questId]: updatedProgress },
+        adventureLogs: { ...state.adventureLogs, [questId]: [...existingLogsForContinue, decisionLog] },
       };
     }
   }
@@ -160,5 +184,6 @@ export function applyQuestDecision(
   return {
     ...state,
     questProgress: { ...state.questProgress, [questId]: updatedProgress },
+    adventureLogs: { ...state.adventureLogs, [questId]: [...existingLogsForContinue, decisionLog] },
   };
 }

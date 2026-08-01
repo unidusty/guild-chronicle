@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { EntityId, GameState, QuestChronicleEntry } from "../../types/game";
+import type { AdventureLogCategory, EntityId, GameState, QuestChronicleEntry } from "../../types/game";
 import { questCategoryLabels, questResultGradeLabels } from "../../game/constants/labels";
 import { formatGameDate } from "../../game/simulation/selectors";
 
@@ -17,9 +17,17 @@ interface Props {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+const ADV_LOG_CATEGORY_LABELS: Record<AdventureLogCategory, string> = {
+  departure: "출발", travel: "이동", exploration: "탐사", combat: "전투", defense: "방어",
+  healing: "치료", discovery: "발견", incident: "사건", decision: "결정", injury: "부상",
+  growth: "성장", trait: "특성", relationship: "관계", teamwork: "팀워크", retreat: "철수",
+  failure: "실패", death: "사망", return: "귀환", completion: "완료",
+};
+
 export default function QuestChronicleTab({ state }: Props) {
   const [partyFilter, setPartyFilter] = useState<EntityId | "all">("all");
   const [yearFilter, setYearFilter] = useState<number | "all">("all");
+  const [selectedQuestId, setSelectedQuestId] = useState<EntityId | null>(null);
 
   const chronicle: QuestChronicleEntry[] = state.questChronicle ?? [];
 
@@ -67,6 +75,8 @@ export default function QuestChronicleTab({ state }: Props) {
   const hasAnyChronicle = chronicle.length > 0;
   const isEmpty = filtered.length === 0;
 
+  const selectedLogs = selectedQuestId ? ((state.adventureLogs ?? {})[selectedQuestId] ?? []) : [];
+
   return (
     <div className="qchron-wrap">
       {/* Filter bar */}
@@ -104,26 +114,64 @@ export default function QuestChronicleTab({ state }: Props) {
         </select>
       </div>
 
-      {/* List or empty state */}
-      {isEmpty ? (
-        <div className="qchron-empty">
-          {hasAnyChronicle ? (
-            <p>선택한 조건에 맞는 기록이 없습니다.</p>
+      {/* Body: list + optional log detail */}
+      <div className="qchron-body">
+        {/* List or empty state */}
+        <div className="qchron-list-col">
+          {isEmpty ? (
+            <div className="qchron-empty">
+              {hasAnyChronicle ? (
+                <p>선택한 조건에 맞는 기록이 없습니다.</p>
+              ) : (
+                <p>
+                  아직 길드가 완수한 의뢰 기록이 없습니다.
+                  <br />
+                  첫 의뢰의 기록이 이곳에 남게 됩니다.
+                </p>
+              )}
+            </div>
           ) : (
-            <p>
-              아직 길드가 완수한 의뢰 기록이 없습니다.
-              <br />
-              첫 의뢰의 기록이 이곳에 남게 됩니다.
-            </p>
+            <div className="qchron-list">
+              {filtered.map((entry) => (
+                <ChronicleEntryRow
+                  key={entry.id}
+                  entry={entry}
+                  selected={entry.questId === selectedQuestId}
+                  onSelect={() => setSelectedQuestId(selectedQuestId === entry.questId ? null : entry.questId)}
+                />
+              ))}
+            </div>
           )}
         </div>
-      ) : (
-        <div className="qchron-list">
-          {filtered.map((entry) => (
-            <ChronicleEntryRow key={entry.id} entry={entry} />
-          ))}
-        </div>
-      )}
+
+        {/* Adventure log detail panel */}
+        {selectedQuestId && (
+          <div className="qchron-log-panel">
+            <div className="qchron-log-header">
+              <span className="qchron-log-title">모험 기록</span>
+              <button className="qchron-log-close" onClick={() => setSelectedQuestId(null)}>✕</button>
+            </div>
+            {selectedLogs.length === 0 ? (
+              <div className="qchron-log-empty">
+                <p>이 의뢰에는 상세 모험 기록이 남아 있지 않습니다.</p>
+              </div>
+            ) : (
+              <div className="qchron-log-entries">
+                {selectedLogs.map((entry) => (
+                  <div key={entry.id} className={`adv-log-entry adv-log-cat-${entry.category}`}>
+                    <div className="adv-log-meta">
+                      <span className="adv-log-day">{entry.questDay}일차</span>
+                      <span className="adv-log-category">{ADV_LOG_CATEGORY_LABELS[entry.category]}</span>
+                      <span className="adv-log-date">{formatGameDate(entry.date)}</span>
+                    </div>
+                    <p className="adv-log-narrative">{entry.narrative}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -132,15 +180,20 @@ export default function QuestChronicleTab({ state }: Props) {
 
 interface EntryRowProps {
   entry: QuestChronicleEntry;
+  selected?: boolean;
+  onSelect?: () => void;
 }
 
-function ChronicleEntryRow({ entry }: EntryRowProps) {
+function ChronicleEntryRow({ entry, selected, onSelect }: EntryRowProps) {
   const partyLabel = entry.partyNameSnapshot ?? entry.partyId ?? "길드";
   const categoryLabel = questCategoryLabels[entry.questCategory];
   const gradeLabel = questResultGradeLabels[entry.resultGrade];
 
   return (
-    <div className="qchron-entry">
+    <div
+      className={`qchron-entry${selected ? " selected" : ""}${onSelect ? " clickable" : ""}`}
+      onClick={onSelect}
+    >
       <div className="qchron-entry-top">
         <div className="qchron-date">{formatGameDate(entry.completedDate)}</div>
         <span className={`qchron-result ${entry.resultGrade}`}>

@@ -1,9 +1,10 @@
-import type { ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult, QuestResult } from "../../types/game";
+import type { AdventureLogEntry, ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult, QuestResult } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
 import { generateQuestEvent, rollEventForQuest } from "./questEvents";
 import { buildQuestResult } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
+import { generateDailyLog, generateIncidentLog, generateCompletionLog } from "./adventureLog";
 
 function absDay(date: GameDate): number {
   const si = ["spring", "summer", "autumn", "winter"].indexOf(date.season);
@@ -60,6 +61,7 @@ function updateQuests(state: GameState): GameState {
   const newResults: QuestCompletionResult[] = [];
   const newQuestResults: QuestResult[] = [];
   const newQuestChronicleEntries: ReturnType<typeof buildQuestChronicleEntry>[] = [];
+  const newAdventureLogEntries: Record<string, AdventureLogEntry[]> = {};
   const quests        = { ...state.quests };
   const adventurers   = { ...state.adventurers };
   const parties       = { ...state.parties };
@@ -67,6 +69,11 @@ function updateQuests(state: GameState): GameState {
   const questProgress = { ...state.questProgress };
   const date          = state.currentDate;
   let   goldEarned    = 0;
+
+  function appendLog(questId: string, entry: AdventureLogEntry) {
+    if (!newAdventureLogEntries[questId]) newAdventureLogEntries[questId] = [];
+    newAdventureLogEntries[questId].push(entry);
+  }
 
   for (const quest of Object.values(state.quests)) {
     if (quest.status !== "assigned") continue;
@@ -83,6 +90,12 @@ function updateQuests(state: GameState): GameState {
         newQuestResults.push(questResult);
         const snapshotParty = state.parties[quest.assignedPartyId] ?? null;
         newQuestChronicleEntries.push(buildQuestChronicleEntry(quest, prog, snapshotParty, questResult, state));
+
+        // Generate completion adventure log
+        const compMembers = snapshotParty
+          ? snapshotParty.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][]
+          : [];
+        appendLog(quest.id, generateCompletionLog(quest, questResult, prog, snapshotParty, compMembers, state.classes, date));
       }
 
       // Release support parties from decisions
@@ -184,6 +197,21 @@ function updateQuests(state: GameState): GameState {
             incidentId:  event.eventId,
             events:      [...existing.events, event],
           };
+
+          // Generate incident adventure log
+          const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
+          if (party) {
+            const members = party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
+            appendLog(quest.id, generateIncidentLog(quest, event, updated, party, members, state.classes, date));
+          }
+        } else {
+          // Generate daily routine log
+          const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
+          if (party) {
+            const members = party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
+            const dailyLog = generateDailyLog(quest, updated, party, members, state.classes, date);
+            if (dailyLog) appendLog(quest.id, dailyLog);
+          }
         }
 
         questProgress[quest.id] = updated;
@@ -199,6 +227,15 @@ function updateQuests(state: GameState): GameState {
     ? [...newQuestChronicleEntries, ...state.questChronicle]
     : state.questChronicle;
 
+  // Merge new adventure log entries into existing logs
+  let updatedAdventureLogs = state.adventureLogs;
+  if (Object.keys(newAdventureLogEntries).length > 0) {
+    updatedAdventureLogs = { ...state.adventureLogs };
+    for (const [questId, entries] of Object.entries(newAdventureLogEntries)) {
+      updatedAdventureLogs[questId] = [...(updatedAdventureLogs[questId] ?? []), ...entries];
+    }
+  }
+
   return {
     ...state,
     guild:          goldEarned > 0 ? { ...state.guild, gold: state.guild.gold + goldEarned } : state.guild,
@@ -209,6 +246,7 @@ function updateQuests(state: GameState): GameState {
     questProgress,
     questResults:    updatedQuestResults,
     questChronicle:  updatedQuestChronicle,
+    adventureLogs:   updatedAdventureLogs,
     chronicle:       [...newEntries, ...state.chronicle],
     pendingResults:  [...state.pendingResults, ...newResults],
   };

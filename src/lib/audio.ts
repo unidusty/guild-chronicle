@@ -17,13 +17,15 @@ const SELECT_COEFF = 1.0;
 
 // ── Singleton audio elements ────────────────────────────────────────────────────
 
-let bgmEl:    HTMLAudioElement | null = null;
-let hoverEl:  HTMLAudioElement | null = null;
-let selectEl: HTMLAudioElement | null = null;
+let bgmEl:       HTMLAudioElement | null = null;
+let hoverEl:     HTMLAudioElement | null = null;
+let selectEl:    HTMLAudioElement | null = null;
+let paperOpenEl: HTMLAudioElement | null = null;
 
-function getBgm():    HTMLAudioElement { if (!bgmEl)    { bgmEl    = new Audio("/audio/guild-hall-bgm.mp3"); bgmEl.loop = true; } return bgmEl; }
-function getHover():  HTMLAudioElement { if (!hoverEl)  hoverEl  = new Audio("/audio/ui-hover.mp3");  return hoverEl; }
-function getSelect(): HTMLAudioElement { if (!selectEl) selectEl = new Audio("/audio/ui-select.mp3"); return selectEl; }
+function getBgm():       HTMLAudioElement { if (!bgmEl)       { bgmEl       = new Audio("/audio/guild-hall-bgm.mp3"); bgmEl.loop = true; } return bgmEl; }
+function getHover():     HTMLAudioElement { if (!hoverEl)     hoverEl     = new Audio("/audio/ui-hover.mp3");  return hoverEl; }
+function getSelect():    HTMLAudioElement { if (!selectEl)    selectEl    = new Audio("/audio/ui-select.mp3"); return selectEl; }
+function getPaperOpen(): HTMLAudioElement { if (!paperOpenEl) paperOpenEl = new Audio("/game-assets/audio/sfx/ui-quest-paper-open.mp3"); return paperOpenEl; }
 
 // ── localStorage helpers ────────────────────────────────────────────────────────
 
@@ -76,6 +78,21 @@ export function playSelect() {
   a.volume = (_sfxVolume / 100) * SELECT_COEFF;
   a.currentTime = 0;
   a.play().catch(() => {});
+}
+
+let _paperOpenPlaying = false;
+export function playQuestPaperOpen() {
+  if (_sfxMuted || _sfxVolume === 0) return;
+  if (_paperOpenPlaying) {
+    try { getPaperOpen().currentTime = 0; } catch {}
+    return;
+  }
+  const a = getPaperOpen();
+  a.volume = (_sfxVolume / 100) * 0.9;
+  a.currentTime = 0;
+  _paperOpenPlaying = true;
+  a.play().catch(() => { _paperOpenPlaying = false; });
+  a.addEventListener("ended", () => { _paperOpenPlaying = false; }, { once: true });
 }
 
 export function playSelectPreview(sfxVol: number) {

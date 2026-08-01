@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { AdventurerRank, EntityId, GameState, QuestDecisionType, QuestEventCategory } from "../../types/game";
+import type { AdventureLogCategory, AdventureLogImportance, AdventurerRank, EntityId, GameState, QuestDecisionType, QuestEventCategory } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
+import { formatGameDate } from "../../game/simulation/selectors";
 import { dangerLevelLabel, questCategoryLabels, questStageLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
 import { CHOICES_BY_CATEGORY, DECISION_LABELS } from "../../game/simulation/questDecisions";
 import { calcCurrentDangerLevel, calcCurrentSuccessRate, getSupportStatus } from "../../game/simulation/questResult";
@@ -9,6 +10,17 @@ import { calcPartyCombatPower, calcQuestSuccessRate, getQuestRecommendedPower } 
 
 const EVENT_CATEGORY_LABELS: Record<QuestEventCategory, string> = {
   exploration: "탐색", combat: "전투", environment: "환경", reward: "보상", person: "인물", danger: "위험",
+};
+
+const ADV_LOG_CATEGORY_LABELS: Record<AdventureLogCategory, string> = {
+  departure: "출발", travel: "이동", exploration: "탐사", combat: "전투", defense: "방어",
+  healing: "치료", discovery: "발견", incident: "사건", decision: "결정", injury: "부상",
+  growth: "성장", trait: "특성", relationship: "관계", teamwork: "팀워크", retreat: "철수",
+  failure: "실패", death: "사망", return: "귀환", completion: "완료",
+};
+
+const ADV_LOG_IMPORTANCE_CLASS: Record<AdventureLogImportance, string> = {
+  normal: "", notable: "notable", major: "major", historic: "historic",
 };
 
 const DECISION_DANGER: Set<QuestDecisionType> = new Set(["withdraw", "abandon"]);
@@ -265,6 +277,39 @@ export default function QuestDetail({ questId, state, onAssign, onDecide }: Prop
                     특이사항 <span className="quiet">없음</span>
                   </div>
                 )}
+              </div>
+            </section>
+          );
+        })()}
+
+        {isDispatched && (() => {
+          const logs = (state.adventureLogs ?? {})[quest.id] ?? [];
+          if (logs.length === 0) return null;
+          const displayLogs = logs.slice(-12).slice().reverse();
+          return (
+            <section className="quest-detail-section">
+              <p className="char-section-label">모험 기록</p>
+              <div className="adv-log-list">
+                {displayLogs.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className={`adv-log-entry adv-log-cat-${entry.category}${ADV_LOG_IMPORTANCE_CLASS[entry.importance] ? ` adv-log-${ADV_LOG_IMPORTANCE_CLASS[entry.importance]}` : ""}`}
+                  >
+                    <div className="adv-log-meta">
+                      <span className="adv-log-day">{entry.questDay}일차</span>
+                      <span className="adv-log-category">{ADV_LOG_CATEGORY_LABELS[entry.category]}</span>
+                      <span className="adv-log-date">{formatGameDate(entry.date)}</span>
+                    </div>
+                    <p className="adv-log-narrative">{entry.narrative}</p>
+                    {entry.actorIds.length > 0 && (() => {
+                      const names = entry.actorIds
+                        .map(id => state.adventurers[id]?.name)
+                        .filter(Boolean)
+                        .join(", ");
+                      return names ? <span className="adv-log-actors">{names}</span> : null;
+                    })()}
+                  </div>
+                ))}
               </div>
             </section>
           );

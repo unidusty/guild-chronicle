@@ -1131,3 +1131,78 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .qchron-reward { color: #8a7838; }
 .qchron-incident { color: #8a6838; }
 .qchron-support { color: #5a7888; }
+
+/* Chronicle entry clickable + selected */
+.qchron-entry.clickable { cursor: pointer; }
+.qchron-entry.selected { background: #0e1e14; border-left: 2px solid #4a7050; padding-left: calc(16px * var(--ui-scale)); }
+
+/* Chronicle body split layout */
+.qchron-body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+.qchron-list-col { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-width: 0; }
+.qchron-list { display: flex; flex-direction: column; }
+
+/* Chronicle log detail panel */
+.qchron-log-panel { width: calc(320px * var(--ui-scale)); flex-shrink: 0; border-left: 1px solid #1e2e20; display: flex; flex-direction: column; overflow: hidden; background: #0b1210; }
+.qchron-log-header { display: flex; align-items: center; justify-content: space-between; padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); border-bottom: 1px solid #1e2e20; flex-shrink: 0; }
+.qchron-log-title { font-size: var(--font-small); color: #8a9e8c; font-weight: 600; }
+.qchron-log-close { background: transparent; border: none; color: #4a5e4c; cursor: pointer; font-size: var(--font-base); padding: 0 calc(4px * var(--ui-scale)); line-height: 1; }
+.qchron-log-close:hover { color: #8a9e8c; }
+.qchron-log-empty { display: flex; align-items: center; justify-content: center; flex: 1; padding: calc(20px * var(--ui-scale)); color: #3a4e3c; font-size: var(--font-small); text-align: center; }
+.qchron-log-entries { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: calc(8px * var(--ui-scale)); gap: calc(6px * var(--ui-scale)); }
+
+/* ── 018-F: Adventure Log ───────────────────────────────────────────────────── */
+
+/* Adventure log list in QuestDetail */
+.adv-log-list { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
+
+/* Adventure log entry base */
+.adv-log-entry { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); padding: calc(8px * var(--ui-scale)) calc(10px * var(--ui-scale)); border-left: 2px solid #1e2e20; background: #0b1410; border-radius: 0 2px 2px 0; }
+
+/* Importance variants */
+.adv-log-entry.adv-log-notable { border-left-color: #3a5040; background: #0d1814; }
+.adv-log-entry.adv-log-major   { border-left-color: #5a7050; background: #101c14; }
+.adv-log-entry.adv-log-historic { border-left-color: #8a9860; background: #141e10; }
+
+/* Category color accents */
+.adv-log-entry.adv-log-cat-departure  { border-left-color: #2a4060; }
+.adv-log-entry.adv-log-cat-combat     { border-left-color: #5a2a20; background: #130c08; }
+.adv-log-entry.adv-log-cat-danger     { border-left-color: #5a3820; background: #130e08; }
+.adv-log-entry.adv-log-cat-decision   { border-left-color: #204060; background: #080e18; }
+.adv-log-entry.adv-log-cat-completion { border-left-color: #4a7040; background: #0d1a0d; }
+.adv-log-entry.adv-log-cat-retreat    { border-left-color: #403020; background: #100e08; }
+.adv-log-entry.adv-log-cat-failure    { border-left-color: #502020; background: #120808; }
+.adv-log-entry.adv-log-cat-discovery  { border-left-color: #5a4a20; background: #111008; }
+
+/* Log entry meta row */
+.adv-log-meta { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); }
+.adv-log-day { font-size: var(--font-tiny); color: #4a6050; font-weight: 600; }
+.adv-log-category { font-size: var(--font-tiny); color: #5a7060; background: #141e14; border: 1px solid #1e2e1e; padding: 0 calc(5px * var(--ui-scale)); border-radius: 2px; }
+.adv-log-cat-combat .adv-log-category   { color: #8a5040; background: #1e0e08; border-color: #3a1e14; }
+.adv-log-cat-decision .adv-log-category { color: #4a6888; background: #0e1620; border-color: #1e2e40; }
+.adv-log-cat-completion .adv-log-category { color: #5a8058; background: #101e10; border-color: #203020; }
+.adv-log-cat-retreat .adv-log-category  { color: #807060; background: #181410; border-color: #2e2a20; }
+.adv-log-date { font-size: var(--font-tiny); color: #3a4e3c; margin-left: auto; }
+
+/* Log narrative text */
+.adv-log-narrative { font-size: var(--font-small); color: #7a9e80; margin: 0; line-height: 1.55; }
+.adv-log-cat-combat .adv-log-narrative    { color: #9a8070; }
+.adv-log-cat-completion .adv-log-narrative { color: #90a888; }
+.adv-log-cat-decision .adv-log-narrative  { color: #7888a8; }
+.adv-log-cat-retreat .adv-log-narrative   { color: #9a9080; }
+.adv-log-cat-failure .adv-log-narrative   { color: #9a7870; }
+.adv-log-cat-departure .adv-log-narrative { color: #7898a8; }
+
+/* Named actors row */
+.adv-log-actors { font-size: var(--font-tiny); color: #4a6a58; font-style: italic; }
+
+/* ── 018-F: Quest card UI improvements ──────────────────────────────────────── */
+
+/* Improved card internal spacing */
+.quest-board-card { padding: calc(13px * var(--ui-scale)) calc(14px * var(--ui-scale)) calc(11px * var(--ui-scale)); }
+.qbc-info-row { gap: calc(4px * var(--ui-scale)); }
+.qbc-info-label { min-width: calc(60px * var(--ui-scale)); }
+
+/* Card hover lift effect */
+.quest-board-card { transform: translateY(0); transition: border-color .12s, background .12s, transform .12s, box-shadow .12s; }
+.quest-board-card:hover { border-color: #2e4830; background: #111a12; transform: translateY(calc(-1px * var(--ui-scale))); box-shadow: 0 calc(3px * var(--ui-scale)) calc(8px * var(--ui-scale)) rgba(0,0,0,.35); }
+.quest-board-card.selected { transform: translateY(calc(-1px * var(--ui-scale))); box-shadow: 0 0 0 1px #2a4030, 0 calc(3px * var(--ui-scale)) calc(10px * var(--ui-scale)) rgba(0,0,0,.4); }

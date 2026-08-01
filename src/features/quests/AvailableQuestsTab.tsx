@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { AdventurerRank, EntityId, GameState } from "../../types/game";
-import { playHover, playSelect } from "../../lib/audio";
+import { playHover, playSelect, playQuestPaperOpen } from "../../lib/audio";
 import {
   questTypeLabels,
   questCategoryLabels,
@@ -92,7 +92,9 @@ export default function AvailableQuestsTab({
 
   function handleCardClick(id: EntityId) {
     playSelect();
+    const opening = selectedId !== id;
     onSelect(selectedId === id ? null : id);
+    if (opening) playQuestPaperOpen();
   }
 
   function handleAssign(partyId: EntityId) {

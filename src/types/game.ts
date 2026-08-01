@@ -25,6 +25,12 @@ export type QuestResultGrade = "great_success" | "success" | "narrow_success" | 
 export type QuestCategory = "escort" | "search" | "hunt" | "delivery" | "rescue" | "exploration";
 export type ChronicleScope = "guild" | "adventurer" | "party" | "world";
 export type ChronicleCategory = "join" | "quest" | "injury" | "growth" | "facility" | "reputation" | "world";
+export type AdventureLogCategory =
+  | "departure" | "travel" | "exploration" | "combat" | "defense"
+  | "healing" | "discovery" | "incident" | "decision" | "injury"
+  | "growth" | "trait" | "relationship" | "teamwork" | "retreat"
+  | "failure" | "death" | "return" | "completion";
+export type AdventureLogImportance = "normal" | "notable" | "major" | "historic";
 
 export interface GameDate {
   year: number;
@@ -361,6 +367,23 @@ export interface Guild {
   partyIds: EntityId[];
 }
 
+export interface AdventureLogEntry {
+  id: EntityId;
+  questId: EntityId;
+  partyId: EntityId;
+  date: GameDate;
+  questDay: number;
+  category: AdventureLogCategory;
+  importance: AdventureLogImportance;
+  title: string;
+  narrative: string;
+  actorIds: EntityId[];
+  targetIds: EntityId[];
+  incidentId?: EntityId;
+  decisionId?: EntityId;
+  tags: string[];
+}
+
 export interface ChronicleEntry {
   id: EntityId;
   date: GameDate;
@@ -392,6 +415,7 @@ export interface GameState {
   questProgress: Record<EntityId, QuestProgress>;
   questResults: Record<EntityId, QuestResult>;
   questChronicle: QuestChronicleEntry[];
+  adventureLogs: Record<EntityId, AdventureLogEntry[]>;
   regions: Record<EntityId, Region>;
   facilities: Record<EntityId, Facility>;
   chronicle: ChronicleEntry[];
