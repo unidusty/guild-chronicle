@@ -2,11 +2,16 @@ import type { EntityId, GameState, QuestDecision, QuestProgress, QuestStage } fr
 
 export type { QuestDecision };
 
-export function calcQuestStage(progress: number): QuestStage {
-  if (progress < 20) return "traveling";
-  if (progress < 50) return "searching";
-  if (progress < 75) return "executing";
-  return "returning";
+export function calcQuestStage(currentDay: number, totalDays: number): QuestStage {
+  const returnDays     = totalDays <= 5 ? 1 : 2;
+  const returnStartDay = Math.max(1, totalDays - returnDays);
+  if (currentDay >= returnStartDay) return "returning";
+  const activeRange = returnStartDay - 1;
+  const travelEnd   = Math.max(1, Math.ceil(activeRange * 0.25));
+  const searchEnd   = Math.max(travelEnd + 1, Math.ceil(activeRange * 0.55));
+  if (currentDay <= travelEnd) return "traveling";
+  if (currentDay <= searchEnd) return "searching";
+  return "executing";
 }
 
 export function createQuestProgress(

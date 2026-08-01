@@ -1,5 +1,5 @@
 // AUTO-GENERATED — do not edit manually. Run: npm run manifest
-// Generated: 2026-08-01T08:13:01.434Z
+// Generated: 2026-08-01T08:31:41.073Z
 // Filename rule: {race}_{m|f}_{classId}_{number}.ext
 // ID format: `{race}-{gender}-{basename}` — globally unique in manifest.
 // Base/mod conflict: mod overrides base.
@@ -21,7 +21,7 @@ export interface AssetManifest {
 }
 
 export const assetManifest: AssetManifest = {
-  generatedAt: "2026-08-01T08:13:01.434Z",
+  generatedAt: "2026-08-01T08:31:41.073Z",
   portraits: [
     {
       "id": "human-male-human_m_archer_01",

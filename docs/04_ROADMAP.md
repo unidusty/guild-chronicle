@@ -161,6 +161,18 @@
 - `questDecisions.ts` — 철수·포기 시 `generateCompletionLog`에 지원 파티 전달
 - 설계 문서: ADVENTURE_LOG_GUIDE.md / STORY_ENGINE_GUIDE.md 업데이트
 
+**018-M** Quest Validation & Story Consistency
+- `questValidation.ts` 신규 — `MandatoryStep` + 의뢰 유형별 필수 단계 시퀀스 (6개 유형)
+- `calcQuestStage` 리팩터링 — 진행률 기반 → 일수 기반 (`currentDay / totalDays`)
+- 귀환 기간 정규화 — 5일 이하 의뢰: 마지막 1일, 6일 이상: 마지막 2일
+- 8일 의뢰 귀환 4일 문제 수정 (5일째 귀환 시작 → 6일째로 수정)
+- `selectEvent` 귀환 단계 필터 — `returning` 중 `environment` / `danger` 이외 이벤트 차단
+- `EventDefinition.allowedQuestTypes` 필드 추가 — 고대 비문·마법 잔재·봉인 공간·고대 기관 4개 이벤트를 `exploration` 전용으로 제한
+- `getMandatoryUrgencyMultiplier` — 귀환 임박 시 미충족 필수 카테고리 이벤트 가중치 1.5~3배 부스트
+- `FAILURE_CONTEXT_BY_TYPE` — 의뢰 유형별 실패 서사 풀 (hunt·search·rescue·exploration·escort·delivery)
+- `generateCompletionLog` great_failure — 전투 이벤트 없는 경우 "강적과의 전투 끝에" 서사 제외
+- dev 모드 완료 검증 — 미충족 필수 단계 `console.warn` 출력
+
 ---
 
 ## 예정

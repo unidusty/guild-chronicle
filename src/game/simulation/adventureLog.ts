@@ -512,13 +512,44 @@ const GREAT_SUCCESS_HERO: Partial<Record<QuestCategory, string[]>> & { default: 
 
 // ── Failure context notes ─────────────────────────────────────────────────────
 
-const FAILURE_CONTEXT: string[] = [
-  "예상보다 강한 적에 맞서다 목표를 달성하지 못하였다.",
-  "현장 상황이 당초 예상과 크게 달라 의뢰를 완수할 수 없었다.",
-  "연이은 사건으로 전력이 소진되어 목표 달성에 실패하였다.",
-  "부득이한 상황으로 인해 임무를 중단할 수밖에 없었다.",
-  "위험 수준이 예상을 초과하여 목표 달성이 불가능해졌다.",
-];
+const FAILURE_CONTEXT_BY_TYPE: Partial<Record<QuestCategory, string[]>> & { default: string[] } = {
+  default:     [
+    "현장 상황이 당초 예상과 크게 달라 의뢰를 완수할 수 없었다.",
+    "연이은 사건으로 전력이 소진되어 목표 달성에 실패하였다.",
+    "부득이한 상황으로 인해 임무를 중단할 수밖에 없었다.",
+    "위험 수준이 예상을 초과하여 목표 달성이 불가능해졌다.",
+  ],
+  hunt:        [
+    "목표 대상과의 전투에서 결정적인 성과를 거두지 못하였다.",
+    "대상을 격퇴하기에 역부족이었다.",
+    "목표를 끝내 쓰러뜨리지 못한 채 귀환을 결정하였다.",
+  ],
+  search:      [
+    "수색을 거듭하였으나 목표물의 행방을 끝내 파악하지 못하였다.",
+    "단서가 부족하여 목표에 도달하지 못하였다.",
+    "수색 범위를 넓혔음에도 목표를 발견하지 못하였다.",
+  ],
+  rescue:      [
+    "구조 대상을 찾지 못한 채 임무를 종료하였다.",
+    "시간 내에 생존자를 발견하지 못하였다.",
+    "구조 시도에도 불구하고 목표에 도달하지 못하였다.",
+  ],
+  exploration: [
+    "탐사 지역의 전체 조사를 완료하지 못하였다.",
+    "예상보다 복잡한 구조로 인해 조사가 미완으로 끝났다.",
+    "탐사 중 발생한 사태로 인해 목표 구역에 접근하지 못하였다.",
+  ],
+  escort:      [
+    "호위 임무 중 예상치 못한 사태로 의뢰를 완수하지 못하였다.",
+    "호위 대상을 목적지까지 안전하게 이송하는 데 실패하였다.",
+    "이동 중 발생한 위협을 막아내지 못하였다.",
+  ],
+  delivery:    [
+    "배달 의뢰물을 목적지까지 전달하지 못하였다.",
+    "이동 중 발생한 사고로 의뢰를 완수할 수 없었다.",
+    "목적지 도달 전 임무를 포기해야 하는 상황이 발생하였다.",
+  ],
+};
 
 const COMPLETION_ACTOR: Record<ActorRole, string[]> = {
   vanguard: ["{actor}이(가) 전열을 지키며 파티를 이끌었다.", "{actor}는 선두에서 활약하였다.", "{actor}이(가) 결정적인 순간에 파티를 지탱하였다."],
@@ -1542,12 +1573,12 @@ export function generateCompletionLog(
     // s0: struggle opening
     segments.push(pickByHash(SCENE_STRUGGLE, seed + "-struggle"));
 
-    // s1: actor tried but overwhelmed
+    // s1: actor tried but overwhelmed — use combat pool only if combat actually occurred
+    const hasCombat = prog.events.some(e => e.category === "combat");
     const actor = selectActor(members, classes, ["vanguard", "damage"], seed + "-actor");
     if (actor) {
-      const cls = classes[actor.classId];
-      const role = (cls?.role ?? "vanguard") as ActorRole;
-      const pool = CLASS_COMBAT[actor.classId] ?? COMBAT_ACTOR[role];
+      const role = (classes[actor.classId]?.role ?? "vanguard") as ActorRole;
+      const pool = hasCombat ? (CLASS_COMBAT[actor.classId] ?? COMBAT_ACTOR[role]) : COMPLETION_ACTOR[role];
       segments.push(applyVars(pickByHash(pool, seed + "-act"), { actor: actor.name, party: partyName }));
       actorIds.push(actor.id);
     }
@@ -1555,8 +1586,11 @@ export function generateCompletionLog(
     // s2: turning negative
     segments.push(pickByHash(SCENE_TURNING_NEG, seed + "-turn"));
 
-    // s3: great failure base sentence
-    segments.push(applyVars(pickByHash(COMPLETION_NARRATIVE.great_failure, seed + "-base"), vars));
+    // s3: great failure base sentence — avoid combat framing when no combat occurred
+    const gfPool = hasCombat
+      ? COMPLETION_NARRATIVE.great_failure
+      : COMPLETION_NARRATIVE.great_failure.filter(s => !s.includes("강적과의 전투"));
+    segments.push(applyVars(pickByHash(gfPool.length > 0 ? gfPool : COMPLETION_NARRATIVE.great_failure, seed + "-base"), vars));
 
     // s4: heavy aftermath
     segments.push(pickByHash(SCENE_AFTERMATH_FAIL, seed + "-after"));
@@ -1565,8 +1599,9 @@ export function generateCompletionLog(
     // s0: failure base
     segments.push(applyVars(pickByHash(COMPLETION_NARRATIVE.failure, seed + "-base"), vars));
 
-    // s1: failure context (why)
-    segments.push(pickByHash(FAILURE_CONTEXT, seed + "-ctx"));
+    // s1: failure context (why) — quest-type specific
+    const failCtxPool = FAILURE_CONTEXT_BY_TYPE[quest.type] ?? FAILURE_CONTEXT_BY_TYPE.default;
+    segments.push(pickByHash(failCtxPool, seed + "-ctx"));
 
     // s2: aftermath
     segments.push(pickByHash(SCENE_AFTERMATH_FAIL, seed + "-after"));

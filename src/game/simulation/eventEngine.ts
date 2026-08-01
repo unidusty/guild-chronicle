@@ -2,12 +2,14 @@ import type {
   EntityId,
   GameDate,
   Quest,
+  QuestCategory,
   QuestEvent,
   QuestEventCategory,
   QuestProgress,
   QuestStage,
   Region,
 } from "../../types/game";
+import { getPendingMandatoryCategories, getMandatoryUrgencyMultiplier, isEventCategoryAllowedInReturn } from "./questValidation";
 
 // ── Quest Tag System ──────────────────────────────────────────────────────────
 
@@ -46,6 +48,7 @@ export interface EventDefinition {
   requiredStage?: QuestStage;
   boostedByTags?: QuestTag[];
   followUpIds?: string[];
+  allowedQuestTypes?: QuestCategory[];
 }
 
 // ── Event Pool (90 events) ────────────────────────────────────────────────────
@@ -274,6 +277,7 @@ export const EVENT_POOL: EventDefinition[] = [
     weight: 4,
     boostedByTags: ["terrain:ruins", "terrain:dungeon", "theme:mystery"],
     followUpIds: ["ev-reward-001", "ev-explore-012"],
+    allowedQuestTypes: ["exploration"],
   },
   {
     id: "ev-explore-005",
@@ -301,6 +305,7 @@ export const EVENT_POOL: EventDefinition[] = [
     weight: 4,
     boostedByTags: ["risk:magic", "terrain:ruins"],
     followUpIds: ["ev-danger-006", "ev-reward-005"],
+    allowedQuestTypes: ["exploration"],
   },
   {
     id: "ev-explore-008",
@@ -345,6 +350,7 @@ export const EVENT_POOL: EventDefinition[] = [
     weight: 3,
     boostedByTags: ["risk:magic", "terrain:ruins", "theme:mystery"],
     followUpIds: ["ev-reward-001", "ev-combat-014"],
+    allowedQuestTypes: ["exploration"],
   },
   {
     id: "ev-explore-013",
@@ -373,6 +379,7 @@ export const EVENT_POOL: EventDefinition[] = [
     weight: 3,
     boostedByTags: ["terrain:ruins", "obj:explore"],
     followUpIds: ["ev-reward-001", "ev-explore-012"],
+    allowedQuestTypes: ["exploration"],
   },
 
   // ── ENVIRONMENT (15) ─────────────────────────────────────────────────────
@@ -999,6 +1006,8 @@ export function selectEvent(
     if (def.requiredStage && def.requiredStage !== prog.currentStage) return false;
     if (def.requiredTags && !def.requiredTags.every(t => tags.has(t))) return false;
     if (def.blockedTags  && def.blockedTags.some(t => tags.has(t)))    return false;
+    if (prog.currentStage === "returning" && !isEventCategoryAllowedInReturn(def.category)) return false;
+    if (def.allowedQuestTypes && !def.allowedQuestTypes.includes(quest.type)) return false;
     return true;
   });
 
@@ -1018,6 +1027,9 @@ export function selectEvent(
 
     // Event chain: double weight for designated follow-ups
     if (followUpBias && followUpBias.has(def.id)) w *= 2;
+
+    // Urgency boost: drive missing mandatory events before return phase
+    w *= getMandatoryUrgencyMultiplier(quest.type, prog.events, prog.currentStage, prog.currentDay, prog.totalDays, def.category);
 
     return w;
   });

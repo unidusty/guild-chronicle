@@ -4,7 +4,7 @@
 
 ## 현재 버전
 
-**018-L — Adventure System Integration**
+**018-M — Quest Validation & Story Consistency**
 
 ## 실행 방법
 

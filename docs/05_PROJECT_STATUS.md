@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**018-L — Adventure System Integration**
+**018-M — Quest Validation & Story Consistency**
 
 ## 완료
 
@@ -82,6 +82,14 @@
 - `generateCompletionLog` — 지원 파티 기여 문단 추가 (supportUsed 시)
 - `QuestChronicleEntry.supportPartyIds` — 참여한 파티 ID 배열로 연대기에 기록
 - 의뢰 상세 UI "참여 파티" 섹션 — 주 파티 + 지원 파티 현황 (합류 완료 / 이동 중 배지)
+- Quest Validation & Story Consistency (018-M)
+- `questValidation.ts` — 의뢰 유형별 필수 단계 시퀀스, 긴급 가중치, 귀환 허용 카테고리
+- `calcQuestStage` 일수 기반 재구현 — 5일 이하 귀환 1일, 6일 이상 귀환 2일
+- `returning` 단계에서 `environment` / `danger` 이외 이벤트 완전 차단
+- 탐사 전용 이벤트 4개 `allowedQuestTypes: ["exploration"]` 제한
+- 의뢰 미충족 필수 단계 임박 시 관련 이벤트 가중치 1.5~3배 긴급 부스트
+- `FAILURE_CONTEXT_BY_TYPE` — 의뢰 유형별 실패 서사 (hunt·search·rescue·exploration·escort·delivery)
+- `generateCompletionLog` 대실패 — 전투 없을 시 "강적과의 전투 끝에" 서사 자동 제외
 
 ## 현재 데이터 원칙
 
@@ -109,6 +117,7 @@
 ## 다음 작업
 
 **019 — 길드 재정 및 세계 이벤트 (예정)**
+
 
 
 ## 주의사항

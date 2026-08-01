@@ -1,6 +1,7 @@
 import type { AdventureLogEntry, ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult, QuestResult } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
+import { validateQuestCompletion } from "./questValidation";
 import { deriveTags, selectEvent, buildQuestEvent } from "./eventEngine";
 import { buildQuestResult } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
@@ -84,6 +85,11 @@ function updateQuests(state: GameState): GameState {
 
     if (remaining <= 0) {
       const prog = questProgress[quest.id];
+
+      if (import.meta.env.DEV && prog) {
+        const { warnings } = validateQuestCompletion(quest.type, prog.events, prog.currentStage);
+        for (const w of warnings) console.warn(w);
+      }
 
       // Build quest result and chronicle entry before removing progress
       if (prog && quest.assignedPartyId) {
@@ -185,11 +191,12 @@ function updateQuests(state: GameState): GameState {
 
       const existing = questProgress[quest.id];
       if (existing) {
-        const newStage = calcQuestStage(newProgress);
+        const nextDay  = existing.currentDay + 1;
+        const newStage = calcQuestStage(nextDay, existing.totalDays);
         const stageChanged = newStage !== existing.currentStage;
         let updated = {
           ...existing,
-          currentDay:   existing.currentDay + 1,
+          currentDay:   nextDay,
           currentStage: newStage,
           reportRead:   stageChanged ? false : existing.reportRead,
         };
