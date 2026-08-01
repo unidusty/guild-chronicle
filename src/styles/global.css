@@ -924,3 +924,38 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* Day-end report: quest progress items */
 .day-end-report-item.quest_progress_update { border-left-color: #2a4060; background: #0f1a14; }
 .day-end-report-item.quest_progress_update strong { color: #6ab0cc; }
+
+/* Day-end report: quest event items */
+.day-end-report-item.quest_event { border-left-color: #60401a; background: #161009; }
+.day-end-report-item.quest_event strong { color: #c4a060; }
+
+/* ── 018-B: Quest Incident / Event System ───────────────────────────────────── */
+
+/* Quest card incident badge */
+.quest-incident-badge { font-size: var(--font-tiny); color: #c4a060; background: #1e1400; border: 1px solid #3a2800; padding: 0 calc(5px * var(--ui-scale)); border-radius: 2px; white-space: nowrap; }
+
+/* Event log in QuestDetail */
+.quest-event-log { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
+.quest-event-log-label { font-size: var(--font-tiny); color: #5a6e5c; text-transform: uppercase; letter-spacing: .04em; margin-bottom: calc(2px * var(--ui-scale)); }
+.quest-event-item { background: #0f1a0f; border: 1px solid #1e2e1e; padding: calc(8px * var(--ui-scale)) calc(10px * var(--ui-scale)); border-radius: 2px; }
+.quest-event-item.unread { border-color: #3a2800; background: #161009; }
+.quest-event-item-header { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); margin-bottom: calc(4px * var(--ui-scale)); }
+.quest-event-category { font-size: var(--font-tiny); color: #5a6e5c; background: #162018; border: 1px solid #1e3020; padding: 0 calc(5px * var(--ui-scale)); border-radius: 2px; white-space: nowrap; }
+.quest-event-item.unread .quest-event-category { color: #8a7030; background: #1e1400; border-color: #3a2800; }
+.quest-event-title { font-size: var(--font-small); font-weight: 600; color: #a0b89a; }
+.quest-event-item.unread .quest-event-title { color: #d4b070; }
+.quest-event-desc { font-size: var(--font-tiny); color: #5a6e5c; margin: 0; line-height: 1.5; }
+.quest-event-item.unread .quest-event-desc { color: #8a7840; }
+
+/* Party detail latest event */
+.party-quest-latest-event { margin-top: calc(6px * var(--ui-scale)); padding: calc(7px * var(--ui-scale)) calc(10px * var(--ui-scale)); background: #0f1a0f; border: 1px solid #1e2e1e; border-radius: 2px; display: flex; flex-direction: column; gap: calc(3px * var(--ui-scale)); }
+.party-quest-latest-event.unread { background: #161009; border-color: #3a2800; }
+.party-quest-event-label { font-size: var(--font-tiny); color: #5a6e5c; display: flex; align-items: center; gap: calc(3px * var(--ui-scale)); }
+.party-quest-latest-event.unread .party-quest-event-label { color: #8a7030; }
+.party-quest-event-title { font-size: var(--font-small); font-weight: 600; color: #9ab098; }
+.party-quest-latest-event.unread .party-quest-event-title { color: #d4b070; }
+.party-quest-event-desc { font-size: var(--font-tiny); color: #5a6e5c; margin: 0; line-height: 1.5; }
+
+/* GuildHall activity panel header */
+.activity-panel-meta { display: flex; flex-direction: column; align-items: flex-end; gap: calc(3px * var(--ui-scale)); }
+.activity-new-report-badge { font-size: var(--font-tiny); color: #c4a060; background: #1e1400; border: 1px solid #3a2800; padding: calc(2px * var(--ui-scale)) calc(6px * var(--ui-scale)); border-radius: 2px; }

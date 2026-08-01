@@ -128,11 +128,22 @@ export default function AdventurerDetail({ adventurer: adv, state, onClose }: Pr
             {currentQuest && adv.currentQuestId && (() => {
               const prog = state.questProgress[adv.currentQuestId];
               if (!prog) return null;
+              const latest = [...prog.events].reverse().find(Boolean);
               return (
-                <div className="char-status-row">
-                  <label>단계</label>
-                  <span className="quest-stage-inline">{questStageLabels[prog.currentStage]}</span>
-                </div>
+                <>
+                  <div className="char-status-row">
+                    <label>단계</label>
+                    <span className="quest-stage-inline">{questStageLabels[prog.currentStage]}</span>
+                  </div>
+                  {latest && (
+                    <div className="char-status-row">
+                      <label>최근 보고</label>
+                      <span className={`char-location${!latest.read ? " quest-stage-inline" : ""}`}>
+                        {!latest.read && "⚠ "}{latest.title}
+                      </span>
+                    </div>
+                  )}
+                </>
               );
             })()}
           </div>

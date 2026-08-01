@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { EntityId, GameState } from "../../types/game";
 import { assignQuest } from "../../game/simulation/quests";
+import { markQuestEventsRead } from "../../game/simulation/questProgress";
 import QuestList, { type RankFilter, type StatusFilter } from "./QuestList";
 import QuestDetail from "./QuestDetail";
 
@@ -50,6 +51,14 @@ export default function QuestBoardPage({ state, onStateChange }: Props) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Mark events as read when a quest with incidents is selected
+  useEffect(() => {
+    if (selectedId && state.questProgress[selectedId]?.hasIncident) {
+      onStateChange((s) => markQuestEventsRead(s, selectedId));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
 
   function handleAssign(partyId: EntityId) {
     if (!selectedId) return;

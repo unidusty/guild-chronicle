@@ -19,6 +19,7 @@ export type PartyStatus = "idle" | "dispatched" | "returning";
 export type QuestStatus = "available" | "assigned" | "in_progress" | "completed" | "failed" | "expired";
 export type QuestType = "normal" | "urgent" | "raid";
 export type QuestStage = "traveling" | "searching" | "executing" | "returning";
+export type QuestEventCategory = "exploration" | "combat" | "environment" | "reward" | "person" | "danger";
 export type QuestCategory = "escort" | "search" | "hunt" | "delivery" | "rescue" | "exploration";
 export type ChronicleScope = "guild" | "adventurer" | "party" | "world";
 export type ChronicleCategory = "join" | "quest" | "injury" | "growth" | "facility" | "reputation" | "world";
@@ -182,6 +183,17 @@ export interface Quest {
   riskTags: string[];
 }
 
+export interface QuestEvent {
+  eventId: EntityId;
+  questId: EntityId;
+  partyId: EntityId;
+  day: number;
+  category: QuestEventCategory;
+  title: string;
+  description: string;
+  read: boolean;
+}
+
 export interface QuestProgress {
   questId: EntityId;
   partyId: EntityId;
@@ -193,6 +205,7 @@ export interface QuestProgress {
   reportRead: boolean;
   hasIncident: boolean;
   incidentId: EntityId | null;
+  events: QuestEvent[];
 }
 
 export interface Region {
@@ -221,6 +234,7 @@ export interface Facility {
 export type DailyReportItemKind =
   | "quest_completed"
   | "quest_progress_update"
+  | "quest_event"
   | "facility_completed"
   | "injury_recovered"
   | "training_completed"

@@ -342,6 +342,20 @@ export default function PartyDetail({
                   <span className="quiet">예상 귀환</span>
                   <span>{quest.remainingDays}일 후</span>
                 </div>
+                {prog && prog.events.length > 0 && (() => {
+                  const latest = [...prog.events].reverse().find(Boolean);
+                  if (!latest) return null;
+                  return (
+                    <div className={`party-quest-latest-event${!latest.read ? " unread" : ""}`}>
+                      <span className="party-quest-event-label">
+                        {!latest.read && <span className="quest-new-dot">⚠ </span>}
+                        최근 보고
+                      </span>
+                      <span className="party-quest-event-title">{latest.title}</span>
+                      <p className="party-quest-event-desc">{latest.description}</p>
+                    </div>
+                  );
+                })()}
               </div>
             );
           })() : (

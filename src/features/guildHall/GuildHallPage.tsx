@@ -215,7 +215,15 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
                   <p className="eyebrow">LIVE OPERATIONS</p>
                   <h2>진행 중인 의뢰</h2>
                 </div>
-                <span className="quiet">{activeQuests.length}개 파티 파견 중</span>
+                <div className="activity-panel-meta">
+                  <span className="quiet">{activeQuests.length}건 파견 중</span>
+                  {(() => {
+                    const newReports = Object.values(state.questProgress).filter(p => p.hasIncident).length;
+                    return newReports > 0 ? (
+                      <span className="activity-new-report-badge">⚠ 새 보고 {newReports}건</span>
+                    ) : null;
+                  })()}
+                </div>
               </div>
               {activeQuests.length === 0 ? (
                 <p className="panel-empty">현재 진행 중인 의뢰가 없습니다.</p>

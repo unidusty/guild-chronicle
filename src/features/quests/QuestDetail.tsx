@@ -2,6 +2,11 @@ import { useState } from "react";
 import type { AdventurerRank, EntityId, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { dangerLevelLabel, questCategoryLabels, questStageLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
+import type { QuestEventCategory } from "../../types/game";
+
+const EVENT_CATEGORY_LABELS: Record<QuestEventCategory, string> = {
+  exploration: "탐색", combat: "전투", environment: "환경", reward: "보상", person: "인물", danger: "위험",
+};
 import { canAssignParty, isChallengeMode } from "../../game/simulation/quests";
 import { calcPartyCombatPower, calcQuestSuccessRate, getQuestRecommendedPower } from "../../game/simulation/combatPower";
 
@@ -136,9 +141,24 @@ export default function QuestDetail({ questId, state, onAssign }: Props) {
                 <div className="quest-progress-remain">
                   예상 귀환 <strong>{quest.remainingDays}일 후</strong>
                 </div>
-                <div className="quest-progress-incident">
-                  특이사항 <span className="quiet">없음</span>
-                </div>
+                {prog.events.length > 0 ? (
+                  <div className="quest-event-log">
+                    <p className="quest-event-log-label">현장 보고</p>
+                    {prog.events.slice().reverse().map((ev) => (
+                      <div key={ev.eventId} className={`quest-event-item${!ev.read ? " unread" : ""}`}>
+                        <div className="quest-event-item-header">
+                          <span className="quest-event-category">{EVENT_CATEGORY_LABELS[ev.category]}</span>
+                          <span className="quest-event-title">{!ev.read && <span className="quest-new-dot">● </span>}{ev.title}</span>
+                        </div>
+                        <p className="quest-event-desc">{ev.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="quest-progress-incident">
+                    특이사항 <span className="quiet">없음</span>
+                  </div>
+                )}
               </div>
             </section>
           );

@@ -1,6 +1,12 @@
 import type { ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
+import { generateQuestEvent, rollEventForQuest } from "./questEvents";
+
+function absDay(date: GameDate): number {
+  const si = ["spring", "summer", "autumn", "winter"].indexOf(date.season);
+  return date.year * 120 + si * 30 + date.day;
+}
 
 // ── Date arithmetic ─────────────────────────────────────────────────────────
 
@@ -130,12 +136,25 @@ function updateQuests(state: GameState): GameState {
       if (existing) {
         const newStage = calcQuestStage(newProgress);
         const stageChanged = newStage !== existing.currentStage;
-        questProgress[quest.id] = {
+        let updated = {
           ...existing,
           currentDay:   existing.currentDay + 1,
           currentStage: newStage,
           reportRead:   stageChanged ? false : existing.reportRead,
         };
+
+        // Roll for random event (only when quest still has days remaining)
+        if (quest.assignedPartyId && rollEventForQuest(quest.dangerLevel, quest.type, newStage)) {
+          const event = generateQuestEvent(quest.id, quest.assignedPartyId, absDay(date), quest.type);
+          updated = {
+            ...updated,
+            hasIncident: true,
+            incidentId:  event.eventId,
+            events:      [...existing.events, event],
+          };
+        }
+
+        questProgress[quest.id] = updated;
       }
     }
   }

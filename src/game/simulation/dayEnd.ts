@@ -148,7 +148,7 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     }
   }
 
-  // Active quest progress reports
+  // Active quest progress & event reports
   const activeProgressList = Object.values(newState.questProgress);
   for (const prog of activeProgressList) {
     const quest = newState.quests[prog.questId];
@@ -156,15 +156,24 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     if (!quest || !party) continue;
     const stageLabel = questStageLabels[prog.currentStage];
     const elapsed = prog.currentDay;
-    const isNew = !prog.reportRead;
+    const newEvents = prog.events.filter(e => !e.read);
+    const isStageNew = !prog.reportRead;
+    const prefix = isStageNew ? "● " : newEvents.length > 0 ? "⚠ " : "";
     items.push({
       kind: "quest_progress_update",
-      title: `${isNew ? "● " : ""}진행 보고 — ${party.name}`,
+      title: `${prefix}진행 보고 — ${party.name}`,
       description: `${quest.title} · ${stageLabel} · ${elapsed} / ${prog.totalDays}일`,
     });
+    for (const event of newEvents) {
+      items.push({
+        kind: "quest_event",
+        title: `⚠ ${event.title}`,
+        description: `[${party.name}] ${event.description}`,
+      });
+    }
   }
 
-  // Mark all quest progress as read in the final state
+  // Mark reportRead=true for stage changes; events remain unread (cleared by player action)
   let finalState = newState;
   if (activeProgressList.length > 0) {
     const clearedProgress: Record<string, QuestProgress> = {};

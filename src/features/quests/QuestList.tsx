@@ -86,6 +86,9 @@ export default function QuestList({ state, filteredQuests, selectedId, onSelect,
                 <div className="quest-card-top">
                   <span className="rank">{quest.grade}</span>
                   <span className="quest-card-title">{quest.title}</span>
+                  {isActive && state.questProgress[quest.id]?.hasIncident && (
+                    <span className="quest-incident-badge">⚠ 보고</span>
+                  )}
                   <span className={`status ${tone}`}>{questStatusLabels[quest.status]}</span>
                 </div>
                 <div className="quest-card-meta">
