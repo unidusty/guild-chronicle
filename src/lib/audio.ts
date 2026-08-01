@@ -25,7 +25,7 @@ let paperOpenEl: HTMLAudioElement | null = null;
 function getBgm():       HTMLAudioElement { if (!bgmEl)       { bgmEl       = new Audio("/audio/guild-hall-bgm.mp3"); bgmEl.loop = true; } return bgmEl; }
 function getHover():     HTMLAudioElement { if (!hoverEl)     hoverEl     = new Audio("/audio/ui-hover.mp3");  return hoverEl; }
 function getSelect():    HTMLAudioElement { if (!selectEl)    selectEl    = new Audio("/audio/ui-select.mp3"); return selectEl; }
-function getPaperOpen(): HTMLAudioElement { if (!paperOpenEl) paperOpenEl = new Audio("/game-assets/audio/sfx/ui-quest-paper-open.mp3"); return paperOpenEl; }
+function getPaperOpen(): HTMLAudioElement { if (!paperOpenEl) paperOpenEl = new Audio("/audio/ui-quest-paper-open.mp3"); return paperOpenEl; }
 
 // ── localStorage helpers ────────────────────────────────────────────────────────
 

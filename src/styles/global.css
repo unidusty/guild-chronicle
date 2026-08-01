@@ -1206,3 +1206,24 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .quest-board-card { transform: translateY(0); transition: border-color .12s, background .12s, transform .12s, box-shadow .12s; }
 .quest-board-card:hover { border-color: #2e4830; background: #111a12; transform: translateY(calc(-1px * var(--ui-scale))); box-shadow: 0 calc(3px * var(--ui-scale)) calc(8px * var(--ui-scale)) rgba(0,0,0,.35); }
 .quest-board-card.selected { transform: translateY(calc(-1px * var(--ui-scale))); box-shadow: 0 0 0 1px #2a4030, 0 calc(3px * var(--ui-scale)) calc(10px * var(--ui-scale)) rgba(0,0,0,.4); }
+
+/* ── 018-G: Quest detail modal ──────────────────────────────────────────────── */
+
+/* Remove old side panel narrowing — card grid is always full width */
+.qb-available-main.detail-open { max-width: none; }
+
+/* Backdrop */
+.qb-modal-backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(0, 0, 0, 0.65); display: flex; align-items: center; justify-content: center; padding: calc(20px * var(--ui-scale)); animation: qb-fade-in .12s ease; }
+@keyframes qb-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Modal dialog */
+.qb-modal { position: relative; width: min(calc(560px * var(--ui-scale)), 100%); max-height: calc(100vh - calc(40px * var(--ui-scale))); display: flex; flex-direction: column; background: #0b1210; border: 1px solid #2a4030; box-shadow: 0 calc(8px * var(--ui-scale)) calc(32px * var(--ui-scale)) rgba(0,0,0,.7); overflow: hidden; animation: qb-slide-in .15s ease; }
+@keyframes qb-slide-in { from { opacity: 0; transform: translateY(calc(-6px * var(--ui-scale))); } to { opacity: 1; transform: translateY(0); } }
+
+/* Close button (top-right corner) */
+.qb-modal-close { position: absolute; top: calc(10px * var(--ui-scale)); right: calc(10px * var(--ui-scale)); z-index: 1; background: transparent; border: 1px solid #2a3a2e; color: #4a5e4c; font: inherit; font-size: var(--font-small); cursor: pointer; width: calc(24px * var(--ui-scale)); height: calc(24px * var(--ui-scale)); display: flex; align-items: center; justify-content: center; border-radius: 2px; transition: color .1s, border-color .1s, background .1s; line-height: 1; }
+.qb-modal-close:hover { color: #c8d8cc; border-color: #4a6050; background: #141e14; }
+
+/* Make QuestDetail fill the modal and scroll internally */
+.qb-modal .quest-detail { flex: 1; overflow-y: auto; border: none; border-radius: 0; }
+.qb-modal .panel { border: none; }

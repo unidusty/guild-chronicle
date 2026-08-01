@@ -4,7 +4,7 @@
 
 ## 현재 버전
 
-**013-A — 의뢰 게시판 UI 기반**
+**018-G — 의뢰 시스템 완성**
 
 ## 실행 방법
 
@@ -39,3 +39,5 @@ npm run build
 - `docs/04_ROADMAP.md` — 개발 순서
 - `docs/05_PROJECT_STATUS.md` — 현재 상태
 - `PROJECT_RULES.md` — 개발 규칙
+- `PROJECT_TERMINOLOGY.md` — 공식 용어 사전
+- `docs/design/` — 에셋 및 시스템 설계 가이드

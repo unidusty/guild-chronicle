@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (016-C) 작성.
+현재 구현 기준 (018-G) 작성.
 
 ---
 
@@ -147,10 +147,11 @@
 | 값 | 표시 | 설명 |
 |----|------|------|
 | `available` | 접수 가능 | 파티 배정 대기 중 |
-| `assigned` | 수행 중 | 파티 파견됨 |
+| `assigned` | 출발 대기 | 파티 배정됨, 다음 날 진행 시작 |
+| `in_progress` | 수행 중 | 파티 파견됨 |
 | `completed` | — | 완료 즉시 게시판에서 제거 |
 
-> `in_progress`, `failed`, `expired`는 타입에 정의되어 있으나 현재 미사용.
+> `failed`, `expired`는 타입에 정의되어 있으나 현재 미사용.
 
 ### 의뢰 등급 (`AdventurerRank`)
 
@@ -168,6 +169,27 @@
 
 `escort`(호위) / `search`(수색) / `hunt`(토벌) / `delivery`(배달) / `rescue`(구조) / `exploration`(탐사)
 
+### 의뢰 결과 등급 (`QuestResultGrade`)
+
+| 값 | 표시 | 설명 |
+|----|------|------|
+| `great_success` | 대성공 | 기대 이상 완수 |
+| `success` | 성공 | 정상 완수 |
+| `narrow_success` | 간신히 성공 | 겨우 완수 |
+| `retreat` | 철수 | 플레이어 철수 결정 |
+| `failure` | 실패 | 목표 달성 실패 |
+| `great_failure` | 대실패 | 사상자 발생 또는 의뢰 파탄 |
+
+### 의뢰 탭 구조
+
+의뢰 게시판(`QuestBoardPage`)은 세 탭으로 구성된다.
+
+| 탭 | 컴포넌트 | 설명 |
+|----|----------|------|
+| 가능 의뢰 | `AvailableQuestsTab` | 카드 그리드 + 중앙 모달 상세 |
+| 진행 중 의뢰 | `ActiveQuestsTab` | 목록 + 우측 상세 패널 |
+| 의뢰 연대기 | `QuestChronicleTab` | 완료 의뢰 기록 + 모험 기록 |
+
 ### 완료 흐름
 
 1. `advanceDay` → `updateQuests` 에서 `remainingDays -= 1`
@@ -175,7 +197,83 @@
 3. 파티 및 멤버 상태 → `idle`
 4. 골드 보상 즉시 지급, 전리품 창고에 추가
 5. `QuestCompletionResult` → `pendingResults` (팝업 패널에 표시)
-6. 연대기 자동 기록
+6. 길드 연대기 기록 + 의뢰 연대기(`QuestChronicle`) 기록
+7. 모험 기록(`AdventureLog`) 완료 항목 추가
+
+---
+
+## 의뢰 진행 (`QuestProgress`)
+
+**데이터:** `GameState.questProgress: Record<EntityId, QuestProgress>`
+
+### 진행 단계 (`QuestStage`)
+
+| 값 | 표시 |
+|----|------|
+| `traveling` | 이동 중 |
+| `executing` | 수행 중 |
+| `returning` | 귀환 중 |
+
+### 현장 이벤트 (`QuestEvent`)
+
+의뢰 진행 중 확률적으로 발생한다. 플레이어가 결정을 내려야 하는 경우 `needsDecision: true`로 표시된다.
+
+### 플레이어 결정 (`QuestDecisionType`)
+
+| 값 | 표시 | 설명 |
+|----|------|------|
+| `continue` | 계속 진행 | 현 상태 유지 |
+| `extra_explore` | 추가 탐색 | 위험을 감수하고 계속 |
+| `support_dispatch` | 지원 파견 | 다른 파티 파견 |
+| `withdraw` | 철수 | 의뢰 포기 후 귀환 |
+| `abandon` | 완전 포기 | 즉시 종료 |
+
+---
+
+## 모험 기록 (`AdventureLog`)
+
+**데이터:** `GameState.adventureLogs: Record<EntityId, AdventureLogEntry[]>` (questId를 키로 사용)  
+**생성:** `src/game/simulation/adventureLog.ts`
+
+의뢰 진행의 날별·사건별 내러티브 기록. 의뢰가 삭제된 후에도 보존된다.
+
+### 기록 범주 (`AdventureLogCategory`)
+
+| 값 | 표시 | 생성 시점 |
+|----|------|-----------|
+| `departure` | 출발 | 파티 배정 시 |
+| `travel` | 이동 | 이동 단계 일별 |
+| `exploration` | 탐사 | 수행 단계 일별 |
+| `combat` | 전투 | 전투 이벤트 |
+| `defense` | 방어 | 방어 이벤트 |
+| `healing` | 치료 | 치료 이벤트 |
+| `discovery` | 발견 | 보상·발견 이벤트 |
+| `incident` | 사건 | 일반 이벤트 |
+| `decision` | 결정 | 플레이어 결정 |
+| `injury` | 부상 | 부상 이벤트 |
+| `growth` | 성장 | 성장 이벤트 |
+| `trait` | 특성 | 특성 발현 이벤트 |
+| `relationship` | 관계 | 관계 이벤트 |
+| `teamwork` | 팀워크 | 팀워크 이벤트 |
+| `retreat` | 철수 | 철수 결정 |
+| `failure` | 실패 | 실패 완료 |
+| `death` | 사망 | 사망 이벤트 |
+| `return` | 귀환 | 귀환 단계 일별 |
+| `completion` | 완료 | 의뢰 완료 시 |
+
+### 중요도 (`AdventureLogImportance`)
+
+`normal` / `notable` / `major` / `historic`
+
+### 기록 ID 형식
+
+| 유형 | ID 형식 |
+|------|---------|
+| 출발 | `al-{questId}-depart-{dateKey}` |
+| 일별 | `al-{questId}-day-{day}-{dateKey}` |
+| 이벤트 | `al-{questId}-ev-{eventId}` |
+| 결정 | `al-{questId}-dec-{decisionId}` |
+| 완료 | `al-{questId}-complete-{dateKey}` |
 
 ---
 

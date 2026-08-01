@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { AdventurerRank, EntityId, GameState } from "../../types/game";
 import { playHover, playSelect, playQuestPaperOpen } from "../../lib/audio";
 import {
@@ -60,6 +60,16 @@ export default function AvailableQuestsTab({
   const [rankFilter, setRankFilter] = useState<RankFilter>("all");
   const [sortMode, setSortMode] = useState<SortMode>("default");
 
+  // ESC key closes the modal
+  useEffect(() => {
+    if (!selectedId) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onSelect(null);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedId, onSelect]);
+
   const availableQuests = Object.values(state.quests).filter(
     (q) => q.status === "available",
   );
@@ -79,7 +89,6 @@ export default function AvailableQuestsTab({
       case "danger":
         return b.dangerLevel - a.dangerLevel;
       default:
-        // default: rank desc, then reward desc
         {
           const rd = rankToNum(b.grade) - rankToNum(a.grade);
           if (rd !== 0) return rd;
@@ -87,8 +96,6 @@ export default function AvailableQuestsTab({
         }
     }
   });
-
-  const detailOpen = selectedId !== null;
 
   function handleCardClick(id: EntityId) {
     playSelect();
@@ -104,8 +111,8 @@ export default function AvailableQuestsTab({
 
   return (
     <div className="qb-available">
-      {/* ── Left: card grid ── */}
-      <div className={`qb-available-main${detailOpen ? " detail-open" : ""}`}>
+      {/* ── Full-width card grid (never narrows) ── */}
+      <div className="qb-available-main">
         {/* Filter + sort bar */}
         <div className="qb-available-filter">
           <div className="qb-rank-chips">
@@ -230,15 +237,24 @@ export default function AvailableQuestsTab({
         )}
       </div>
 
-      {/* ── Right: side detail panel ── */}
-      {detailOpen && selectedId && (
-        <div className="qb-side-detail">
-          <QuestDetail
-            key={selectedId}
-            questId={selectedId}
-            state={state}
-            onAssign={handleAssign}
-          />
+      {/* ── Quest detail modal overlay ── */}
+      {selectedId && (
+        <div className="qb-modal-backdrop" onClick={() => onSelect(null)}>
+          <div className="qb-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="qb-modal-close"
+              onClick={() => onSelect(null)}
+              aria-label="닫기"
+            >
+              ✕
+            </button>
+            <QuestDetail
+              key={selectedId}
+              questId={selectedId}
+              state={state}
+              onAssign={handleAssign}
+            />
+          </div>
         </div>
       )}
     </div>
