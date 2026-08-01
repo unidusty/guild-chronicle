@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { EntityId, GameState } from "../../types/game";
+import type { EntityId, Formation, GameState } from "../../types/game";
 import { playSelect } from "../../lib/audio";
-import { createParty, deleteParty, addPartyMember, removePartyMember, setPartyLeader, renameParty, setFormationSlot, swapFormationSlots } from "../../game/simulation/party";
-import type { FormationSlot } from "../../types/game";
+import { createParty, deleteParty, addPartyMember, removePartyMember, setPartyLeader, renameParty, replaceFormation } from "../../game/simulation/party";
 import PartyList from "./PartyList";
 import PartyDetail from "./PartyDetail";
 
@@ -12,10 +11,13 @@ interface Props {
   onStateChange: Dispatch<SetStateAction<GameState>>;
   initialSelectedId?: string | null;
   onInitialIdConsumed?: () => void;
+  onFormationDirtyChange?: (dirty: boolean) => void;
 }
 
-export default function PartiesPage({ state, onStateChange, initialSelectedId, onInitialIdConsumed }: Props) {
+export default function PartiesPage({ state, onStateChange, initialSelectedId, onInitialIdConsumed, onFormationDirtyChange }: Props) {
   const [selectedId, setSelectedId] = useState<EntityId | null>(null);
+  const [formationDirty, setFormationDirty] = useState(false);
+  const [pendingPartyId, setPendingPartyId] = useState<EntityId | null>(null);
 
   useEffect(() => {
     if (initialSelectedId) {
@@ -55,14 +57,30 @@ export default function PartiesPage({ state, onStateChange, initialSelectedId, o
     onStateChange((s) => renameParty(s, selectedId, name));
   }
 
-  function handleFormationSlot(slot: FormationSlot, advId: string | null) {
+  function handleApplyFormation(formation: Formation) {
     if (!selectedId) return;
-    onStateChange((s) => setFormationSlot(s, selectedId, slot, advId));
+    onStateChange((s) => replaceFormation(s, selectedId, formation));
   }
 
-  function handleFormationSwap(slotA: FormationSlot, slotB: FormationSlot) {
-    if (!selectedId) return;
-    onStateChange((s) => swapFormationSlots(s, selectedId, slotA, slotB));
+  function handleFormationDirtyChange(dirty: boolean) {
+    setFormationDirty(dirty);
+    onFormationDirtyChange?.(dirty);
+  }
+
+  function handlePartySelect(id: EntityId) {
+    if (formationDirty && id !== selectedId) {
+      setPendingPartyId(id);
+    } else {
+      setSelectedId(id);
+    }
+  }
+
+  function handleDiscardAndSwitch() {
+    setFormationDirty(false);
+    onFormationDirtyChange?.(false);
+    playSelect();
+    setSelectedId(pendingPartyId);
+    setPendingPartyId(null);
   }
 
   return (
@@ -78,7 +96,7 @@ export default function PartiesPage({ state, onStateChange, initialSelectedId, o
           <PartyList
             state={state}
             selectedId={selectedId}
-            onSelect={setSelectedId}
+            onSelect={handlePartySelect}
             onCreateParty={handleCreateParty}
           />
         </div>
@@ -93,12 +111,25 @@ export default function PartiesPage({ state, onStateChange, initialSelectedId, o
               onSetLeader={handleSetLeader}
               onDelete={() => handleDeleteParty(selectedId)}
               onRename={handleRenameParty}
-              onFormationSlot={handleFormationSlot}
-              onFormationSwap={handleFormationSwap}
+              onApplyFormation={handleApplyFormation}
+              onDirtyChange={handleFormationDirtyChange}
             />
           </div>
         )}
       </div>
+
+      {pendingPartyId && (
+        <div className="modal-backdrop" onClick={() => setPendingPartyId(null)}>
+          <div className="formation-nav-confirm" onClick={(e) => e.stopPropagation()}>
+            <p className="formation-nav-confirm-title">저장하지 않은 진형 변경사항이 있습니다.</p>
+            <p className="formation-nav-confirm-body">변경사항을 버리고 다른 파티로 이동하시겠습니까?</p>
+            <div className="formation-nav-confirm-actions">
+              <button className="fac-confirm-cancel" onClick={() => setPendingPartyId(null)}>돌아가기</button>
+              <button className="fac-confirm-ok" onClick={handleDiscardAndSwitch}>변경사항 버리기</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

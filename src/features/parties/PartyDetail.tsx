@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { EntityId, FormationSlot, GameState } from "../../types/game";
+import { useState, useEffect } from "react";
+import type { EntityId, Formation, FormationSlot, GameState } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
 import { adventurerStatusLabels, getBondStageLabel, getStatusTone, partyStatusLabels } from "../../game/constants/labels";
 import {
@@ -8,6 +8,12 @@ import {
   calcFormationAdjustment,
 } from "../../game/simulation/combatPower";
 import FormationGrid from "./FormationGrid";
+
+const ALL_SLOTS: FormationSlot[] = ["front-1", "front-2", "mid-1", "mid-2", "back-1", "back-2"];
+
+function formationsEqual(a: Formation, b: Formation): boolean {
+  return ALL_SLOTS.every((s) => (a[s] ?? null) === (b[s] ?? null));
+}
 
 interface Props {
   partyId: EntityId;
@@ -18,21 +24,31 @@ interface Props {
   onSetLeader: (adventurerId: EntityId) => void;
   onDelete: () => void;
   onRename: (name: string) => void;
-  onFormationSlot: (slot: FormationSlot, advId: string | null) => void;
-  onFormationSwap: (slotA: FormationSlot, slotB: FormationSlot) => void;
+  onApplyFormation: (formation: Formation) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 export default function PartyDetail({
   partyId, state, onClose, onAddMember, onRemoveMember,
-  onSetLeader, onDelete, onRename, onFormationSlot, onFormationSwap,
+  onSetLeader, onDelete, onRename, onApplyFormation, onDirtyChange,
 }: Props) {
   const [addingMember, setAddingMember] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
   const [renameError, setRenameError] = useState("");
+  const [draftFormation, setDraftFormation] = useState<Formation>({});
 
   const party = state.parties[partyId];
+
+  // Reset draft formation when party changes or member list changes
+  const memberIdsKey = party ? party.memberIds.join(",") : "";
+  useEffect(() => {
+    if (party) {
+      setDraftFormation({ ...party.formation });
+    }
+  }, [partyId, memberIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (!party) return null;
 
   const isDispatched = party.status === "dispatched" || party.status === "returning";
@@ -40,9 +56,18 @@ export default function PartyDetail({
   const quest = party.activeQuestId ? state.quests[party.activeQuestId] : null;
   const statusTone = isDispatched ? "active" : "idle";
 
-  const combatPower = calcPartyCombatPower(party, members, state.classes);
+  const isDirty = !formationsEqual(draftFormation, party.formation);
+
+  // Propagate dirty state to parent
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
+  const effectiveFormation = draftFormation;
+  const combatPower = calcPartyCombatPower({ ...party, formation: effectiveFormation }, members, state.classes);
   const synergy = calcSynergy(members, state.classes);
-  const formationAdj = calcFormationAdjustment(party.formation, members);
+  const formationAdj = calcFormationAdjustment(effectiveFormation, members);
 
   const eligibleAdventurers = Object.values(state.adventurers)
     .filter((adv) => !adv.isArchived && adv.status === "idle" && adv.partyId === null)
@@ -91,6 +116,44 @@ export default function PartyDetail({
     setRenameError("");
   }
 
+  // ── Draft formation mutation handlers ────────────────────────────────────
+
+  function handleDraftSlotChange(slot: FormationSlot, advId: string | null) {
+    setDraftFormation((prev) => {
+      if (advId === null) {
+        const next = { ...prev };
+        delete next[slot];
+        return next;
+      }
+      const cleaned = Object.fromEntries(
+        Object.entries(prev).filter(([, id]) => id !== advId)
+      ) as Formation;
+      return { ...cleaned, [slot]: advId };
+    });
+  }
+
+  function handleDraftSlotSwap(slotA: FormationSlot, slotB: FormationSlot) {
+    setDraftFormation((prev) => {
+      const advA = prev[slotA];
+      const advB = prev[slotB];
+      if (advA === advB) return prev;
+      const next = { ...prev };
+      if (advA) next[slotB] = advA; else delete next[slotB];
+      if (advB) next[slotA] = advB; else delete next[slotA];
+      return next;
+    });
+  }
+
+  function handleApplyFormation() {
+    playSelect();
+    onApplyFormation(draftFormation);
+  }
+
+  function handleCancelFormation() {
+    playSelect();
+    setDraftFormation({ ...party.formation });
+  }
+
   const bondLabel = getBondStageLabel(party.currentFormationQuestCount);
 
   return (
@@ -131,7 +194,7 @@ export default function PartyDetail({
       {/* Combat power banner */}
       <div className="party-power-banner">
         <div className="party-power-main">
-          <span className="party-power-label">전투력</span>
+          <span className="party-power-label">{isDirty ? "예상 전투력" : "전투력"}</span>
           <span className="party-power-value">{combatPower}</span>
         </div>
         <div className="party-power-mods">
@@ -233,14 +296,21 @@ export default function PartyDetail({
           <section className="party-formation-section">
             <p className="char-section-label">진형 배치</p>
             <FormationGrid
-              formation={party.formation}
+              formation={draftFormation}
               memberIds={party.memberIds}
               adventurers={state.adventurers}
               classes={state.classes}
               disabled={isDispatched}
-              onSlotChange={onFormationSlot}
-              onSlotSwap={onFormationSwap}
+              onSlotChange={handleDraftSlotChange}
+              onSlotSwap={handleDraftSlotSwap}
             />
+            {!isDispatched && (
+              <div className="formation-actions-bar">
+                {isDirty && <span className="formation-dirty-hint">변경 사항 있음</span>}
+                <button className="formation-cancel-btn" disabled={!isDirty} onClick={handleCancelFormation}>변경 취소</button>
+                <button className="formation-apply-btn" disabled={!isDirty} onClick={handleApplyFormation}>진형 적용</button>
+              </div>
+            )}
           </section>
         )}
 

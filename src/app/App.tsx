@@ -38,10 +38,21 @@ export default function App() {
   const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [dayEndOpen, setDayEndOpen] = useState(false);
+  const [partiesFormationDirty, setPartiesFormationDirty] = useState(false);
+  const [pendingNavPage, setPendingNavPage] = useState<Page | null>(null);
 
   function navigateToParty(partyId: string) {
     setSelectedPartyId(partyId);
     setPage("parties");
+  }
+
+  function handleNavClick(newPage: Page) {
+    if (page === "parties" && partiesFormationDirty && newPage !== "parties") {
+      setPendingNavPage(newPage);
+      return;
+    }
+    playSelect();
+    setPage(newPage);
   }
 
   function openSettings() { playSelect(); setSettingsOpen(true); }
@@ -74,8 +85,7 @@ export default function App() {
               onMouseEnter={playHover}
               onClick={() => {
                 if (!item.page) return;
-                playSelect();
-                setPage(item.page);
+                handleNavClick(item.page);
               }}
             >
               {item.label}
@@ -102,7 +112,7 @@ export default function App() {
         ) : page === "adventurers" ? (
           <AdventurersPage state={state} onNavigateToParty={navigateToParty} />
         ) : page === "parties" ? (
-          <PartiesPage state={state} onStateChange={setState} initialSelectedId={selectedPartyId} onInitialIdConsumed={() => setSelectedPartyId(null)} />
+          <PartiesPage state={state} onStateChange={setState} initialSelectedId={selectedPartyId} onInitialIdConsumed={() => setSelectedPartyId(null)} onFormationDirtyChange={setPartiesFormationDirty} />
         ) : page === "quests" ? (
           <QuestBoardPage state={state} onStateChange={setState} />
         ) : page === "warehouse" ? (
@@ -142,6 +152,19 @@ export default function App() {
 
       {DEV_MODE && (
         <DevPanel state={state} onStateChange={setState} />
+      )}
+
+      {pendingNavPage && (
+        <div className="modal-backdrop" onClick={() => setPendingNavPage(null)}>
+          <div className="formation-nav-confirm" onClick={(e) => e.stopPropagation()}>
+            <p className="formation-nav-confirm-title">저장하지 않은 진형 변경사항이 있습니다.</p>
+            <p className="formation-nav-confirm-body">변경사항을 버리고 이동하시겠습니까?</p>
+            <div className="formation-nav-confirm-actions">
+              <button className="fac-confirm-cancel" onClick={() => setPendingNavPage(null)}>돌아가기</button>
+              <button className="fac-confirm-ok" onClick={() => { playSelect(); setPage(pendingNavPage!); setPendingNavPage(null); }}>변경사항 버리기</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

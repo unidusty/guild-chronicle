@@ -1,4 +1,4 @@
-import type { EntityId, FormationSlot, GameDate, GameState, Party } from "../../types/game";
+import type { EntityId, Formation, FormationSlot, GameDate, GameState, Party } from "../../types/game";
 import { computePartyRank } from "./combatPower";
 
 function resetFormation(party: Party, date: GameDate): Partial<Party> {
@@ -210,5 +210,18 @@ export function swapFormationSlots(
   return {
     ...state,
     parties: { ...state.parties, [partyId]: { ...party, formation: newFormation } },
+  };
+}
+
+export function replaceFormation(
+  state: GameState,
+  partyId: EntityId,
+  formation: Formation,
+): GameState {
+  const party = state.parties[partyId];
+  if (!party || party.status === "dispatched") return state;
+  return {
+    ...state,
+    parties: { ...state.parties, [partyId]: { ...party, formation: { ...formation } } },
   };
 }

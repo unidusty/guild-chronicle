@@ -847,10 +847,30 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .formation-member-card.dragging { opacity: 0.35; }
 .fmc-name { font-size: var(--font-tiny); font-weight: 600; color: #c8d0c0; }
 .fmc-class { font-size: calc(11px * var(--ui-scale)); color: #6a7e6c; }
-.slot-card { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; height: 100%; justify-content: center; cursor: grab; }
+.slot-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; height: 100%; justify-content: center; cursor: grab; }
 .slot-card:active { cursor: grabbing; }
 .formation-slot.drag-source { opacity: 0.4; border-style: dashed; }
 .formation-slot.drag-over { border-color: #6a9060 !important; background: #1a2e1e !important; outline: 1px solid #4a7050; }
+
+/* Unassign button inside slot */
+.slot-unassign-btn { position: absolute; top: 2px; right: 3px; width: calc(16px * var(--ui-scale)); height: calc(16px * var(--ui-scale)); border: 0; background: transparent; color: #4a3a3a; font-size: calc(12px * var(--ui-scale)); line-height: 1; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 2px; }
+.slot-unassign-btn:hover { color: #c08080; background: rgba(80,20,20,.25); }
+
+/* Apply/Cancel bar */
+.formation-actions-bar { display: flex; align-items: center; gap: calc(8px * var(--ui-scale)); margin-top: calc(8px * var(--ui-scale)); }
+.formation-dirty-hint { font-size: var(--font-tiny); color: #9a8855; margin-right: auto; }
+.formation-cancel-btn { padding: calc(5px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #2a3a2e; background: transparent; color: #6a7e6c; font: inherit; font-size: var(--font-tiny); cursor: pointer; transition: border-color .12s, color .12s; }
+.formation-cancel-btn:hover:not(:disabled) { border-color: #3a5040; color: #9ab09c; }
+.formation-cancel-btn:disabled { opacity: .3; cursor: default; }
+.formation-apply-btn { padding: calc(5px * var(--ui-scale)) calc(14px * var(--ui-scale)); border: 1px solid #3a5a40; background: #1e3022; color: #7ab07a; font: inherit; font-size: var(--font-tiny); cursor: pointer; transition: background .12s; }
+.formation-apply-btn:hover:not(:disabled) { background: #2a4030; }
+.formation-apply-btn:disabled { opacity: .3; cursor: default; }
+
+/* Nav/party switch confirmation dialog */
+.formation-nav-confirm { background: #16201a; border: 1px solid #2a4030; padding: calc(28px * var(--ui-scale)) calc(32px * var(--ui-scale)); width: calc(380px * var(--ui-scale)); max-width: calc(100vw - 40px); display: flex; flex-direction: column; gap: calc(14px * var(--ui-scale)); animation: modal-in .15s ease; }
+.formation-nav-confirm-title { margin: 0; font-family: Georgia, serif; font-size: calc(17px * var(--ui-scale)); color: #c8e0cc; font-weight: 500; }
+.formation-nav-confirm-body { margin: 0; font-size: var(--font-small); color: #6a7e6c; }
+.formation-nav-confirm-actions { display: flex; gap: calc(8px * var(--ui-scale)); justify-content: flex-end; }
 
 /* ── Quest Success Rate ──────────────────────────────────────────────────────── */
 .quest-challenge-badge { color: #c4a860; }
