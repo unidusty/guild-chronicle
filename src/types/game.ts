@@ -21,6 +21,7 @@ export type QuestType = "normal" | "urgent" | "raid";
 export type QuestStage = "traveling" | "searching" | "executing" | "returning";
 export type QuestEventCategory = "exploration" | "combat" | "environment" | "reward" | "person" | "danger";
 export type QuestDecisionType = "continue" | "withdraw" | "support_dispatch" | "extra_explore" | "abandon";
+export type QuestResultGrade = "great_success" | "success" | "narrow_success" | "retreat" | "failure" | "great_failure";
 export type QuestCategory = "escort" | "search" | "hunt" | "delivery" | "rescue" | "exploration";
 export type ChronicleScope = "guild" | "adventurer" | "party" | "world";
 export type ChronicleCategory = "join" | "quest" | "injury" | "growth" | "facility" | "reputation" | "world";
@@ -220,6 +221,19 @@ export interface QuestProgress {
   decisions: QuestDecision[];
 }
 
+export interface QuestResult {
+  questId: EntityId;
+  partyId: EntityId;
+  resultGrade: QuestResultGrade;
+  successRate: number;
+  success: boolean;
+  dangerLevel: number;
+  supportUsed: boolean;
+  retreat: boolean;
+  extraExplore: boolean;
+  completedAt: GameDate;
+}
+
 export interface Region {
   id: EntityId;
   name: string;
@@ -356,6 +370,7 @@ export interface GameState {
   parties: Record<EntityId, Party>;
   quests: Record<EntityId, Quest>;
   questProgress: Record<EntityId, QuestProgress>;
+  questResults: Record<EntityId, QuestResult>;
   regions: Record<EntityId, Region>;
   facilities: Record<EntityId, Facility>;
   chronicle: ChronicleEntry[];

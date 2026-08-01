@@ -1,4 +1,4 @@
-import type { Adventurer, AdventurerStatus, Gender, PartyStatus, QuestCategory, QuestStage, QuestStatus, QuestType, Race, Stats } from "../../types/game";
+import type { Adventurer, AdventurerStatus, Gender, PartyStatus, QuestCategory, QuestResultGrade, QuestStage, QuestStatus, QuestType, Race, Stats } from "../../types/game";
 
 export const raceLabels: Record<Race, string> = {
   human: "인간",
@@ -106,6 +106,15 @@ export function dangerLevelLabel(level: number): string {
   if (level >= 2) return "보통";
   return "낮음";
 }
+
+export const questResultGradeLabels: Record<QuestResultGrade, string> = {
+  great_success:  "대성공",
+  success:        "성공",
+  narrow_success: "간신히 성공",
+  retreat:        "철수",
+  failure:        "실패",
+  great_failure:  "대실패",
+};
 
 export function getBondStageLabel(questCount: number): string {
   if (questCount >= 60) return "오랜 전우";

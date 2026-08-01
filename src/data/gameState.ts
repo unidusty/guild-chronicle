@@ -453,6 +453,7 @@ const _rawState: GameState = {
       reportRead: true, hasIncident: false, incidentId: null, events: [], decisions: [],
     },
   },
+  questResults: {},
   pendingResults: [],
   warehouse: {},
   saleTransactions: [],

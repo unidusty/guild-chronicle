@@ -111,6 +111,32 @@ export function applyQuestDecision(
     decisions: [...prog.decisions, decisionEntry],
   };
 
+  // Dispatch support party immediately (they travel, but are committed)
+  if (decision === "support_dispatch" && supportPartyId) {
+    const supportParty = state.parties[supportPartyId];
+    if (supportParty && supportParty.status === "idle") {
+      const updatedAdventurers = { ...state.adventurers };
+      for (const memberId of supportParty.memberIds) {
+        if (updatedAdventurers[memberId]) {
+          updatedAdventurers[memberId] = {
+            ...updatedAdventurers[memberId],
+            status: "dispatched",
+            currentQuestId: questId,
+          };
+        }
+      }
+      return {
+        ...state,
+        parties: {
+          ...state.parties,
+          [supportPartyId]: { ...supportParty, status: "dispatched", activeQuestId: questId },
+        },
+        adventurers: updatedAdventurers,
+        questProgress: { ...state.questProgress, [questId]: updatedProgress },
+      };
+    }
+  }
+
   return {
     ...state,
     questProgress: { ...state.questProgress, [questId]: updatedProgress },

@@ -3,6 +3,7 @@ import type { AdventurerRank, EntityId, GameState, QuestDecisionType, QuestEvent
 import { playHover, playSelect } from "../../lib/audio";
 import { dangerLevelLabel, questCategoryLabels, questStageLabels, questStatusLabels, questTypeLabels } from "../../game/constants/labels";
 import { CHOICES_BY_CATEGORY, DECISION_LABELS } from "../../game/simulation/questDecisions";
+import { calcCurrentDangerLevel, calcCurrentSuccessRate, getSupportStatus } from "../../game/simulation/questResult";
 import { canAssignParty, isChallengeMode } from "../../game/simulation/quests";
 import { calcPartyCombatPower, calcQuestSuccessRate, getQuestRecommendedPower } from "../../game/simulation/combatPower";
 
@@ -145,6 +146,33 @@ export default function QuestDetail({ questId, state, onAssign, onDecide }: Prop
                 <div className="quest-progress-remain">
                   예상 귀환 <strong>{quest.remainingDays}일 후</strong>
                 </div>
+                {(() => {
+                  const assignedParty = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
+                  if (!assignedParty) return null;
+                  const sr = calcCurrentSuccessRate(assignedParty, quest, prog, state);
+                  const dl = calcCurrentDangerLevel(quest, prog);
+                  const support = getSupportStatus(prog);
+                  return (
+                    <div className="quest-success-prediction">
+                      <div className="qsp-row">
+                        <span className="qsp-label">예상 성공률</span>
+                        <span className={`qsp-rate ${sr >= 70 ? "high" : sr >= 45 ? "mid" : "low"}`}>{sr}%</span>
+                      </div>
+                      <div className="qsp-row">
+                        <span className="qsp-label">위험도</span>
+                        <span className={`danger-level-${Math.max(1, Math.min(5, dl))}`}>{dangerLevelLabel(dl)}</span>
+                      </div>
+                      {support !== "none" && (
+                        <div className="qsp-row">
+                          <span className="qsp-label">지원 파티</span>
+                          <span className={`qsp-support ${support}`}>
+                            {support === "arrived" ? "합류 완료" : "도착 예정"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
                 {prog.events.length > 0 ? (
                   <div className="quest-event-log">
                     <p className="quest-event-log-label">현장 보고</p>

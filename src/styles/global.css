@@ -910,6 +910,17 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .quest-progress-remain strong { color: #c8d8cc; }
 .quest-progress-incident { font-size: var(--font-small); color: #5a6e5c; }
 
+/* Success prediction panel (018-D) */
+.quest-success-prediction { margin: calc(6px * var(--ui-scale)) 0; padding: calc(8px * var(--ui-scale)) calc(10px * var(--ui-scale)); background: #0a1020; border: 1px solid #1a2840; border-radius: 2px; display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); }
+.qsp-row { display: flex; justify-content: space-between; align-items: center; font-size: var(--font-small); }
+.qsp-label { color: #5a6e7c; }
+.qsp-rate { font-size: var(--font-base); font-weight: 700; }
+.qsp-rate.high { color: #6ab868; }
+.qsp-rate.mid  { color: #c4a060; }
+.qsp-rate.low  { color: #c06060; }
+.qsp-support.arrived  { color: #6ab868; }
+.qsp-support.en_route { color: #c4a060; }
+
 /* Inline stage label (AdventurerDetail, PartyDetail) */
 .quest-stage-inline { color: #4a9abb; font-size: var(--font-small); }
 

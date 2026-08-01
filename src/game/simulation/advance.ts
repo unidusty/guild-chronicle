@@ -1,7 +1,8 @@
-import type { ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult } from "../../types/game";
+import type { ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult, QuestResult } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
 import { generateQuestEvent, rollEventForQuest } from "./questEvents";
+import { buildQuestResult } from "./questResult";
 
 function absDay(date: GameDate): number {
   const si = ["spring", "summer", "autumn", "winter"].indexOf(date.season);
@@ -56,6 +57,7 @@ const DAILY_PROGRESS = 15;
 function updateQuests(state: GameState): GameState {
   const newEntries: ChronicleEntry[] = [];
   const newResults: QuestCompletionResult[] = [];
+  const newQuestResults: QuestResult[] = [];
   const quests        = { ...state.quests };
   const adventurers   = { ...state.adventurers };
   const parties       = { ...state.parties };
@@ -70,6 +72,31 @@ function updateQuests(state: GameState): GameState {
     const remaining = quest.remainingDays - 1;
 
     if (remaining <= 0) {
+      const prog = questProgress[quest.id];
+
+      // Build quest result before removing progress
+      if (prog && quest.assignedPartyId) {
+        const stateSnapshot: GameState = { ...state, parties, adventurers, questProgress };
+        newQuestResults.push(buildQuestResult(quest.assignedPartyId, quest, prog, stateSnapshot, date));
+      }
+
+      // Release support parties from decisions
+      if (prog) {
+        for (const d of prog.decisions) {
+          if (d.decision === "support_dispatch" && d.supportPartyId) {
+            const sp = parties[d.supportPartyId];
+            if (sp) {
+              parties[d.supportPartyId] = { ...sp, status: "idle", activeQuestId: null };
+              for (const memberId of sp.memberIds) {
+                if (adventurers[memberId]) {
+                  adventurers[memberId] = { ...adventurers[memberId], status: "idle", currentQuestId: null };
+                }
+              }
+            }
+          }
+        }
+      }
+
       // Remove completed quest from the board
       delete quests[quest.id];
       delete questProgress[quest.id];
@@ -159,6 +186,10 @@ function updateQuests(state: GameState): GameState {
     }
   }
 
+  const updatedQuestResults = newQuestResults.length > 0
+    ? { ...state.questResults, ...Object.fromEntries(newQuestResults.map(r => [r.questId, r])) }
+    : state.questResults;
+
   return {
     ...state,
     guild:         goldEarned > 0 ? { ...state.guild, gold: state.guild.gold + goldEarned } : state.guild,
@@ -167,6 +198,7 @@ function updateQuests(state: GameState): GameState {
     parties,
     warehouse,
     questProgress,
+    questResults:   updatedQuestResults,
     chronicle:      [...newEntries, ...state.chronicle],
     pendingResults: [...state.pendingResults, ...newResults],
   };
