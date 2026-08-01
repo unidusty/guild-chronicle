@@ -183,6 +183,15 @@
 - DevPanel "Quest Director" 섹션 — 진행 중 의뢰별 긴급도·필수 단계 실시간 표시
 - `docs/design/QUEST_VALIDATION_GUIDE.md` 신규 — Director 전체 설계 기준서
 
+**018-O** Project Documentation Finalization
+- `docs/design/QUEST_TAG_GUIDE.md` 신규 — QuestTag 전체 목록, deriveTags 매핑, 이벤트·서사 영향 기준서
+- `docs/design/QUEST_DIRECTOR_GUIDE.md` 신규 — Director 철학, MandatoryStep 표, DirectorState, 강제 이벤트 알고리즘
+- `docs/design/SCENE_GENERATOR_GUIDE.md` 신규 — Scene Generator 핵심 헬퍼, 로그 유형별 세그먼트 구조, 템플릿 상수 목록
+- 기존 설계 문서 8개 현행화 (EVENT_ENGINE_GUIDE / STORY_ENGINE_GUIDE / ADVENTURE_LOG_GUIDE / RARE_EVENT_GUIDE 등)
+- `PROJECT_RULES.md` — 이벤트 엔진·Quest Director·모험 기록 규칙 추가
+- `PROJECT_TERMINOLOGY.md` — 버전 018-N 반영, 전체 용어 현행화
+- `docs/02_GAME_SYSTEM.md` — Quest Validation 표, Quest Director 섹션, Dynamic Story Engine 섹션 추가
+
 ---
 
 ## 예정
@@ -699,6 +708,134 @@
 - 로드 실패 시 원본 저장 보호
 - 자동 저장 덮어쓰기 주의
 - 개발용 저장과 일반 저장 구분
+
+### 의뢰 기간 생성 규칙
+
+#### 기본 원칙
+
+의뢰의 전체 기간은 무작위로 분배하지 않는다.
+
+모든 의뢰는 기본적으로 다음 3단계 구조를 따른다.
+
+- 이동
+- 수행
+- 귀환
+
+수행 단계가 전체 의뢰 기간에서 가장 큰 비중을 차지한다.
+
+---
+
+#### 일반 의뢰
+
+이동
+
+- 1~2일
+
+수행
+
+- 전체 기간의 약 60~80%
+
+귀환
+
+- 1~2일
+
+예시
+
+5일 의뢰
+
+- 이동 1일
+- 수행 3일
+- 귀환 1일
+
+8일 의뢰
+
+- 이동 2일
+- 수행 4~5일
+- 귀환 1~2일
+
+---
+
+#### 중·장거리 의뢰
+
+이동
+
+- 2~5일
+
+수행
+
+- 6~10일
+
+귀환
+
+- 2~5일
+
+---
+
+#### 대형 원정
+
+이동
+
+- 7~10일
+
+수행
+
+- 10~20일
+
+귀환
+
+- 7~10일
+
+---
+
+#### 호위 의뢰 예외
+
+호위 의뢰는 이동 자체가 임무 수행이다.
+
+따라서 일반 의뢰와 다른 기간 생성 규칙을 사용한다.
+
+예시
+
+출발
+
+↓
+
+이동
+
+↓
+
+매복
+
+↓
+
+이동
+
+↓
+
+방어
+
+↓
+
+도착
+
+↓
+
+귀환
+
+---
+
+#### 동적 기간 연동
+
+의뢰 생성 시 계산된 기간은
+
+확정 기간이 아니라 예상 기간이다.
+
+의뢰 진행 중 발생하는 사건과
+
+길드장의 결정에 따라
+
+실제 완료일은 변경될 수 있다.
+
+(019 Dynamic Quest Duration 시스템과 연동)
 
 ---
 

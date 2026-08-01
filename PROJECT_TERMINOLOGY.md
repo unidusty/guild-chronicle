@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (018-L) 작성.
+현재 구현 기준 (018-N) 작성.
 
 ---
 
@@ -443,11 +443,12 @@
 
 ---
 
-## 이벤트 엔진 (018-K)
+## 이벤트 엔진 (018-K / 018-N)
 
 ### QuestTag
 
-의뢰 특성을 나타내는 공통 언어 타입. `"카테고리:값"` 형식.
+의뢰 특성을 나타내는 공통 언어 타입. `"카테고리:값"` 형식.  
+→ 상세 내용: `docs/design/QUEST_TAG_GUIDE.md`
 
 | 카테고리 | 값 |
 |----------|---|
@@ -473,14 +474,81 @@
 | `requiredStage` | 특정 Quest 진행 단계에서만 등장 |
 | `boostedByTags` | 일치할 때마다 weight +2 |
 | `followUpIds` | 다음 이벤트 우선 후보 (Event Chain) |
+| `allowedQuestTypes` | 지정된 의뢰 유형에서만 등장 (018-M) |
 
 ### Event Memory
 
-`prog.events` 최근 5개의 제목을 기록하여 동일 이벤트 단기 반복을 억제.
+`prog.events` 최근 **8**개의 제목을 기록하여 동일 이벤트 단기 반복을 억제. (018-N: 5→8)
 
 ### Event Chain
 
 마지막 이벤트의 `followUpIds`에 등록된 이벤트가 가중치 2배로 다음 선택에 우선됨.
+
+---
+
+## Quest Validation & Director (018-M / 018-N)
+
+→ 상세 내용: `docs/design/QUEST_VALIDATION_GUIDE.md`, `docs/design/QUEST_DIRECTOR_GUIDE.md`
+
+### MandatoryStep
+
+의뢰 유형마다 반드시 거쳐야 하는 서사 단계 정의. `questValidation.ts`의 `MANDATORY_SEQUENCES`에 저장.
+
+| 필드 | 설명 |
+|------|------|
+| `id` | 단계 식별자 (예: `hunt-encounter`) |
+| `description` | 한국어 설명 |
+| `triggerCategories` | 충족 시키는 이벤트 카테고리 목록 |
+| `minimumStage` | 최소 진행 단계 |
+
+### DirectorState (urgencyLevel)
+
+| 값 | 의미 |
+|----|------|
+| `none` | 미완료 필수 단계 없음 |
+| `low` | 시간 여유 있음 (urgency weight만 적용) |
+| `high` | 촉박 (urgency weight 강화) |
+| `critical` | 즉시 강제 이벤트 생성 필요 |
+
+### Quest Stage (일수 기반)
+
+| Stage | 설명 |
+|-------|------|
+| `traveling` | 이동 단계 |
+| `searching` | 탐색·추적 단계 |
+| `executing` | 목표 수행 단계 |
+| `returning` | 귀환 단계 (5일 이하: 마지막 1일, 6일 이상: 마지막 2일) |
+
+---
+
+## Adventure Log (018-F ~ 018-N)
+
+→ 상세 내용: `docs/design/ADVENTURE_LOG_GUIDE.md`, `docs/design/SCENE_GENERATOR_GUIDE.md`
+
+### Story Memory
+
+`adventureLog.ts`의 `buildRecentSegments`가 직전 **15**개 로그 문장을 Set으로 구성하여 반복을 억제. (018-N: 10→15)
+
+### 기록 ID 형식
+
+| 로그 유형 | ID 형식 |
+|-----------|---------|
+| 출발 | `al-{q}-depart-{dateKey}` |
+| 일별 | `al-{q}-day-{day}-{dateKey}` |
+| 사건 | `al-{q}-ev-{eventId}` |
+| 결정 | `al-{q}-dec-{decisionId}` |
+| 지원 합류 | `al-{q}-support-{dateKey}` |
+| 완료 | `al-{q}-complete-{dateKey}` |
+
+### 지원 파티 시스템
+
+| 용어 | 설명 |
+|------|------|
+| 주 파티 (Primary Party) | 의뢰에 처음 배정된 파티 |
+| 지원 파티 (Support Party) | 길드장 결정으로 파견된 추가 파티 |
+| `SUPPORT_TRAVEL_DAYS` | 지원 파티 이동 소요 일수 (`2`) |
+| 이동 중 (en_route) | 파견 결정 후 도착 전 상태 |
+| 합류 완료 (arrived) | 현장 도착 후 상태 |
 
 ---
 

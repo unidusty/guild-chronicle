@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**018-N — Quest Director & Mandatory Flow**
+**018-O — Project Documentation Finalization**
 
 ## 완료
 
@@ -98,6 +98,14 @@
 - Event Memory 5→8개 확장, Story Memory 10→15개 확장 (반복 억제 강화)
 - DevPanel — "Quest Director" 섹션 추가 (긴급도·완료/미완료 필수 단계 표시)
 - `docs/design/QUEST_VALIDATION_GUIDE.md` 신규 작성
+- Project Documentation Finalization (018-O)
+- `docs/design/QUEST_TAG_GUIDE.md` 신규 — QuestTag 전체 목록, deriveTags 매핑, 이벤트·서사 영향
+- `docs/design/QUEST_DIRECTOR_GUIDE.md` 신규 — Director 철학, MandatoryStep 표, 알고리즘 전체
+- `docs/design/SCENE_GENERATOR_GUIDE.md` 신규 — Scene Generator 구조, 세그먼트 조립, 템플릿 목록
+- 기존 설계 문서 8개 현행화 (EVENT_ENGINE_GUIDE·STORY_ENGINE_GUIDE·ADVENTURE_LOG_GUIDE·RARE_EVENT_GUIDE 등)
+- `PROJECT_RULES.md` — 이벤트 엔진·Quest Director·모험 기록 규칙 추가
+- `PROJECT_TERMINOLOGY.md` — 버전 018-N 반영, Event Memory 8개·Story Memory 15개 현행화
+- `docs/02_GAME_SYSTEM.md` — Quest Validation 표, Quest Director 섹션, Dynamic Story Engine 섹션 추가
 
 ## 현재 데이터 원칙
 

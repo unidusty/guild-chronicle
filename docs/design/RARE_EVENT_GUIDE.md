@@ -1,6 +1,6 @@
 # RARE EVENT GUIDE
 
-Guild Chronicle 희귀 사건 설계 기준서. (018-J / 018-K)
+Guild Chronicle 희귀 사건 설계 기준서. (018-N)
 
 ---
 

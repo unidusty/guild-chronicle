@@ -4,7 +4,7 @@
 
 ## 현재 버전
 
-**018-N — Quest Director & Mandatory Flow**
+**018-O — Project Documentation Finalization**
 
 ## 실행 방법
 
