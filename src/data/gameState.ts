@@ -220,7 +220,7 @@ const _rawState: GameState = {
       clientName: "회색등성이 상단", dangerLevel: 3, recommendedPartySize: 3, expiresInDays: 0,
       rewardGold: 1850, durationDays: 4, remainingDays: 2, progress: 68,
       assignedPartyId: "party-silverhawk", expectedReturnAt: { year: 317, season: "summer", day: 14 },
-      riskTags: ["산적", "낙석"],
+      riskTags: ["산적", "낙석"], enemyHint: "산적",
     },
     "quest-missing": {
       id: "quest-missing", title: "서부 수로의 실종자 수색", grade: "C", regionId: "region-westcanal",
@@ -229,7 +229,7 @@ const _rawState: GameState = {
       clientName: "서부 수로 관리청", dangerLevel: 2, recommendedPartySize: 2, expiresInDays: 0,
       rewardGold: 920, durationDays: 2, remainingDays: 1, progress: 91,
       assignedPartyId: "party-bluelantern", expectedReturnAt: { year: 317, season: "summer", day: 12 },
-      riskTags: ["침수", "야간"],
+      riskTags: ["침수", "야간"], enemyHint: null,
     },
     "quest-rats": {
       id: "quest-rats", title: "헛간 들쥐 퇴치", grade: "F", regionId: "region-westfield",
@@ -237,7 +237,7 @@ const _rawState: GameState = {
       description: "서쪽 들판 농가의 헛간에 들쥐가 대량 번식했습니다. 작물 피해가 심각하오니 신속한 처리를 부탁드립니다.",
       clientName: "서쪽 농장 주민 연합", dangerLevel: 1, recommendedPartySize: 1, expiresInDays: 8,
       rewardGold: 160, durationDays: 3, remainingDays: 3, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["민첩 필요"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["민첩 필요"], enemyHint: "들쥐",
     },
     "quest-herbalist": {
       id: "quest-herbalist", title: "약초꾼 안전 호위", grade: "F", regionId: "region-westfield",
@@ -245,7 +245,7 @@ const _rawState: GameState = {
       description: "서쪽 숲에서 채약 중인 노인 약초꾼을 마을까지 안전하게 호위해 주십시오. 최근 야생 멧돼지 목격 신고가 있었습니다.",
       clientName: "마을 약초상 조합", dangerLevel: 1, recommendedPartySize: 2, expiresInDays: 5,
       rewardGold: 240, durationDays: 2, remainingDays: 2, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["야생 동물"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["야생 동물"], enemyHint: "야생 멧돼지",
     },
     "quest-oldmine": {
       id: "quest-oldmine", title: "폐광 내부 정밀 조사", grade: "E", regionId: "region-oldmine",
@@ -253,7 +253,7 @@ const _rawState: GameState = {
       description: "오래전 폐쇄된 구리 광산 내부에서 이상한 소리가 들린다는 신고가 들어왔습니다. 내부를 조사하여 위험 요소를 파악해 주십시오.",
       clientName: "광산 조합 대표", dangerLevel: 2, recommendedPartySize: 2, expiresInDays: 12,
       rewardGold: 420, durationDays: 4, remainingDays: 4, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["붕괴 위험", "독기"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["붕괴 위험", "독기"], enemyHint: null,
     },
     "quest-goblin": {
       id: "quest-goblin", title: "고블린 야영지 정찰", grade: "E", regionId: "region-darkforest",
@@ -261,7 +261,7 @@ const _rawState: GameState = {
       description: "어둠의 숲 동쪽 경계 부근에 고블린 야영지가 세워진 것이 목격되었습니다. 병력 규모와 거점 위치를 파악하여 보고해 주십시오.",
       clientName: "국경 수비대 지휘관", dangerLevel: 2, recommendedPartySize: 3, expiresInDays: 7,
       rewardGold: 380, durationDays: 3, remainingDays: 3, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["기습 위험", "야간 순찰"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["기습 위험", "야간 순찰"], enemyHint: "고블린",
     },
     "quest-merchant": {
       id: "quest-merchant", title: "실종된 행상인 수색", grade: "D", regionId: "region-borderpass",
@@ -269,7 +269,7 @@ const _rawState: GameState = {
       description: "국경 고갯길을 따라 이동하던 행상인 에드린 포스가 나흘째 연락이 두절되었습니다. 마지막 목격 지점은 북쪽 갈림길 인근입니다.",
       clientName: "포스 상회", dangerLevel: 3, recommendedPartySize: 3, expiresInDays: 10,
       rewardGold: 780, durationDays: 5, remainingDays: 5, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["산악 지형", "산적"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["산악 지형", "산적"], enemyHint: "산적",
     },
     "quest-swamp": {
       id: "quest-swamp", title: "늪지 마물 긴급 토벌", grade: "D", regionId: "region-swamplands",
@@ -277,7 +277,7 @@ const _rawState: GameState = {
       description: "늪지대 남쪽 어귀에 정체 모를 거대 마물이 출현했습니다. 이미 어부 두 명이 피해를 입었으며 빠른 대응이 필요합니다.",
       clientName: "어촌 촌장 연명", dangerLevel: 3, recommendedPartySize: 4, expiresInDays: 3,
       rewardGold: 1200, durationDays: 4, remainingDays: 4, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["대형 마물", "침수 지형", "독"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["대형 마물", "침수 지형", "독"], enemyHint: "늪지 마물",
     },
     "quest-escort-caravan": {
       id: "quest-escort-caravan", title: "왕도행 대형 상단 호위", grade: "C", regionId: "region-borderpass",
@@ -285,7 +285,7 @@ const _rawState: GameState = {
       description: "왕도로 향하는 대형 상단을 국경까지 호위해 주십시오. 최근 이 경로에서 무장 산적 습격 사례가 반복 발생하고 있습니다.",
       clientName: "왕도 교역 연합", dangerLevel: 3, recommendedPartySize: 4, expiresInDays: 14,
       rewardGold: 1500, durationDays: 6, remainingDays: 6, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["산적", "매복 위험"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["산적", "매복 위험"], enemyHint: "산적",
     },
     "quest-wyvern": {
       id: "quest-wyvern", title: "붉은 협곡의 와이번 추적", grade: "B", regionId: "region-redcanyon",
@@ -293,7 +293,7 @@ const _rawState: GameState = {
       description: "붉은 협곡 일대에 와이번 한 마리가 둥지를 튼 것이 확인되었습니다. 협곡 인근 채석장 작업자들의 안전을 위해 추적 및 격퇴가 필요합니다.",
       clientName: "붉은 협곡 채석장 조합", dangerLevel: 4, recommendedPartySize: 5, expiresInDays: 20,
       rewardGold: 3200, durationDays: 8, remainingDays: 8, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["비행 마물", "산악 지형", "화염"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["비행 마물", "산악 지형", "화염"], enemyHint: "와이번",
     },
     "quest-ruins": {
       id: "quest-ruins", title: "고대 유적 심층 탐사", grade: "B", regionId: "region-ancientruins",
@@ -301,7 +301,7 @@ const _rawState: GameState = {
       description: "북동쪽 산기슭에서 고대 왕국의 유적이 발굴되었습니다. 내부 구조와 유물 현황 파악을 의뢰합니다. 함정과 수호 골렘을 주의하십시오.",
       clientName: "왕립 고고학회", dangerLevel: 4, recommendedPartySize: 5, expiresInDays: 30,
       rewardGold: 2800, durationDays: 10, remainingDays: 10, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["함정", "수호 구조체", "구조물 붕괴"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["함정", "수호 구조체", "구조물 붕괴"], enemyHint: "수호 골렘",
     },
     "quest-dragon": {
       id: "quest-dragon", title: "고룡 토벌 원정 준비", grade: "S", regionId: "region-northmountain",
@@ -309,7 +309,7 @@ const _rawState: GameState = {
       description: "북부 산맥 심부에 잠들어 있던 고룡 '서리날개'가 깨어났습니다. 단독 파티로는 대응 불가 수준이며 공격대 편성이 필요합니다. 현재 참전 파티 모집 중.",
       clientName: "왕국 기사단 원정 사령부", dangerLevel: 5, recommendedPartySize: 15, expiresInDays: 60,
       rewardGold: 15000, durationDays: 30, remainingDays: 30, progress: 0,
-      assignedPartyId: null, expectedReturnAt: null, riskTags: ["고룡", "극한 추위", "공격대 필요", "단독 불가"],
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["고룡", "극한 추위", "공격대 필요", "단독 불가"], enemyHint: "고룡 서리날개",
     },
   },
   regions: {

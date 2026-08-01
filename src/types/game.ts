@@ -189,6 +189,7 @@ export interface Quest {
   assignedPartyId: EntityId | null;
   expectedReturnAt: GameDate | null;
   riskTags: string[];
+  enemyHint?: string | null;
 }
 
 export interface QuestEvent {

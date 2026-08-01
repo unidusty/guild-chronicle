@@ -115,7 +115,7 @@ export function applyQuestDecision(
     // Generate decision + completion adventure logs
     const decLog = generateDecisionLog(quest, decisionEntry, prog, party ?? null, null, date);
     const members = party ? party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][] : [];
-    const compLog = generateCompletionLog(quest, questResult, prog, party ?? null, members, state.classes, date);
+    const compLog = generateCompletionLog(quest, questResult, prog, party ?? null, members, state.classes, date, state.regions[quest.regionId]?.name ?? "");
     const existingLogs = state.adventureLogs[questId] ?? [];
     const updatedAdventureLogs = {
       ...state.adventureLogs,

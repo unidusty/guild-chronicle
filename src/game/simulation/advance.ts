@@ -95,7 +95,7 @@ function updateQuests(state: GameState): GameState {
         const compMembers = snapshotParty
           ? snapshotParty.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][]
           : [];
-        appendLog(quest.id, generateCompletionLog(quest, questResult, prog, snapshotParty, compMembers, state.classes, date));
+        appendLog(quest.id, generateCompletionLog(quest, questResult, prog, snapshotParty, compMembers, state.classes, date, state.regions[quest.regionId]?.name ?? ""));
       }
 
       // Release support parties from decisions
@@ -202,14 +202,14 @@ function updateQuests(state: GameState): GameState {
           const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
           if (party) {
             const members = party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
-            appendLog(quest.id, generateIncidentLog(quest, event, updated, party, members, state.classes, date));
+            appendLog(quest.id, generateIncidentLog(quest, event, updated, party, members, state.classes, date, state.regions[quest.regionId]?.name ?? ""));
           }
         } else {
           // Generate daily routine log
           const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
           if (party) {
             const members = party.memberIds.map(id => state.adventurers[id]).filter(Boolean) as typeof state.adventurers[string][];
-            const dailyLog = generateDailyLog(quest, updated, party, members, state.classes, date);
+            const dailyLog = generateDailyLog(quest, updated, party, members, state.classes, date, state.regions[quest.regionId]?.name ?? "");
             if (dailyLog) appendLog(quest.id, dailyLog);
           }
         }
