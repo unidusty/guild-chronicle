@@ -11,6 +11,12 @@ import {
 import { getWorldEventDefinition, tickWorldEvents, trySpawnFollowUpEvent, trySpawnWorldEvent } from "./worldEvents";
 import { applyDailyOperatingCost } from "./operatingCost";
 import { getReputationTier } from "../constants/reputation";
+import {
+  processPayroll,
+  processTax,
+  processLoanRepayments,
+  processFacilityUsage,
+} from "./economy";
 
 export function processDayEnd(state: GameState): { newState: GameState; report: DailyReport } {
   const previousDate = state.currentDate;
@@ -62,8 +68,14 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
   // 3.5. Apply daily operating costs (before advanceDay so currentDate = previousDate)
   const { newState: afterOpCost, result: opCostResult } = applyDailyOperatingCost(afterRelease);
 
+  // 3.6. Economy: payroll, tax, loan repayments, facility usage
+  const { newState: afterPayroll, result: payrollResult } = processPayroll(afterOpCost, todayAbsDay);
+  const { newState: afterTax, result: taxResult } = processTax(afterPayroll, todayAbsDay);
+  const { newState: afterLoans, results: loanResults } = processLoanRepayments(afterTax, todayAbsDay);
+  const { newState: afterEconomy, result: facilityUsageResult } = processFacilityUsage(afterLoans, todayAbsDay);
+
   // 4. Advance day (quests, injuries, training, party formations, date increment)
-  const afterAdvance = advanceDay(afterOpCost);
+  const afterAdvance = advanceDay(afterEconomy);
 
   // 5. Generate new applicants for the new day
   const { state: afterGenerate, newApplicants } = generateDailyApplicants(afterAdvance);
@@ -150,6 +162,85 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
         description: `자금이 부족하여 ${fmt(opCostResult.unpaidAmount)}G가 미납 처리되었습니다. 누적 미납: ${fmt(newState.guild.unpaidOperatingCost)}G`,
       });
     }
+  }
+
+  // Payroll
+  if (payrollResult !== null) {
+    const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
+    if (payrollResult.paidSalary > 0) {
+      items.push({
+        kind: "staff_salary_paid",
+        title: `직원 급여 지급 — ${fmt(payrollResult.paidSalary)}G`,
+        description: `${payrollResult.entries.length}명 · ${payrollResult.entries.map((e) => `${e.name} ${fmt(e.salary)}G`).join(", ")}`,
+      });
+    }
+    if (payrollResult.unpaidSalary > 0) {
+      items.push({
+        kind: "staff_salary_unpaid",
+        title: `급여 미지급 — ${fmt(payrollResult.unpaidSalary)}G`,
+        description: `자금 부족으로 ${fmt(payrollResult.unpaidSalary)}G가 미지급 처리되었습니다.`,
+      });
+    }
+  }
+
+  // Tax
+  if (taxResult !== null) {
+    const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
+    if (taxResult.paidAmount > 0) {
+      items.push({
+        kind: "guild_tax_paid",
+        title: `길드 세금 납부 — ${fmt(taxResult.paidAmount)}G`,
+        description: `30일 주기 세금 납부. 총 세액 ${fmt(taxResult.taxAmount)}G.`,
+      });
+    }
+    if (taxResult.unpaidAmount > 0) {
+      items.push({
+        kind: "guild_tax_unpaid",
+        title: `세금 미납 — ${fmt(taxResult.unpaidAmount)}G`,
+        description: `자금 부족으로 ${fmt(taxResult.unpaidAmount)}G가 미납 처리되었습니다.`,
+      });
+    }
+  }
+
+  // Loan repayments
+  for (const r of loanResults) {
+    const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
+    if (r.isFullyPaid) {
+      items.push({
+        kind: "loan_repayment",
+        title: `대출 상환 완료 — ${r.creditorName}`,
+        description: `원금 ${fmt(r.principalPaid)}G · 이자 ${fmt(r.interestPaid)}G. 완전 상환.`,
+      });
+    } else if (r.isOverdue) {
+      items.push({
+        kind: "loan_overdue",
+        title: `대출 연체 — ${r.creditorName}`,
+        description: `자금 부족으로 ${fmt(r.overdueAmount)}G 연체 처리. 남은 원금 ${fmt(r.remainingPrincipal)}G.`,
+      });
+    } else if (r.principalPaid + r.interestPaid > 0) {
+      items.push({
+        kind: "loan_repayment",
+        title: `대출 상환 — ${r.creditorName}`,
+        description: `원금 ${fmt(r.principalPaid)}G · 이자 ${fmt(r.interestPaid)}G. 남은 원금 ${fmt(r.remainingPrincipal)}G.`,
+      });
+    }
+  }
+
+  // Facility revenue
+  if (facilityUsageResult.usageRecords.length > 0) {
+    const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
+    const totalNet = facilityUsageResult.usageRecords.reduce((sum, r) => sum + r.netRevenue, 0);
+    const names = facilityUsageResult.usageRecords
+      .map((r) => {
+        const f = afterEconomy.facilities[r.facilityId];
+        return f ? `${f.name} +${fmt(r.netRevenue)}G` : "";
+      })
+      .filter(Boolean);
+    items.push({
+      kind: "facility_revenue",
+      title: `시설 수익 — 순수익 ${fmt(totalNet)}G`,
+      description: names.join(" · "),
+    });
   }
 
   // New applicants arrived (next day's applicants)

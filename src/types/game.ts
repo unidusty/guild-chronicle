@@ -370,7 +370,16 @@ export type FinanceTransactionType =
   | "facility_construction"
   | "facility_upgrade"
   | "facility_maintenance"
-  | "guild_operating_cost";
+  | "guild_operating_cost"
+  | "staff_salary"
+  | "guild_tax"
+  | "facility_operating_cost"
+  | "loan_principal_payment"
+  | "loan_interest_payment"
+  | "loan_received"
+  | "lodging_revenue"
+  | "meal_revenue"
+  | "pub_revenue";
 
 export interface FinanceTransaction {
   id: EntityId;
@@ -413,6 +422,65 @@ export interface FinanceSummary {
   totalExpense: number;
   recentTransactions: FinanceTransaction[];
 }
+
+// ── Guild Operating Economy ───────────────────────────────────────────────────
+
+export type StaffRoleId = "receptionist" | "warehouse_manager" | "operations_staff";
+
+export interface StaffMember {
+  id: EntityId;
+  name: string;
+  role: StaffRoleId;
+  requiredFacilityId: EntityId;
+  salaryPerPeriod: number;
+  isActive: boolean;
+}
+
+export type FacilityOperationStatus = "open" | "closed" | "suspended" | "understaffed";
+
+export type FacilityPolicyId =
+  | "inn_budget" | "inn_standard" | "inn_premium"
+  | "pub_quiet" | "pub_standard" | "pub_lively"
+  | "restaurant_frugal" | "restaurant_standard" | "restaurant_fine";
+
+export interface FacilityOperationState {
+  facilityId: EntityId;
+  status: FacilityOperationStatus;
+  policyId?: FacilityPolicyId;
+  unpaidOperatingCost: number;
+}
+
+export type FacilityUsageType = "lodging" | "meal" | "pub_visit";
+
+export interface FacilityUsageRecord {
+  id: EntityId;
+  facilityId: EntityId;
+  date: GameDate;
+  usageType: FacilityUsageType;
+  quantity: number;
+  unitRevenue: number;
+  grossRevenue: number;
+  operatingCost: number;
+  netRevenue: number;
+  sourceType?: string;
+  sourceId?: EntityId;
+}
+
+export interface GuildLoan {
+  id: EntityId;
+  creditorName: string;
+  principal: number;
+  remainingPrincipal: number;
+  interestRate: number;
+  issuedAt: GameDate;
+  nextPaymentDate: GameDate;
+  paymentIntervalDays: number;
+  installmentAmount: number;
+  status: "active" | "paid" | "overdue";
+  overdueAmount: number;
+}
+
+export type GuildFinancialHealth = "stable" | "caution" | "deficit" | "critical";
 
 // ── World Events ─────────────────────────────────────────────────────────────
 
@@ -502,7 +570,14 @@ export type DailyReportItemKind =
   | "reputation_tier_changed"
   | "guild_operating_cost"
   | "operating_cost_unpaid"
-  | "quest_duration_changed";
+  | "quest_duration_changed"
+  | "staff_salary_paid"
+  | "staff_salary_unpaid"
+  | "guild_tax_paid"
+  | "guild_tax_unpaid"
+  | "loan_repayment"
+  | "loan_overdue"
+  | "facility_revenue";
 
 export interface DailyReportItem {
   kind: DailyReportItemKind;
@@ -626,6 +701,13 @@ export interface RecruitmentState {
   lastGeneratedDay: number | null;
 }
 
+export interface ArrivalNotification {
+  id: EntityId;             // groupId — siblings share one notification
+  applicantIds: EntityId[]; // all applicants in this arrival group
+  arrivalScene: string;     // narrative text to display
+  eventName: string;        // event type label (e.g. "왕실 추천장")
+}
+
 export type ReputationChangeType =
   | "quest_result"
   | "world_event"
@@ -740,6 +822,14 @@ export interface GameState {
   version: number;
   currentDate: GameDate;
   lastOperatingCostDay: number | null;
+  lastPayrollDay: number | null;
+  lastTaxDay: number | null;
+  unpaidSalary: number;
+  unpaidTax: number;
+  staff: StaffMember[];
+  loans: GuildLoan[];
+  facilityOperationStates: Record<EntityId, FacilityOperationState>;
+  facilityUsageRecords: FacilityUsageRecord[];
   guild: Guild;
   adventurers: Record<EntityId, Adventurer>;
   classes: Record<EntityId, AdventurerClass>;
@@ -760,6 +850,7 @@ export interface GameState {
   saleTransactions: SaleTransaction[];
   financeTransactions: FinanceTransaction[];
   recruitment: RecruitmentState;
+  pendingArrivalNotifications: ArrivalNotification[];
   activeWorldEvents: ActiveWorldEvent[];
   worldEventHistory: WorldEventHistoryEntry[];
   pendingWorldEventNotifications: Array<{ id: EntityId; definitionId: EntityId; day: number }>;

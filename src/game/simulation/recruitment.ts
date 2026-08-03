@@ -1,5 +1,5 @@
 import type {
-  Adventurer, ChronicleEntry, EntityId, GameDate, GameState,
+  ArrivalNotification, Adventurer, ChronicleEntry, EntityId, GameDate, GameState,
   Race, RecruitmentApplicant, RecruitmentEventDefinition, RecruitmentHistoryItem, Stats,
 } from "../../types/game";
 import { FACILITY_DEFS } from "../../data/facilityData";
@@ -456,6 +456,19 @@ export function generateDailyApplicants(
     existingNames.add(a.name);
   }
 
+  // Build arrival notifications grouped by groupId (siblings share one notification)
+  const notifMap = new Map<string, ArrivalNotification>();
+  for (const a of newApplicants) {
+    const def = RECRUITMENT_EVENT_DEFINITIONS.find((d) => d.id === a.recruitmentEvent?.eventId);
+    if (!def?.arrivalScene) continue;
+    const gid = a.recruitmentEvent?.groupId ?? a.id;
+    if (!notifMap.has(gid)) {
+      notifMap.set(gid, { id: gid, applicantIds: [], arrivalScene: def.arrivalScene, eventName: def.name });
+    }
+    notifMap.get(gid)!.applicantIds.push(a.id);
+  }
+  const arrivalNotifications = Array.from(notifMap.values());
+
   return {
     state: {
       ...state,
@@ -464,8 +477,21 @@ export function generateDailyApplicants(
         applicants: [...state.recruitment.applicants, ...newApplicants],
         lastGeneratedDay: newAbsDay,
       },
+      pendingArrivalNotifications: [
+        ...state.pendingArrivalNotifications,
+        ...arrivalNotifications,
+      ],
     },
     newApplicants,
+  };
+}
+
+export function dismissArrivalNotification(state: GameState, notificationId: EntityId): GameState {
+  return {
+    ...state,
+    pendingArrivalNotifications: state.pendingArrivalNotifications.filter(
+      (n) => n.id !== notificationId,
+    ),
   };
 }
 

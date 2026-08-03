@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0020-D — 세계 이벤트 시스템 확장**
+**0020-E — 길드 운영 경제 확장**
 
 ## 완료
 
@@ -132,6 +132,18 @@
 - `docs/03_DESIGN/UI_REFERENCE.md` 개정 — 비주얼 스타일·타이틀 화면 문서 연결
 - `docs/03_DESIGN/ASSET_NAMING_GUIDE.md` 개정 — 초상화 파일명 규칙 현행화 (`{종족}_{m|f}_{직업}_{순번}.webp`)
 - `docs/03_DESIGN/PORTRAIT_ASSET_GUIDE.md` 개정 — 파일명·매니페스트 구조 현행화, 비주얼 스타일 연결
+- 길드 운영 경제 확장 (0020-E)
+  - `StaffMember`, `GuildLoan`, `FacilityOperationState`, `FacilityUsageRecord`, `GuildFinancialHealth` 타입 추가
+  - `FinanceTransactionType` 9종 추가 (staff_salary / guild_tax / facility_operating_cost / loan_received / loan_principal_payment / loan_interest_payment / lodging_revenue / meal_revenue / pub_revenue)
+  - `DailyReportItemKind` 7종 추가 (staff_salary_paid / staff_salary_unpaid / guild_tax_paid / guild_tax_unpaid / loan_repayment / loan_overdue / facility_revenue)
+  - `GameState` 필드 추가 (staff / loans / facilityOperationStates / facilityUsageRecords / unpaidSalary / unpaidTax / lastPayrollDay / lastTaxDay)
+  - `src/game/simulation/economy.ts` 신규 — 급여/세금/대출/시설이용 처리 함수 + `getFinancialHealth()`
+  - `processDayEnd` 3.6단계 추가 — payroll / tax / loanRepayments / facilityUsage 통합
+  - 초기 직원 3명 정의 (접수대·창고·길드홀)
+  - `FinanceTab` 확장 — 재정 건강 배지, 직원 급여 섹션, 세금·부채 섹션, 시설 손익 섹션
+  - `docs/01_SYSTEM/GUILD_OPERATION_ECONOMY_SYSTEM_GUIDE.md` 신규
+  - `docs/02_DATABASE/GUILD_OPERATION_ECONOMY_DATABASE.md` 신규
+  - `briefings/GUILD_OPERATION_ECONOMY_BRIEFING.md` 신규
 
 ## 현재 데이터 원칙
 

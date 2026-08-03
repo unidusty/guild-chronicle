@@ -118,13 +118,22 @@ export const questResultGradeLabels: Record<QuestResultGrade, string> = {
 };
 
 export const financeTransactionTypeLabels: Record<FinanceTransactionType, string> = {
-  quest_commission:     "의뢰 수수료",
-  warehouse_sale:       "창고 판매",
-  loot_purchase:        "전리품 구매",
-  facility_construction:"시설 건설",
-  facility_upgrade:     "시설 업그레이드",
-  facility_maintenance: "시설 유지비",
-  guild_operating_cost: "길드 운영비",
+  quest_commission:       "의뢰 수수료",
+  warehouse_sale:         "창고 판매",
+  loot_purchase:          "전리품 구매",
+  facility_construction:  "시설 건설",
+  facility_upgrade:       "시설 업그레이드",
+  facility_maintenance:   "시설 유지비",
+  guild_operating_cost:   "길드 운영비",
+  staff_salary:           "직원 급여",
+  guild_tax:              "길드 세금",
+  facility_operating_cost:"시설 운영비",
+  loan_principal_payment: "대출 원금 상환",
+  loan_interest_payment:  "대출 이자",
+  loan_received:          "대출 실행",
+  lodging_revenue:        "여관 수익",
+  meal_revenue:           "식당 수익",
+  pub_revenue:            "펍 수익",
 };
 
 export const financeDirectionLabels: Record<FinanceTransactionDirection, string> = {

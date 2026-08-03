@@ -1586,3 +1586,29 @@ button.day-end-locked { opacity: 0.72; }
 .arr-btn-later:hover { border-color: #5a7a4a; color: #aac48a; }
 .arr-btn-confirm { background: #2a3e1a; border: 1px solid #5a7a3a; color: #b0d080; padding: calc(6px * var(--ui-scale)) calc(16px * var(--ui-scale)); font-size: var(--font-small); font-weight: 600; cursor: pointer; border-radius: 2px; }
 .arr-btn-confirm:hover { background: #344e20; border-color: #7aaa4a; color: #c8e898; }
+
+/* ── Finance — 0020-E Economy ────────────────────────────────────────────────── */
+.fh-row { display: flex; align-items: center; gap: calc(8px * var(--ui-scale)); margin-bottom: calc(10px * var(--ui-scale)); }
+.fh-label { font-size: var(--font-tiny); color: #8a9a7a; letter-spacing: .06em; }
+.fh-badge { font-size: var(--font-tiny); font-weight: 700; letter-spacing: .08em; padding: calc(2px * var(--ui-scale)) calc(8px * var(--ui-scale)); border-radius: 2px; }
+.fh-stable   { background: #1a2e1a; color: #7aba7a; border: 1px solid #3a5a3a; }
+.fh-caution  { background: #2a2810; color: #c8a840; border: 1px solid #4a4010; }
+.fh-deficit  { background: #2a1a0e; color: #c87840; border: 1px solid #4a3010; }
+.fh-critical { background: #2a0e0e; color: #d06060; border: 1px solid #4a1818; }
+.fh-note { font-size: var(--font-tiny); color: #9a8a6a; }
+
+.finance-unpaid-banner.critical { border-color: #4a1818; background: #1e0a0a; }
+
+.finance-row-warning span { color: #c87840; }
+
+.finance-loan-list { margin-top: calc(8px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); }
+.finance-loan-item { padding: calc(10px * var(--ui-scale)) calc(12px * var(--ui-scale)); background: #0e1218; border: 1px solid #2a3a2a; border-radius: 3px; }
+.finance-loan-item.overdue { border-color: #4a1818; }
+.finance-loan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(5px * var(--ui-scale)); }
+.finance-loan-creditor { font-size: var(--font-small); font-weight: 600; color: #c4c8b8; }
+.finance-loan-status { font-size: var(--font-tiny); font-weight: 700; padding: calc(2px * var(--ui-scale)) calc(6px * var(--ui-scale)); border-radius: 2px; }
+.finance-loan-active   { background: #1a2e2a; color: #7abaa0; border: 1px solid #2a4a3a; }
+.finance-loan-overdue  { background: #2a0e0e; color: #d06060; border: 1px solid #4a1818; }
+.finance-loan-paid     { background: #1a1e1a; color: #5a7a5a; border: 1px solid #2a3a2a; }
+.finance-loan-details { display: flex; gap: calc(14px * var(--ui-scale)); font-size: var(--font-tiny); color: #8a9a7a; }
+.finance-loan-overdue-amount { margin-top: calc(4px * var(--ui-scale)); font-size: var(--font-tiny); color: #d06060; }

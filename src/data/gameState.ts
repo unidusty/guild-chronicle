@@ -5,6 +5,39 @@ const _rawState: GameState = {
   version: 1,
   currentDate: { year: 317, season: "summer", day: 12 },
   lastOperatingCostDay: null,
+  lastPayrollDay: 37961,  // toAbsoluteDay({ year: 317, season: "summer", day: 12 }) — first payroll in 7 days
+  lastTaxDay: 37961,      // first tax in 30 days
+  unpaidSalary: 0,
+  unpaidTax: 0,
+  staff: [
+    {
+      id: "staff-reception-1",
+      name: "베라 화이트홀로우",
+      role: "receptionist",
+      requiredFacilityId: "facility-reception",
+      salaryPerPeriod: 25,
+      isActive: true,
+    },
+    {
+      id: "staff-storage-1",
+      name: "그런트 아이언키",
+      role: "warehouse_manager",
+      requiredFacilityId: "facility-storage",
+      salaryPerPeriod: 20,
+      isActive: true,
+    },
+    {
+      id: "staff-guildhall-1",
+      name: "미아 콜드웰",
+      role: "operations_staff",
+      requiredFacilityId: "facility-guild-hall",
+      salaryPerPeriod: 15,
+      isActive: true,
+    },
+  ],
+  loans: [],
+  facilityOperationStates: {},
+  facilityUsageRecords: [],
   guild: {
     id: "guild-westwind",
     name: "서풍 길드",
@@ -487,6 +520,7 @@ const _rawState: GameState = {
     history: [],
     lastGeneratedDay: null,
   },
+  pendingArrivalNotifications: [],
   activeWorldEvents: [],
   worldEventHistory: [],
   pendingWorldEventNotifications: [],
