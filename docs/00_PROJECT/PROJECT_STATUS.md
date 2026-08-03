@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0019-E — 가입 신청 이벤트 시스템**
+**0019-F — 길드 명성 시스템**
 
 ## 완료
 
@@ -152,7 +152,6 @@
 - 파티원 간 관계 수치
 - 은닉 특성 발현
 - 길드 자금 소비 (유지비, 실패 패널티)
-- 명성 변동
 - 저장 및 불러오기
 - 능력치 실전 판정 (행동별 능력치 연결)
 - Battle Event 데이터 구조
@@ -234,9 +233,22 @@
   - 문서: `RECRUITMENT_EVENT_SYSTEM_GUIDE.md` (신규), `RECRUITMENT_EVENT_DATABASE.md` (신규), `RECRUITMENT_EVENT_SYSTEM_BRIEFING.md` (신규)
   - 버그 수정: `questDirector.ts` — critical 단계 이벤트 선택을 결정론적 reduce에서 가중 랜덤으로 교체 (매 게임 동일 이벤트 반복 방지)
 
+- 길드 명성 시스템 (0019-F)
+  - `ReputationChangeType` / `ReputationChange` 타입 추가
+  - `DailyReportItemKind` — `reputation_changed` / `reputation_tier_changed` 추가
+  - `Guild.reputationTier: number` 제거 → `getReputationTier(reputation)` 계산 함수로 대체
+  - `GameState.reputationChanges: ReputationChange[]` 추가
+  - `src/game/constants/reputation.ts` (신규) — `REPUTATION_TIERS` (7등급) / `getReputationTier` / `calcQuestReputation`
+  - `src/game/simulation/reputation.ts` (신규) — `applyReputationChange` (중복 방지·연대기 생성·최소값 0 처리)
+  - `returnReport.ts` — `finalizeSettlement`에서 `calcQuestReputation` + `applyReputationChange` 연동 (sourceId 기반 중복 방지)
+  - `selectors.ts` — `getGuildMetrics` 명성 카드 현행화 (등급명 + 다음 등급까지 표시), `getReputationLog` selector 추가
+  - `GuildHallPage` — "명성" 탭 추가 (5번째 탭): 현재 명성·등급·진행률·등급 기준표·변동 기록
+  - CSS: `.rep-*` 클래스 군 추가
+  - 문서: `GUILD_REPUTATION_SYSTEM_GUIDE.md` (신규), `GUILD_REPUTATION_SYSTEM_BRIEFING.md` (신규)
+
 ## 다음 작업
 
-**0020 이후 — 명성 시스템, 모험가 성장 (예정)**
+**0020 이후 — 모험가 성장 (예정)**
 
 
 

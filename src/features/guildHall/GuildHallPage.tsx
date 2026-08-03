@@ -5,9 +5,11 @@ import {
   formatShortGameDate,
   getActiveQuestRows,
   getGuildMetrics,
+  getReputationLog,
   getRosterRows,
 } from "../../game/simulation/selectors";
-import { questStageLabels } from "../../game/constants/labels";
+import { questStageLabels, seasonLabels } from "../../game/constants/labels";
+import { getReputationTier, REPUTATION_TIERS } from "../../game/constants/reputation";
 import { WORLD_EVENT_DEFINITIONS } from "../../data/worldEventData";
 import FacilitiesPage from "../facilities/FacilitiesPage";
 import RecruitmentTab from "../recruitment/RecruitmentTab";
@@ -15,7 +17,7 @@ import FinanceTab from "../finance/FinanceTab";
 import ReturnReportModal from "../returnReport/ReturnReportModal";
 import { playHover, playSelect } from "../../lib/audio";
 
-type GuildTab = "dashboard" | "facilities" | "recruitment" | "finance";
+type GuildTab = "dashboard" | "facilities" | "recruitment" | "finance" | "reputation";
 
 interface Props {
   state: GameState;
@@ -109,6 +111,13 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
           onClick={() => handleTabChange("finance")}
         >
           재정
+        </button>
+        <button
+          className={`gh-tab${tab === "reputation" ? " active" : ""}`}
+          onMouseEnter={playHover}
+          onClick={() => handleTabChange("reputation")}
+        >
+          명성
         </button>
       </div>
 
@@ -342,6 +351,77 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
       {tab === "finance" && (
         <FinanceTab state={state} />
       )}
+
+      {/* Reputation tab */}
+      {tab === "reputation" && (() => {
+        const repLog = getReputationLog(state);
+        const tier   = getReputationTier(state.guild.reputation);
+        const rep    = state.guild.reputation;
+        const progress = tier.nextMin != null
+          ? Math.min(100, Math.round(((rep - tier.min) / (tier.nextMin - tier.min)) * 100))
+          : 100;
+        return (
+          <div className="rep-tab">
+            {/* Summary card */}
+            <section className="rep-summary">
+              <div className="rep-summary-main">
+                <p className="rep-summary-label">현재 명성</p>
+                <p className="rep-summary-value">{new Intl.NumberFormat("ko-KR").format(rep)}</p>
+                <p className="rep-summary-tier">{tier.label}</p>
+              </div>
+              <div className="rep-summary-next">
+                {tier.nextMin != null ? (
+                  <>
+                    <p className="rep-next-label">다음 등급까지 <b>{tier.toNext}</b></p>
+                    <div className="rep-progress-bar">
+                      <i style={{ width: `${progress}%` }} />
+                    </div>
+                    <p className="rep-next-tier">{REPUTATION_TIERS[REPUTATION_TIERS.findIndex(t => t.min === tier.nextMin)]?.label ?? ""}</p>
+                  </>
+                ) : (
+                  <p className="rep-next-label rep-max">최고 등급</p>
+                )}
+              </div>
+            </section>
+
+            {/* Tier reference */}
+            <section className="rep-tier-list">
+              <p className="rep-section-heading">명성 등급 기준</p>
+              <div className="rep-tier-grid">
+                {REPUTATION_TIERS.map((t) => (
+                  <div key={t.label} className={`rep-tier-row${t.min === tier.min ? " current" : ""}`}>
+                    <span className="rep-tier-name">{t.label}</span>
+                    <span className="rep-tier-min">{t.min.toLocaleString()} 이상</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Change log */}
+            <section className="rep-log">
+              <p className="rep-section-heading">명성 변동 기록</p>
+              {repLog.length === 0 ? (
+                <p className="rep-log-empty">아직 명성 변동 기록이 없습니다.</p>
+              ) : (
+                <div className="rep-log-list">
+                  {repLog.map((entry) => (
+                    <div className="rep-log-row" key={entry.id}>
+                      <span className="rep-log-date">
+                        {seasonLabels[entry.date.season]} {entry.date.day}일
+                      </span>
+                      <span className="rep-log-desc">{entry.description}</span>
+                      <span className={`rep-log-delta${entry.delta >= 0 ? " pos" : " neg"}`}>
+                        {entry.delta >= 0 ? "+" : ""}{entry.delta}
+                      </span>
+                      <span className="rep-log-after">{entry.reputationAfter.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        );
+      })()}
 
       {/* Return Report modal */}
       {activeReport && (

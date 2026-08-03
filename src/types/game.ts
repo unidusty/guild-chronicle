@@ -425,7 +425,9 @@ export type DailyReportItemKind =
   | "recruitment_expired"
   | "recruitment_new_applicants"
   | "world_event_started"
-  | "world_event_ended";
+  | "world_event_ended"
+  | "reputation_changed"
+  | "reputation_tier_changed";
 
 export interface DailyReportItem {
   kind: DailyReportItemKind;
@@ -531,12 +533,27 @@ export interface RecruitmentState {
   lastGeneratedDay: number | null;
 }
 
+export type ReputationChangeType =
+  | "quest_result"
+  | "world_event"
+  | "guild_activity";
+
+export interface ReputationChange {
+  id: EntityId;
+  date: GameDate;
+  type: ReputationChangeType;
+  delta: number;
+  reputationBefore: number;
+  reputationAfter: number;
+  description: string;
+  sourceId?: EntityId;
+}
+
 export interface Guild {
   id: EntityId;
   name: string;
   gold: number;
   reputation: number;
-  reputationTier: number;
   facilityIds: EntityId[];
   adventurerIds: EntityId[];
   partyIds: EntityId[];
@@ -602,4 +619,5 @@ export interface GameState {
   financeTransactions: FinanceTransaction[];
   recruitment: RecruitmentState;
   activeWorldEvents: ActiveWorldEvent[];
+  reputationChanges: ReputationChange[];
 }

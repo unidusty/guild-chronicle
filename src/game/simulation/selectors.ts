@@ -1,5 +1,6 @@
-import type { Adventurer, ChronicleEntry, EntityId, GameDate, GameState } from "../../types/game";
+import type { Adventurer, ChronicleEntry, EntityId, GameDate, GameState, ReputationChange } from "../../types/game";
 import { adventurerStatusLabels, raceLabels, seasonLabels } from "../constants/labels";
+import { getReputationTier } from "../constants/reputation";
 
 const PERSONALITY_ADJ: Record<string, string> = {
   "책임감 강함": "책임감 강한",
@@ -56,7 +57,7 @@ export function getGuildMetrics(state: GameState) {
   return [
     { label: "길드 자금", value: formatGold(state.guild.gold), note: "이번 주 +2,140 G" },
     { label: "소속 모험가", value: `${active.length}명`, note: `파견 ${dispatched} · 대기 ${waiting} · 부상 ${injured}` },
-    { label: "길드 명성", value: new Intl.NumberFormat("ko-KR").format(state.guild.reputation), note: `지역 공인 ${state.guild.reputationTier}단계` },
+    { label: "길드 명성", value: new Intl.NumberFormat("ko-KR").format(state.guild.reputation), note: (() => { const t = getReputationTier(state.guild.reputation); return t.toNext != null ? `${t.label} · 다음까지 ${t.toNext}` : t.label; })() },
     { label: "의뢰 성공률", value: `${successRate}%`, note: "최근 30건 기준" },
   ];
 }
@@ -111,6 +112,10 @@ export function getAdventurerChronicle(
   return state.chronicle
     .filter((entry) => entry.relatedEntityIds.includes(adventurerId))
     .slice(0, limit);
+}
+
+export function getReputationLog(state: GameState, limit = 20): ReputationChange[] {
+  return state.reputationChanges.slice(0, limit);
 }
 
 export function getActiveQuestRows(state: GameState) {

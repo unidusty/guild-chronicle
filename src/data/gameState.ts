@@ -9,7 +9,6 @@ const _rawState: GameState = {
     name: "서풍 길드",
     gold: 18420,
     reputation: 1286,
-    reputationTier: 3,
     facilityIds: ["facility-guild-hall", "facility-reception", "facility-storage", "facility-recruitment"],
     adventurerIds: ["adv-ella", "adv-lien", "adv-dorgan", "adv-marien", "adv-theo", "adv-serin", "adv-braen", "adv-vess", "adv-caelum", "adv-rina", "adv-korra", "adv-mael"],
     partyIds: ["party-silverhawk", "party-bluelantern", "party-ironforge"],
@@ -458,6 +457,7 @@ const _rawState: GameState = {
     lastGeneratedDay: null,
   },
   activeWorldEvents: [],
+  reputationChanges: [],
 };
 
 export const initialGameState: GameState = (() => {

@@ -14,6 +14,8 @@ import type {
 import { LOOT_TABLE } from "../../data/lootData";
 import { applyFinanceIncome, applyFinanceExpense } from "./finance";
 import { calcGuildPurchaseValue } from "../constants/economy";
+import { calcQuestReputation } from "../constants/reputation";
+import { applyReputationChange } from "./reputation";
 
 export const GUILD_FEE_RATE = 0.10;
 
@@ -159,15 +161,33 @@ export function finalizeSettlement(
   });
 
   // Apply loot purchase expense if any
-  if (settlement.lootPurchaseTotal > 0) {
-    return applyFinanceExpense(afterIncome, {
-      type: "loot_purchase",
-      amount: settlement.lootPurchaseTotal,
-      description: `전리품 구매 — ${report.questTitle}`,
-      sourceType: "return_report_loot",
-      sourceId: report.id,
-    });
-  }
+  const afterLoot = settlement.lootPurchaseTotal > 0
+    ? applyFinanceExpense(afterIncome, {
+        type: "loot_purchase",
+        amount: settlement.lootPurchaseTotal,
+        description: `전리품 구매 — ${report.questTitle}`,
+        sourceType: "return_report_loot",
+        sourceId: report.id,
+      })
+    : afterIncome;
 
-  return afterIncome;
+  // Apply reputation change (idempotent by sourceId = report.id)
+  const repDelta = calcQuestReputation(report.questGrade, report.resultGrade);
+  const repSourceId = `rep-quest-${report.id}`;
+  const resultLabels: Record<string, string> = {
+    great_success: "대성공",
+    success:       "성공",
+    narrow_success:"간신히 성공",
+    retreat:       "철수",
+    failure:       "실패",
+    great_failure: "대실패",
+  };
+  return applyReputationChange(afterLoot, {
+    type: "quest_result",
+    delta: repDelta,
+    description: `${report.questTitle} ${resultLabels[report.resultGrade] ?? report.resultGrade}`,
+    date: report.completedAt,
+    sourceId: repSourceId,
+    questId: report.questId,
+  });
 }

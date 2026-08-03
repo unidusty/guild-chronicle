@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (0019-E) 작성.
+현재 구현 기준 (0019-F) 작성.
 
 ---
 
@@ -24,7 +24,7 @@
 
 **컴포넌트:** `GuildHallPage`
 
-세 개의 탭으로 구성된다.
+다섯 개의 탭으로 구성된다.
 
 ### 대시보드 탭
 
@@ -45,6 +45,14 @@
 → **가입 심사** 섹션 참조.  
 가입 심사실이 건설 전이면 잠금 안내 화면, 공사 중이면 진행률 화면이 표시된다.  
 심사 대기자가 있을 때 탭 배지(숫자)가 표시된다.
+
+### 재정 탭
+
+→ **재정 거래** 섹션 참조.
+
+### 명성 탭
+
+→ **길드 명성** 섹션 참조.
 
 ---
 
@@ -149,6 +157,64 @@
 | `originNote` | 연대기 기록용 한 줄 이벤트 설명 |
 
 현재 이벤트 10종: 형제 함께 지원 / 몰락한 귀족 / 라이벌 길드 출신 / 왕실 추천장 / 은퇴 기사 / 수상한 지원자 / 유명 모험가의 제자 / 고아 출신 / 부상 후 재기 / 빚을 갚기 위한 지원
+
+---
+
+## 길드 명성
+
+**데이터:** `GameState.guild.reputation: number`, `GameState.reputationChanges: ReputationChange[]`  
+**상수:** `src/game/constants/reputation.ts`  
+**시뮬레이션:** `src/game/simulation/reputation.ts`  
+**UI:** `GuildHallPage` 명성 탭
+
+명성 수치는 `guild.reputation`에 정수로 저장한다. 등급 문자열은 저장하지 않는다.
+
+### 명성 등급 (`ReputationTier`)
+
+| 등급 | 최소 명성 |
+|------|-----------|
+| 무명 길드 | 0 |
+| 신생 길드 | 50 |
+| 소규모 길드 | 200 |
+| 지역 길드 | 600 |
+| 유명 길드 | 1,500 |
+| 명문 길드 | 3,500 |
+| 전설의 길드 | 7,000 |
+
+등급은 `getReputationTier(reputation)` 함수로 실시간 계산한다. (`REPUTATION_TIERS` 상수 기준)
+
+### 명성 변화 기록 (`ReputationChange`)
+
+| 필드 | 설명 |
+|------|------|
+| `id` | 고유 ID |
+| `date` | 변화 발생 게임 날짜 |
+| `type` | `"quest_result"` \| `"world_event"` \| `"guild_activity"` |
+| `delta` | 실제 적용된 변화량 (음수 가능) |
+| `reputationBefore` | 변화 전 명성 수치 |
+| `reputationAfter` | 변화 후 명성 수치 |
+| `description` | 변화 원인 설명 |
+| `sourceId` | 중복 방지용 출처 ID (예: `"rep-quest-{reportId}"`) |
+
+### 명성 변경 공통 함수
+
+`applyReputationChange(state, params)` — 명성 수치 변경·변동 기록 생성·연대기 기록을 하나의 흐름으로 처리하는 단일 진입점.
+
+- `sourceId` 기반 중복 방지: 동일 sourceId가 이미 존재하면 즉시 반환
+- 명성은 0 미만으로 내려가지 않음
+- 등급 변경 또는 `|delta| >= 20` 시 `ChronicleEntry(category: "reputation")` 자동 생성
+
+### 명성 변화 계산
+
+`calcQuestReputation(questGrade, resultGrade)` — `BASE_DELTA × RANK_MULTIPLIER` 테이블 기반.
+
+- 적용 시점: `finalizeSettlement` (귀환 정산 완료 시 한 번만)
+- sourceId 형식: `"rep-quest-{reportId}"`
+
+### 명성 탭 UI
+
+현재 명성 수치·등급·진행률 / 등급 기준표 / 명성 변동 기록 목록 표시.  
+selector: `getReputationLog(state, limit?)`
 
 ---
 
@@ -505,6 +571,8 @@
 | 건설 전 | `FacilityStatus = "unbuilt"` |
 | 공사 중 | `FacilityStatus = "constructing" | "upgrading"` |
 | 운영 중 | `FacilityStatus = "active"` |
+| 명성 | `guild.reputation` (수치), `getReputationTier()` (등급) |
+| 명성 변동 기록 | `state.reputationChanges` → `getReputationLog()` |
 
 ---
 
@@ -627,3 +695,6 @@
 | 가입 심사 (단독 메뉴) | 길드 홀 > 가입 심사 탭 | 016-A |
 | 오늘의 영입 후보 | 가입 심사 (지원자 목록) | 016-B |
 | `status: "completed"` in quests | 의뢰 완료 후 `state.quests`에서 삭제 | 016-C |
+| `isBasic?: boolean` (RecruitmentEventDefinition) | 폐기 — 단일 이벤트 풀로 통합 | 0019-E |
+| 일반 지원 / 특별 지원 구분 | 폐기 — 이벤트 유무로만 구분 | 0019-E |
+| `reputationTier: number` (Guild) | 폐기 — `getReputationTier(reputation)`으로 실시간 계산 | 0019-F |
