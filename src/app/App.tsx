@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { initialGameState } from "../data/gameState";
 import { formatGameDate } from "../game/simulation/selectors";
 import GuildHallPage from "../features/guildHall/GuildHallPage";
@@ -11,7 +11,7 @@ import DayEndOverlay from "../features/dayEnd/DayEndOverlay";
 import SettingsModal from "../components/SettingsModal";
 import TitleScreen from "../features/title/TitleScreen";
 import DevPanel from "../features/devTools/DevPanel";
-import { useAudio, playHover, playSelect } from "../lib/audio";
+import { useAudio, playHover, playSelect, startGameBgm } from "../lib/audio";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -35,7 +35,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function App() {
   const audio = useAudio();
-  const [screen, setScreen] = useState<Screen>(DEV_MODE ? "game" : "title");
+  const [screen, setScreen] = useState<Screen>("title");
   const [state, setState] = useState(initialGameState);
   const [page, setPage] = useState<Page>("guildHall");
   const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null);
@@ -43,6 +43,11 @@ export default function App() {
   const [dayEndOpen, setDayEndOpen] = useState(false);
   const [partiesFormationDirty, setPartiesFormationDirty] = useState(false);
   const [pendingNavPage, setPendingNavPage] = useState<Page | null>(null);
+
+  // Start game BGM when entering the game (title BGM is already stopped by TitleScreen)
+  useEffect(() => {
+    if (screen === "game") startGameBgm();
+  }, [screen]);
 
   function navigateToParty(partyId: string) {
     setSelectedPartyId(partyId);

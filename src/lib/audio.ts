@@ -18,14 +18,16 @@ const SELECT_COEFF = 1.0;
 // ── Singleton audio elements ────────────────────────────────────────────────────
 
 let bgmEl:       HTMLAudioElement | null = null;
+let titleBgmEl:  HTMLAudioElement | null = null;
 let hoverEl:     HTMLAudioElement | null = null;
 let selectEl:    HTMLAudioElement | null = null;
 let paperOpenEl: HTMLAudioElement | null = null;
 
-function getBgm():       HTMLAudioElement { if (!bgmEl)       { bgmEl       = new Audio("/audio/guild-hall-bgm.mp3"); bgmEl.loop = true; } return bgmEl; }
-function getHover():     HTMLAudioElement { if (!hoverEl)     hoverEl     = new Audio("/audio/ui-hover.mp3");  return hoverEl; }
-function getSelect():    HTMLAudioElement { if (!selectEl)    selectEl    = new Audio("/audio/ui-select.mp3"); return selectEl; }
-function getPaperOpen(): HTMLAudioElement { if (!paperOpenEl) paperOpenEl = new Audio("/audio/ui-quest-paper-open.mp3"); return paperOpenEl; }
+function getBgm():      HTMLAudioElement { if (!bgmEl)      { bgmEl      = new Audio("/audio/guild-hall-bgm.mp3"); bgmEl.loop = true; }      return bgmEl; }
+function getTitleBgm(): HTMLAudioElement { if (!titleBgmEl) { titleBgmEl = new Audio("/audio/title-theme.mp3");   titleBgmEl.loop = true; } return titleBgmEl; }
+function getHover():    HTMLAudioElement { if (!hoverEl)    hoverEl    = new Audio("/audio/ui-hover.mp3");             return hoverEl; }
+function getSelect():   HTMLAudioElement { if (!selectEl)   selectEl   = new Audio("/audio/ui-select.mp3");            return selectEl; }
+function getPaperOpen():HTMLAudioElement { if (!paperOpenEl) paperOpenEl = new Audio("/audio/ui-quest-paper-open.mp3"); return paperOpenEl; }
 
 // ── localStorage helpers ────────────────────────────────────────────────────────
 
@@ -57,12 +59,14 @@ function readInitial() {
   };
 }
 
-// ── Module-level SFX state (updated by hook, used by standalone functions) ─────
+// ── Module-level state (synced by useAudio hook, used by standalone functions) ─
 
+let _bgmVolume = DEFAULTS.bgmVolume;
+let _bgmMuted  = DEFAULTS.bgmMuted;
 let _sfxVolume = DEFAULTS.sfxVolume;
 let _sfxMuted  = DEFAULTS.sfxMuted;
 
-// ── Standalone playback functions (importable without hook) ────────────────────
+// ── Standalone SFX functions ────────────────────────────────────────────────────
 
 export function playHover() {
   if (_sfxMuted || _sfxVolume === 0) return;
@@ -103,37 +107,64 @@ export function playSelectPreview(sfxVol: number) {
   a.play().catch(() => {});
 }
 
+// ── BGM standalone controls (for screen transitions) ──────────────────────────
+
+export function playTitleBgm() {
+  if (_bgmMuted || _bgmVolume === 0) return;
+  const a = getTitleBgm();
+  a.volume = _bgmVolume / 100;
+  a.muted  = false;
+  a.play().catch(() => {});
+}
+
+export function stopTitleBgm() {
+  const a = getTitleBgm();
+  a.pause();
+  a.currentTime = 0;
+}
+
+export function startGameBgm() {
+  const a = getBgm();
+  a.volume = _bgmMuted ? 0 : _bgmVolume / 100;
+  a.muted  = _bgmMuted;
+  a.play().catch(() => {});
+}
+
 // ── React hook ──────────────────────────────────────────────────────────────────
 
 export function useAudio() {
   const [state, setState] = useState(readInitial);
 
-  // Set up BGM autoplay on first user gesture
+  // Initialize module-level vars and BGM element on mount.
+  // BGM is NOT auto-started here; it is started explicitly via
+  // playTitleBgm() (title screen) or startGameBgm() (game entry).
   useEffect(() => {
+    _bgmVolume = state.bgmVolume;
+    _bgmMuted  = state.bgmMuted;
+    _sfxVolume = state.sfxVolume;
+    _sfxMuted  = state.sfxMuted;
     const a = getBgm();
     a.volume = state.bgmVolume / 100;
     a.muted  = state.bgmMuted;
-    _sfxVolume = state.sfxVolume;
-    _sfxMuted  = state.sfxMuted;
-
-    const start = () => { a.play().catch(() => {}); };
-    document.addEventListener("click",   start, { once: true });
-    document.addEventListener("keydown", start, { once: true });
-    return () => {
-      document.removeEventListener("click",   start);
-      document.removeEventListener("keydown", start);
-    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync BGM whenever volume/muted state changes
+  // Sync BGM volume/muted on settings change
   useEffect(() => {
+    _bgmVolume = state.bgmVolume;
+    _bgmMuted  = state.bgmMuted;
     const a = getBgm();
     a.volume = state.bgmVolume / 100;
     a.muted  = state.bgmMuted;
+    // Also sync title BGM if it is currently playing
+    const t = getTitleBgm();
+    if (!t.paused) {
+      t.volume = _bgmMuted ? 0 : _bgmVolume / 100;
+      t.muted  = _bgmMuted;
+    }
   }, [state.bgmVolume, state.bgmMuted]);
 
-  // Sync module-level SFX vars for standalone functions
+  // Sync SFX vars for standalone functions
   useEffect(() => {
     _sfxVolume = state.sfxVolume;
     _sfxMuted  = state.sfxMuted;
