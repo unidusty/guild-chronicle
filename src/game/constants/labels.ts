@@ -119,6 +119,7 @@ export const questResultGradeLabels: Record<QuestResultGrade, string> = {
 
 export const financeTransactionTypeLabels: Record<FinanceTransactionType, string> = {
   quest_commission:       "의뢰 수수료",
+  guild_quest_commission: "길드 발주 보수",
   warehouse_sale:         "창고 판매",
   loot_purchase:          "전리품 구매",
   facility_construction:  "시설 건설",

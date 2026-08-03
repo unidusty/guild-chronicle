@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { GameState, InboxItem, ReturnReport } from "../../types/game";
+import type { GameState, GuildQuestDraft, InboxItem, ReturnReport } from "../../types/game";
 import { dismissReputationEvent } from "../../game/simulation/reputationEvents";
 import { dismissWorldEventNotification } from "../../game/simulation/worldEvents";
 import {
@@ -18,6 +18,9 @@ import FacilitiesPage from "../facilities/FacilitiesPage";
 import RecruitmentTab from "../recruitment/RecruitmentTab";
 import FinanceTab from "../finance/FinanceTab";
 import ReturnReportModal from "../returnReport/ReturnReportModal";
+import GuildQuestDraftModal from "./GuildQuestDraftModal";
+import { approveGuildQuestDraft, rejectGuildQuestDraft } from "../../game/simulation/guildQuests";
+import { toAbsoluteDay } from "../../game/simulation/recruitment";
 import { playHover, playSelect } from "../../lib/audio";
 
 type GuildTab = "dashboard" | "facilities" | "recruitment" | "finance" | "reputation" | "world";
@@ -36,7 +39,8 @@ const INBOX_ICON: Record<string, { icon: string; tone: string }> = {
   recruitment_application: { icon: "+", tone: "green" },
   quest_decision:          { icon: "!", tone: "danger" },
   reputation_event:        { icon: "명", tone: "gold" },
-  world_event:             { icon: "세", tone: "teal" },
+  world_event:             { icon: "세", tone: "gold" },
+  guild_quest_draft:       { icon: "발", tone: "green" },
 };
 
 const PRIORITY_LABEL: Record<string, string> = {
@@ -49,6 +53,7 @@ const PRIORITY_LABEL: Record<string, string> = {
 export default function GuildHallPage({ state, onStateChange, onDayEnd, onNavigate, initialApplicantId, onInitialApplicantConsumed }: Props) {
   const [tab, setTab] = useState<GuildTab>(initialApplicantId ? "recruitment" : "dashboard");
   const [activeReport, setActiveReport] = useState<ReturnReport | null>(null);
+  const [activeDraft, setActiveDraft] = useState<GuildQuestDraft | null>(null);
   const [showBlockedMsg, setShowBlockedMsg] = useState(false);
 
   const metrics      = getGuildMetrics(state);
@@ -98,6 +103,9 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd, onNaviga
     } else if (item.type === "world_event") {
       onStateChange((s) => dismissWorldEventNotification(s, item.sourceId));
       handleTabChange("world");
+    } else if (item.type === "guild_quest_draft") {
+      const draft = state.pendingGuildQuestDrafts.find(d => d.id === item.sourceId);
+      if (draft) setActiveDraft(draft);
     }
   }
 
@@ -570,6 +578,24 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd, onNaviga
             onStateChange(newState);
             setActiveReport(null);
           }}
+        />
+      )}
+
+      {/* Guild Quest Draft modal */}
+      {activeDraft && (
+        <GuildQuestDraftModal
+          draft={activeDraft}
+          state={state}
+          onApprove={() => {
+            const todayAbsDay = toAbsoluteDay(state.currentDate);
+            onStateChange((s) => approveGuildQuestDraft(s, activeDraft.id, todayAbsDay));
+            setActiveDraft(null);
+          }}
+          onReject={() => {
+            onStateChange((s) => rejectGuildQuestDraft(s, activeDraft.id));
+            setActiveDraft(null);
+          }}
+          onClose={() => setActiveDraft(null)}
         />
       )}
     </div>

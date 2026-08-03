@@ -1611,4 +1611,32 @@ button.day-end-locked { opacity: 0.72; }
 .finance-loan-overdue  { background: #2a0e0e; color: #d06060; border: 1px solid #4a1818; }
 .finance-loan-paid     { background: #1a1e1a; color: #5a7a5a; border: 1px solid #2a3a2a; }
 .finance-loan-details { display: flex; gap: calc(14px * var(--ui-scale)); font-size: var(--font-tiny); color: #8a9a7a; }
+
+/* ── Guild Quest Badges ───────────────────────────────────────────────────────── */
+.qbc-guild-badge { font-size: 0.58rem; font-weight: 700; background: #1c2e10; color: #8aba6a; border: 1px solid #3a5020; border-radius: 2px; padding: calc(1px * var(--ui-scale)) calc(5px * var(--ui-scale)); letter-spacing: 0.04em; }
+.guild-quest-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; background: #1c2e10; color: #8aba6a; border: 1px solid #3a5020; border-radius: 2px; padding: calc(2px * var(--ui-scale)) calc(7px * var(--ui-scale)); letter-spacing: 0.04em; margin-left: calc(6px * var(--ui-scale)); vertical-align: middle; }
+
+/* ── Guild Quest Draft Modal ─────────────────────────────────────────────────── */
+.gqd-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: flex; align-items: center; justify-content: center; z-index: 900; }
+.gqd-modal { background: #12160e; border: 1px solid #3a4a2a; border-radius: 4px; padding: calc(28px * var(--ui-scale)); max-width: calc(460px * var(--ui-scale)); width: 90%; display: flex; flex-direction: column; gap: calc(14px * var(--ui-scale)); }
+.gqd-header { display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); }
+.gqd-badge { font-size: 0.6rem; font-weight: 700; background: #1c2e10; color: #8aba6a; border: 1px solid #3a5020; border-radius: 2px; padding: calc(2px * var(--ui-scale)) calc(7px * var(--ui-scale)); letter-spacing: 0.05em; align-self: flex-start; }
+.gqd-need-label { font-size: var(--font-tiny); color: #9a9a7a; letter-spacing: 0.06em; }
+.gqd-title { font-size: var(--font-medium); color: #d4c89a; margin: 0; }
+.gqd-section { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); }
+.gqd-label { font-size: var(--font-tiny); color: #7a8a6a; letter-spacing: 0.08em; text-transform: uppercase; }
+.gqd-reason { font-size: var(--font-small); color: #c4b888; margin: 0; }
+.gqd-text { font-size: var(--font-small); color: #9aaa8a; margin: 0; }
+.gqd-info-grid { display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); }
+.gqd-info-row { display: flex; justify-content: space-between; align-items: center; font-size: var(--font-tiny); border-bottom: 1px solid #1e2a16; padding-bottom: calc(4px * var(--ui-scale)); }
+.gqd-info-key { color: #7a8a6a; }
+.gqd-info-val { color: #c4c8b8; font-weight: 500; }
+.gqd-warn-text { color: #c07040 !important; }
+.gqd-warn-banner { font-size: var(--font-tiny); color: #c07040; background: #1e120a; border: 1px solid #3e2010; border-radius: 2px; padding: calc(6px * var(--ui-scale)) calc(10px * var(--ui-scale)); margin: 0; }
+.gqd-actions { display: flex; gap: calc(10px * var(--ui-scale)); justify-content: flex-end; margin-top: calc(4px * var(--ui-scale)); }
+.gqd-btn-reject { background: #0e1208; border: 1px solid #3a3a2a; color: #8a9a7a; padding: calc(7px * var(--ui-scale)) calc(18px * var(--ui-scale)); font-size: var(--font-small); cursor: pointer; border-radius: 2px; }
+.gqd-btn-reject:hover { border-color: #5a5a3a; color: #c4c4a4; }
+.gqd-btn-approve { background: #1c2e10; border: 1px solid #4a6020; color: #8aba6a; padding: calc(7px * var(--ui-scale)) calc(18px * var(--ui-scale)); font-size: var(--font-small); font-weight: 600; cursor: pointer; border-radius: 2px; }
+.gqd-btn-approve:hover:not(:disabled) { background: #243a14; border-color: #6a8030; color: #aad488; }
+.gqd-btn-approve:disabled { opacity: 0.45; cursor: not-allowed; }
 .finance-loan-overdue-amount { margin-top: calc(4px * var(--ui-scale)); font-size: var(--font-tiny); color: #d06060; }

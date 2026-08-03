@@ -526,6 +526,7 @@ const _rawState: GameState = {
   pendingWorldEventNotifications: [],
   reputationChanges: [],
   pendingReputationEvents: [],
+  pendingGuildQuestDrafts: [],
 };
 
 export const initialGameState: GameState = (() => {

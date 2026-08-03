@@ -83,6 +83,9 @@ export default function QuestDetail({ questId, state, onAssign, onDecide }: Prop
         <div className="quest-detail-title-block">
           <span className="rank quest-rank">{quest.grade}</span>
           <h2 className="quest-detail-title">{quest.title}</h2>
+          {quest.issuer === "guild" && (
+            <span className="guild-quest-badge">길드 발주</span>
+          )}
         </div>
         <span className={`status ${isDispatched ? "active" : "idle"}`}>{questStatusLabels[quest.status]}</span>
       </div>

@@ -34,7 +34,8 @@ export function createReturnReport(
   prog?: QuestProgress,
 ): ReturnReport {
   const totalRewardGold  = quest.rewardGold;
-  const guildFeeGold     = Math.floor(totalRewardGold * GUILD_FEE_RATE);
+  const isGuildIssued    = quest.issuer === "guild";
+  const guildFeeGold     = isGuildIssued ? 0 : Math.floor(totalRewardGold * GUILD_FEE_RATE);
   const partyPaymentGold = totalRewardGold - guildFeeGold;
 
   // Actual duration = last incremented currentDay + 1 (the completion day itself)
@@ -75,6 +76,7 @@ export function createReturnReport(
     guildFeeGold,
     partyPaymentGold,
     loot: lootEntries,
+    issuer: quest.issuer,
   };
 }
 
@@ -96,13 +98,17 @@ export function calcSettlement(
 
   const lootPurchaseTotal = purchasedLoot.reduce((sum, p) => sum + p.totalValue, 0);
 
+  const netGuildGoldChange = report.issuer === "guild"
+    ? -(report.partyPaymentGold + lootPurchaseTotal)
+    : report.guildFeeGold - lootPurchaseTotal;
+
   return {
     reportId: report.id,
     guildFeeGold: report.guildFeeGold,
     partyPaymentGold: report.partyPaymentGold,
     purchasedLoot,
     lootPurchaseTotal,
-    netGuildGoldChange: report.guildFeeGold - lootPurchaseTotal,
+    netGuildGoldChange,
   };
 }
 
@@ -146,9 +152,13 @@ export function finalizeSettlement(
   // Remove ReturnReport
   const returnReports = state.returnReports.filter((r) => r.id !== reportId);
 
-  // Pre-validate: income first, then check expense coverage
-  if (state.guild.gold + settlement.guildFeeGold < settlement.lootPurchaseTotal) {
-    return state;
+  const isGuildIssued = report.issuer === "guild";
+
+  // Pre-validate: ensure sufficient gold for net outflows
+  if (isGuildIssued) {
+    if (state.guild.gold < settlement.partyPaymentGold + settlement.lootPurchaseTotal) return state;
+  } else {
+    if (state.guild.gold + settlement.guildFeeGold < settlement.lootPurchaseTotal) return state;
   }
 
   // Build intermediate state with non-gold changes applied
@@ -160,25 +170,46 @@ export function finalizeSettlement(
     returnReports,
   };
 
-  // Apply income first (quest commission)
-  const afterIncome = applyFinanceIncome(midState, {
-    type: "quest_commission",
-    amount: settlement.guildFeeGold,
-    description: `의뢰 수수료 — ${report.questTitle}`,
-    sourceType: "return_report",
-    sourceId: report.id,
-  });
+  let afterGold: GameState;
+  if (isGuildIssued) {
+    // Guild pays party as expense (no commission income)
+    const afterExpense = applyFinanceExpense(midState, {
+      type: "guild_quest_commission",
+      amount: settlement.partyPaymentGold,
+      description: `길드 발주 보수 지급 — ${report.questTitle}`,
+      sourceType: "return_report",
+      sourceId: report.id,
+    });
+    afterGold = settlement.lootPurchaseTotal > 0
+      ? applyFinanceExpense(afterExpense, {
+          type: "loot_purchase",
+          amount: settlement.lootPurchaseTotal,
+          description: `전리품 구매 — ${report.questTitle}`,
+          sourceType: "return_report_loot",
+          sourceId: report.id,
+        })
+      : afterExpense;
+  } else {
+    // External quest: income first (commission), then loot expense
+    const afterIncome = applyFinanceIncome(midState, {
+      type: "quest_commission",
+      amount: settlement.guildFeeGold,
+      description: `의뢰 수수료 — ${report.questTitle}`,
+      sourceType: "return_report",
+      sourceId: report.id,
+    });
+    afterGold = settlement.lootPurchaseTotal > 0
+      ? applyFinanceExpense(afterIncome, {
+          type: "loot_purchase",
+          amount: settlement.lootPurchaseTotal,
+          description: `전리품 구매 — ${report.questTitle}`,
+          sourceType: "return_report_loot",
+          sourceId: report.id,
+        })
+      : afterIncome;
+  }
 
-  // Apply loot purchase expense if any
-  const afterLoot = settlement.lootPurchaseTotal > 0
-    ? applyFinanceExpense(afterIncome, {
-        type: "loot_purchase",
-        amount: settlement.lootPurchaseTotal,
-        description: `전리품 구매 — ${report.questTitle}`,
-        sourceType: "return_report_loot",
-        sourceId: report.id,
-      })
-    : afterIncome;
+  const afterLoot = afterGold;
 
   // Apply reputation change (idempotent by sourceId = report.id)
   const repDelta = calcQuestReputation(report.questGrade, report.resultGrade);

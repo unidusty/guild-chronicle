@@ -161,6 +161,27 @@ export function getInboxItems(state: GameState): InboxItem[] {
     });
   }
 
+  // ── Guild Quest Drafts (informational — do not block day-end) ─────────────────
+  const NEED_LABELS: Record<string, string> = {
+    low_gold:               "자금 부족",
+    dangerous_world_event:  "위협 증가",
+    periodic_exploration:   "정기 탐사",
+  };
+  for (const draft of state.pendingGuildQuestDrafts) {
+    items.push({
+      id: `inbox-guild-draft-${draft.id}`,
+      type: "guild_quest_draft",
+      priority: draft.needType === "dangerous_world_event" ? "important" : "normal",
+      title: "길드 발주 초안",
+      summary: `${draft.questTitle} · ${NEED_LABELS[draft.needType] ?? draft.needType}`,
+      sourceId: draft.id,
+      target: { page: "guildHall" },
+      createdDay: draft.createdDay,
+      requiresAction: false,
+      isUrgent: false,
+    });
+  }
+
   // Sort: priority (critical first), then older items first within same priority
   items.sort((a, b) => {
     const pDiff = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];

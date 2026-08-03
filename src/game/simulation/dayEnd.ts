@@ -17,6 +17,7 @@ import {
   processLoanRepayments,
   processFacilityUsage,
 } from "./economy";
+import { detectAndCreateDrafts, expireGuildQuestDrafts } from "./guildQuests";
 
 export function processDayEnd(state: GameState): { newState: GameState; report: DailyReport } {
   const previousDate = state.currentDate;
@@ -74,8 +75,12 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
   const { newState: afterLoans, results: loanResults } = processLoanRepayments(afterTax, todayAbsDay);
   const { newState: afterEconomy, result: facilityUsageResult } = processFacilityUsage(afterLoans, todayAbsDay);
 
+  // 3.7. Guild quest drafts: expire stale, detect new needs
+  const { newState: afterDraftExpire, expired: expiredDrafts } = expireGuildQuestDrafts(afterEconomy, todayAbsDay);
+  const { newState: afterDraftDetect, created: createdDrafts } = detectAndCreateDrafts(afterDraftExpire, todayAbsDay);
+
   // 4. Advance day (quests, injuries, training, party formations, date increment)
-  const afterAdvance = advanceDay(afterEconomy);
+  const afterAdvance = advanceDay(afterDraftDetect);
 
   // 5. Generate new applicants for the new day
   const { state: afterGenerate, newApplicants } = generateDailyApplicants(afterAdvance);
@@ -240,6 +245,24 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
       kind: "facility_revenue",
       title: `시설 수익 — 순수익 ${fmt(totalNet)}G`,
       description: names.join(" · "),
+    });
+  }
+
+  // Guild quest drafts created
+  for (const draft of createdDrafts) {
+    items.push({
+      kind: "guild_quest_draft_created",
+      title: `길드 발주 초안 생성 — ${draft.questTitle}`,
+      description: `${draft.reason}. Inbox에서 승인 또는 거절할 수 있습니다.`,
+    });
+  }
+
+  // Guild quest drafts expired
+  for (const draft of expiredDrafts) {
+    items.push({
+      kind: "guild_quest_draft_expired",
+      title: `길드 발주 초안 만료 — ${draft.questTitle}`,
+      description: `처리되지 않아 자동 만료되었습니다.`,
     });
   }
 

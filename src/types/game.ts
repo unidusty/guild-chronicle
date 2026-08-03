@@ -192,6 +192,7 @@ export interface Quest {
   riskTags: string[];
   enemyHint?: string | null;
   reputationCondition?: ReputationCondition;
+  issuer?: "external" | "guild";
 }
 
 export interface QuestEvent {
@@ -348,6 +349,7 @@ export interface ReturnReport {
   guildFeeGold: number;
   partyPaymentGold: number;
   loot: LootEntry[];
+  issuer?: "external" | "guild";
 }
 
 export interface SettlementResult {
@@ -365,6 +367,7 @@ export type FinanceTransactionDirection = "income" | "expense";
 
 export type FinanceTransactionType =
   | "quest_commission"
+  | "guild_quest_commission"
   | "warehouse_sale"
   | "loot_purchase"
   | "facility_construction"
@@ -482,6 +485,31 @@ export interface GuildLoan {
 
 export type GuildFinancialHealth = "stable" | "caution" | "deficit" | "critical";
 
+// ── Guild Issued Quests ───────────────────────────────────────────────────────
+
+export type GuildQuestNeedType =
+  | "low_gold"
+  | "dangerous_world_event"
+  | "periodic_exploration";
+
+export interface GuildQuestDraft {
+  id: EntityId;
+  needType: GuildQuestNeedType;
+  reason: string;
+  expectedReward: string;
+  estimatedCost: number;
+  createdDay: number;
+  expiresDay: number;
+  questTitle: string;
+  questDescription: string;
+  questCategory: QuestCategory;
+  questGrade: AdventurerRank;
+  regionId: EntityId;
+  durationDays: number;
+  dangerLevel: number;
+  recommendedPartySize: number;
+}
+
 // ── World Events ─────────────────────────────────────────────────────────────
 
 export type WorldEventCategory =
@@ -577,7 +605,9 @@ export type DailyReportItemKind =
   | "guild_tax_unpaid"
   | "loan_repayment"
   | "loan_overdue"
-  | "facility_revenue";
+  | "facility_revenue"
+  | "guild_quest_draft_created"
+  | "guild_quest_draft_expired";
 
 export interface DailyReportItem {
   kind: DailyReportItemKind;
@@ -785,7 +815,8 @@ export type InboxItemType =
   | "recruitment_application"
   | "quest_decision"
   | "reputation_event"
-  | "world_event";
+  | "world_event"
+  | "guild_quest_draft";
 
 export type InboxPriority = "normal" | "important" | "urgent" | "critical";
 
@@ -856,4 +887,5 @@ export interface GameState {
   pendingWorldEventNotifications: Array<{ id: EntityId; definitionId: EntityId; day: number }>;
   reputationChanges: ReputationChange[];
   pendingReputationEvents: Array<{ id: EntityId; day: number }>;
+  pendingGuildQuestDrafts: GuildQuestDraft[];
 }

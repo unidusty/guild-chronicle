@@ -173,13 +173,16 @@ export default function AvailableQuestsTab({
                 >
                   <div className="qbc-pin" />
 
-                  {/* Header row: rank + urgent badge */}
+                  {/* Header row: rank + urgent + guild badge */}
                   <div className="qbc-header">
                     <span className={`rank qbc-grade rank-${quest.grade}`}>
                       {quest.grade}
                     </span>
                     {isUrgent && (
                       <span className="qbc-urgent-badge">긴급</span>
+                    )}
+                    {quest.issuer === "guild" && (
+                      <span className="qbc-guild-badge">길드 발주</span>
                     )}
                   </div>
 
