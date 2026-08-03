@@ -4,6 +4,41 @@ Guild Chronicle 버전별 변경 이력. 상세 작업지시서는 `tasks/archiv
 
 ---
 
+## 0020-F — 길드 직접 발주 의뢰
+
+길드가 내부 필요에 따라 의뢰를 직접 생성·발주하는 시스템.
+
+- `quest.issuer: "external" | "guild"` — 발주 주체 구분 필드 추가
+- `GuildQuestDraft` 타입 및 `pendingGuildQuestDrafts` 게임 상태 필드 추가
+- 초안 자동 감지 3종: 자금 300G 미만 / 위험 세계이벤트 활성 / 20일 정기 탐사
+- `guildQuests.ts` (신규) — detectAndCreateDrafts / expireGuildQuestDrafts / approve / reject
+- 초안 7일 자동 만료, Inbox 등록 (requiresAction: false)
+- `dayEnd.ts` 3.7단계 추가: 초안 만료 → 감지 순차 실행
+- `returnReport.ts` — 길드 발주 정산 분기: guildFeeGold = 0, guild_quest_commission expense
+- `GuildQuestDraftModal.tsx` (신규) — 승인/거절 모달, 자금 부족 시 승인 비활성화
+- 의뢰 카드·상세에 "길드 발주" 배지 추가
+- `briefings/GUILD_INTERNAL_QUEST_BRIEFING.md` (신규)
+
+---
+
+## 0020-E — 길드 운영 경제 확장
+
+직원 급여, 세금, 대출, 시설 이용, 재정 건강 시스템 구현.
+
+- `StaffMember` / `GuildLoan` / `FacilityUsageRecord` / `GuildFinancialHealth` 타입 추가
+- `FinanceTransactionType` 9종 추가 (staff_salary / guild_tax / facility_operating_cost / loan_* / lodging_revenue / meal_revenue / pub_revenue)
+- `DailyReportItemKind` 7종 추가 (staff_salary_paid / unpaid / guild_tax_paid / unpaid / loan_repayment / overdue / facility_revenue)
+- `src/game/simulation/economy.ts` (신규) — 급여/세금/대출/시설이용 처리 + `getFinancialHealth()`
+- `processDayEnd` 3.6단계 추가 (payroll → tax → loanRepayments → facilityUsage)
+- 초기 직원 3명 정의 (접수대·창고·길드홀, 총 60G/7일)
+- 길드 세금: 30일 주기, 기본 50G + 모험가×5G + 시설×10G
+- 재정 건강 4단계 (stable / caution / deficit / critical) — selector 계산, 저장 없음
+- 시설 이용 기록 구조 (`FacilityUsageRecord`) — 여관·펍·식당 기반, 현재 no-op
+- `FinanceTab` 확장 — 재정 건강 배지, 직원 급여·세금·부채·시설 손익 섹션
+- `docs/01_SYSTEM/GUILD_OPERATION_ECONOMY_SYSTEM_GUIDE.md` (신규)
+
+---
+
 ## 0018-P — Project Documentation Refactor & Workflow System
 
 문서 구조 전면 재편 및 워크플로우 체계 확립.

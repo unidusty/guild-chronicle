@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0020-E — 길드 운영 경제 확장**
+**0020-F — 길드 직접 발주 의뢰**
 
 ## 완료
 
@@ -144,6 +144,25 @@
   - `docs/01_SYSTEM/GUILD_OPERATION_ECONOMY_SYSTEM_GUIDE.md` 신규
   - `docs/02_DATABASE/GUILD_OPERATION_ECONOMY_DATABASE.md` 신규
   - `briefings/GUILD_OPERATION_ECONOMY_BRIEFING.md` 신규
+
+- 길드 직접 발주 의뢰 (0020-F)
+  - `quest.issuer: "external" | "guild"` — 발주 주체 구분 필드 추가
+  - `GuildQuestNeedType` — `"low_gold" | "dangerous_world_event" | "periodic_exploration"`
+  - `GuildQuestDraft` 타입 추가 — Inbox 경유 승인 대기 초안 구조
+  - `GameState.pendingGuildQuestDrafts: GuildQuestDraft[]` 추가
+  - `InboxItemType` — `"guild_quest_draft"` 추가 (requiresAction: false)
+  - `FinanceTransactionType` — `"guild_quest_commission"` 추가
+  - `DailyReportItemKind` — `"guild_quest_draft_created" | "guild_quest_draft_expired"` 추가
+  - `src/game/simulation/guildQuests.ts` (신규) — `detectAndCreateDrafts` / `expireGuildQuestDrafts` / `approveGuildQuestDraft` / `rejectGuildQuestDraft`
+  - 초안 감지 조건 3종: 자금 300G 미만 / 위험 세계이벤트 활성 / 20일 주기 정기 탐사
+  - 초안 7일 자동 만료 (`DRAFT_EXPIRY_DAYS = 7`)
+  - `dayEnd.ts` — 3.7단계 추가: 초안 만료 → 새 초안 감지
+  - `returnReport.ts` — 길드 발주 시 `guildFeeGold = 0`, `guild_quest_commission` expense 처리
+  - `src/features/guildHall/GuildQuestDraftModal.tsx` (신규) — 초안 승인/거절 모달
+  - `GuildHallPage.tsx` — `guild_quest_draft` Inbox 클릭 핸들러 + 모달 렌더링
+  - `AvailableQuestsTab.tsx` / `QuestDetail.tsx` — "길드 발주" 배지 추가
+  - CSS: `.qbc-guild-badge` / `.guild-quest-badge` / `.gqd-*` 클래스 군 추가
+  - `briefings/GUILD_INTERNAL_QUEST_BRIEFING.md` (신규)
 
 ## 현재 데이터 원칙
 
@@ -368,9 +387,10 @@
 
 **0021 이후 — 시스템 확장 (계속)**
 - Quest Director 선택지 구조 확장 (선택 효과 → 기간·위험·성공률 영향)
-- 재정 확장 (실패 패널티, 직원 급여, 시설 수익 등)
-- 길드 직접 발주 의뢰
-- 세계 이벤트 추가 종류 (타 길드 경쟁, 도시·계절·지역재난 이벤트)
+- 모험가 경험치 및 스탯 성장
+- 저장 및 불러오기
+
+**후속 작업 목록 (0020 파생)**: `docs/00_PROJECT/FOLLOW_UPS.md` 참조
 
 **0021 이후 — 모험가 성장 및 관계**
 
