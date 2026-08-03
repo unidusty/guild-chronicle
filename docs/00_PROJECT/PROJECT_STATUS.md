@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0019-I — 가입 신청 이벤트 시스템 전면 개선**
+**0020-A — Quest Director 콘텐츠 확장 및 길드 업무(Inbox) 시스템**
 
 ## 완료
 
@@ -299,14 +299,28 @@
   - CSS: `.rec-card-event` / `.rd-event-title` 추가
   - 문서: `RECRUITMENT_EVENT_SYSTEM_GUIDE.md` / `RECRUITMENT_EVENT_DATABASE.md` 전면 개정
 
+- Quest Director 콘텐츠 확장 및 길드 업무(Inbox) 시스템 (0020-A)
+  - `InboxItemType` / `InboxPriority` / `InboxTarget` / `InboxItem` 타입 추가 (`game.ts`)
+  - `src/game/simulation/inboxSelectors.ts` (신규) — `getInboxItems` / `canEndDay` / `getInboxCount` selector
+  - 귀환 보고 Inbox 연동 — `state.returnReports` 기반 파생 (priority: important)
+  - 가입 신청 Inbox 연동 — `pending` 지원자만 포함 (held = 처리 완료), 특별 이벤트 → important
+  - Quest Decision Inbox 연동 — 미결정(unread) 이벤트 파생 (urgent / critical)
+  - `canEndDay(state)` — requiresAction 항목이 있으면 false (일일 종료 차단)
+  - `GuildHallPage.tsx` — MASTER'S DESK Inbox UI로 전환, `onNavigate` prop 추가, 업무 종료 차단 UI
+  - `App.tsx` — `selectedQuestId` 상태 + `navigateToQuest()` + GuildHallPage/QuestBoardPage 연동
+  - `QuestBoardPage.tsx` — `initialSelectedId` / `onInitialConsumed` props 추가, 진행 중 탭 자동 이동
+  - CSS: `.inbox-*` 클래스 군 / `.day-end-wrap` / `.day-end-blocked-msg` / `.day-end-locked` / `.inbox-blocked-notice`
+  - `EVENT_POOL` 10개 이벤트 추가 (탐사 2·인물 3·위험 2·전투 2·보상 1) — 총 100개
+  - 문서: `GUILD_INBOX_SYSTEM_GUIDE.md` (신규), `GUILD_INBOX_SYSTEM_BRIEFING.md` (신규), `QUEST_DIRECTOR_BRIEFING.md` (신규)
+
 ## 다음 작업
 
-**0020 — 시스템 확장 (0019 고도화)**
+**0020-B 이후 — 시스템 확장 (계속)**
+- Quest Director 선택지 구조 확장 (선택 효과 → 기간·위험·성공률 영향)
 - 재정 확장 (실패 패널티, 직원 급여, 시설 수익 등)
 - 길드 직접 발주 의뢰
 - 세계 이벤트 추가 종류 (타 길드 경쟁, 도시·계절·지역재난 이벤트)
-- 가입 신청 이벤트 추가 (소꿉친구, 스승과 제자 등 9종)
-- 가입 이벤트 반응 시스템 (동시 승인, 부분 승인 반응)
+- 가입 신청 시스템 확장 (소꿉친구, 스승과 제자 등 추가 이벤트)
 - 명성 활용 시스템 (지원자 변화, 의뢰 품질 변화 연동)
 
 **0021 이후 — 모험가 성장 및 관계**

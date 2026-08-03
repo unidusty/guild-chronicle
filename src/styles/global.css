@@ -1494,3 +1494,24 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 
 /* Day-end report — duration changed item */
 .day-end-report-item.quest_duration_changed { border-left: 2px solid #3a4a60; background: rgba(10,12,20,.6); }
+
+/* ── Guild Inbox ─────────────────────────────────────────────────────────────── */
+
+/* Priority badge inside report title */
+.inbox-priority-badge { display: inline-block; margin-left: calc(6px * var(--ui-scale)); padding: 0 calc(5px * var(--ui-scale)); font-size: 10px; font-weight: 700; letter-spacing: .06em; border-radius: 2px; vertical-align: middle; line-height: 1.6; }
+.inbox-priority-urgent   { background: #2a1e00; color: #c49030; border: 1px solid #4a3800; }
+.inbox-priority-critical { background: #2a1000; color: #d47060; border: 1px solid #4a2018; }
+
+/* Urgent inbox item — left accent */
+.report.inbox-item-urgent { border-left: 2px solid #7a3020; }
+
+/* Count badge in panel heading — active state */
+.count.count-active { color: #c4a060; }
+
+/* Day-end blocked state */
+.day-end-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: calc(5px * var(--ui-scale)); }
+.day-end-blocked-msg { font-size: var(--font-tiny); color: #c47060; white-space: nowrap; }
+button.day-end-locked { opacity: 0.72; }
+
+/* Inbox blocked notice inside report panel */
+.inbox-blocked-notice { margin-bottom: calc(8px * var(--ui-scale)); padding: calc(8px * var(--ui-scale)) calc(12px * var(--ui-scale)); background: #1a0e0a; border: 1px solid #4a2418; color: #c47060; font-size: var(--font-tiny); }

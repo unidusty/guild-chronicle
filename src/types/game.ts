@@ -650,6 +650,34 @@ export interface DecisionReport {
   priority: "normal" | "high" | "critical";
 }
 
+// ── Guild Inbox ───────────────────────────────────────────────────────────────
+
+export type InboxItemType =
+  | "return_report"
+  | "recruitment_application"
+  | "quest_decision";
+
+export type InboxPriority = "normal" | "important" | "urgent" | "critical";
+
+export interface InboxTarget {
+  page?: "guildHall" | "quests";
+  tab?: "recruitment";
+  entityId?: EntityId;
+}
+
+export interface InboxItem {
+  id: EntityId;
+  type: InboxItemType;
+  priority: InboxPriority;
+  title: string;
+  summary: string;
+  sourceId: EntityId;
+  target: InboxTarget;
+  createdDay: number;
+  requiresAction: boolean;
+  isUrgent: boolean;
+}
+
 export interface GameState {
   version: number;
   currentDate: GameDate;

@@ -859,6 +859,110 @@ export const EVENT_POOL: EventDefinition[] = [
     weight: 1,
     rarity: "rare",
   },
+
+  // ── EXPLORATION EXPANSION ────────────────────────────────────────────────
+
+  {
+    id: "ev-explore-016",
+    category: "exploration",
+    title: "우회로 발견",
+    description: "이동 중 예상하지 못한 우회로를 발견했습니다. 주 경로보다 시간이 더 걸리지만 위험 구간을 완전히 피할 수 있습니다.",
+    weight: 4,
+    boostedByTags: ["terrain:mountain", "terrain:forest", "risk:collapse"],
+    followUpIds: ["ev-reward-001"],
+  },
+  {
+    id: "ev-explore-017",
+    category: "exploration",
+    title: "추가 탐사 가능 구역",
+    description: "의뢰 목표 외에 탐사 가치가 높은 구역이 발견되었습니다. 시간과 체력을 더 쓰면 추가 수확을 기대할 수 있습니다.",
+    weight: 4,
+    boostedByTags: ["obj:explore", "terrain:dungeon", "terrain:ruins"],
+    followUpIds: ["ev-reward-001", "ev-danger-007"],
+  },
+
+  // ── PERSON EXPANSION ─────────────────────────────────────────────────────
+
+  {
+    id: "ev-person-011",
+    category: "person",
+    title: "현지 안내인 제안",
+    description: "이 지역 사정에 밝은 현지인이 길 안내를 자처했습니다. 보수를 요구하지만 지름길을 알고 있다고 합니다.",
+    weight: 4,
+    boostedByTags: ["terrain:forest", "terrain:mountain", "terrain:swamp", "theme:social"],
+    followUpIds: ["ev-explore-016"],
+  },
+  {
+    id: "ev-person-012",
+    category: "person",
+    title: "파티 내 의견 충돌",
+    description: "현재 방침을 두고 파티원 사이에 의견이 갈리고 있습니다. 길드장의 지침이 필요한 상황입니다.",
+    weight: 3,
+    boostedByTags: ["diff:hard", "diff:extreme", "theme:danger"],
+  },
+  {
+    id: "ev-person-013",
+    category: "person",
+    title: "지원 요청 신호",
+    description: "파티가 현재 상황이 예상을 넘어선다고 판단하여 추가 지원을 요청해왔습니다.",
+    weight: 3,
+    boostedByTags: ["diff:hard", "diff:extreme", "risk:hostile"],
+    followUpIds: ["ev-danger-001"],
+  },
+
+  // ── DANGER EXPANSION ─────────────────────────────────────────────────────
+
+  {
+    id: "ev-danger-011",
+    category: "danger",
+    title: "보급 위기",
+    description: "식량과 소모품이 예상보다 빠르게 소진되고 있습니다. 지금 당장 대책을 세우지 않으면 귀환 전에 고갈될 수 있습니다.",
+    weight: 4,
+    boostedByTags: ["diff:hard", "diff:extreme", "obj:explore"],
+    followUpIds: ["ev-danger-003", "ev-danger-008"],
+  },
+  {
+    id: "ev-danger-012",
+    category: "danger",
+    title: "야영지 위협",
+    description: "밤사이 야영지 주변에 위협 징후가 포착됐습니다. 당장 이동하거나 방어 태세를 갖춰야 합니다.",
+    weight: 3,
+    boostedByTags: ["risk:hostile", "risk:ambush", "theme:danger"],
+    followUpIds: ["ev-combat-006", "ev-danger-007"],
+  },
+
+  // ── COMBAT EXPANSION ─────────────────────────────────────────────────────
+
+  {
+    id: "ev-combat-021",
+    category: "combat",
+    title: "전투 장기화",
+    description: "예상보다 전투가 길어지고 있습니다. 소모전 양상으로 접어들어 지금 지원이나 철수를 판단해야 합니다.",
+    weight: 3,
+    boostedByTags: ["diff:hard", "diff:extreme", "enemy:monster"],
+    followUpIds: ["ev-danger-007", "ev-danger-001"],
+  },
+  {
+    id: "ev-combat-022",
+    category: "combat",
+    title: "예상 외 강적 조우",
+    description: "이 지역에서 보고된 적 없는 강력한 개체와 조우했습니다. 기존 전술로는 정면 돌파가 어려워 보입니다.",
+    weight: 3,
+    boostedByTags: ["diff:extreme", "theme:danger"],
+    followUpIds: ["ev-danger-001", "ev-combat-016"],
+  },
+
+  // ── REWARD EXPANSION ─────────────────────────────────────────────────────
+
+  {
+    id: "ev-reward-011",
+    category: "reward",
+    title: "목표 조기 발견",
+    description: "의뢰 목표가 예상보다 훨씬 일찍 발견되었습니다. 지금 완수하면 귀환 일정을 크게 앞당길 수 있습니다.",
+    weight: 3,
+    boostedByTags: ["obj:search", "obj:hunt", "obj:rescue"],
+    followUpIds: ["ev-explore-017"],
+  },
 ];
 
 // ── Tag Derivation Tables ─────────────────────────────────────────────────────

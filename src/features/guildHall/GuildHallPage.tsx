@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { GameState, ReturnReport } from "../../types/game";
+import type { GameState, InboxItem, ReturnReport } from "../../types/game";
 import {
   formatGameDate,
   formatShortGameDate,
@@ -8,6 +8,7 @@ import {
   getReputationLog,
   getRosterRows,
 } from "../../game/simulation/selectors";
+import { canEndDay, getInboxItems } from "../../game/simulation/inboxSelectors";
 import { questStageLabels, seasonLabels } from "../../game/constants/labels";
 import { getReputationTier, REPUTATION_TIERS } from "../../game/constants/reputation";
 import { WORLD_EVENT_DEFINITIONS } from "../../data/worldEventData";
@@ -23,17 +24,26 @@ interface Props {
   state: GameState;
   onStateChange: Dispatch<SetStateAction<GameState>>;
   onDayEnd: () => void;
+  onNavigate?: (page: "quests", params: { questId: string }) => void;
 }
 
-const reportPresentation = {
-  medical:     { icon: "!", tone: "danger" },
-  emergency:   { icon: "Q", tone: "gold" },
-  recruitment: { icon: "+", tone: "green" },
-} as const;
+const INBOX_ICON: Record<string, { icon: string; tone: string }> = {
+  return_report:           { icon: "귀", tone: "gold" },
+  recruitment_application: { icon: "+", tone: "green" },
+  quest_decision:          { icon: "!", tone: "danger" },
+};
 
-export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props) {
+const PRIORITY_LABEL: Record<string, string> = {
+  critical:  "위급",
+  urgent:    "긴급",
+  important: "",
+  normal:    "",
+};
+
+export default function GuildHallPage({ state, onStateChange, onDayEnd, onNavigate }: Props) {
   const [tab, setTab] = useState<GuildTab>("dashboard");
   const [activeReport, setActiveReport] = useState<ReturnReport | null>(null);
+  const [showBlockedMsg, setShowBlockedMsg] = useState(false);
 
   const metrics      = getGuildMetrics(state);
   const roster       = getRosterRows(state);
@@ -49,9 +59,35 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
     (a) => a.status === "pending" || a.status === "held",
   ).length;
 
+  const inboxItems = getInboxItems(state);
+  const inboxCount = inboxItems.filter(i => i.requiresAction).length;
+  const dayEndAllowed = canEndDay(state);
+
   function handleTabChange(t: GuildTab) {
     playSelect();
+    setShowBlockedMsg(false);
     setTab(t);
+  }
+
+  function handleDayEndClick() {
+    if (!dayEndAllowed) {
+      setShowBlockedMsg(true);
+      return;
+    }
+    onDayEnd();
+  }
+
+  function handleInboxItemClick(item: InboxItem) {
+    playSelect();
+    setShowBlockedMsg(false);
+    if (item.type === "return_report") {
+      const rr = state.returnReports.find(r => r.id === item.sourceId);
+      if (rr) setActiveReport(rr);
+    } else if (item.type === "recruitment_application") {
+      handleTabChange("recruitment");
+    } else if (item.type === "quest_decision" && item.target.entityId) {
+      onNavigate?.("quests", { questId: item.target.entityId });
+    }
   }
 
   return (
@@ -64,9 +100,20 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
         {tab === "dashboard" && (
           <div className="top-actions">
             <button onMouseEnter={playHover}>게임 저장</button>
-            <button className="primary" onMouseEnter={playHover} onClick={onDayEnd}>
-              오늘 업무 종료
-            </button>
+            <div className="day-end-wrap">
+              {showBlockedMsg && !dayEndAllowed && (
+                <span className="day-end-blocked-msg">
+                  미처리 업무 {inboxCount}건 · 처리 후 종료 가능
+                </span>
+              )}
+              <button
+                className={`primary${!dayEndAllowed ? " day-end-locked" : ""}`}
+                onMouseEnter={playHover}
+                onClick={handleDayEndClick}
+              >
+                오늘 업무 종료
+              </button>
+            </div>
           </div>
         )}
         {tab === "facilities" && (
@@ -206,57 +253,41 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
                   <p className="eyebrow">MASTER'S DESK</p>
                   <h2>결재 대기</h2>
                 </div>
-                <span className="count">{state.reports.length + state.returnReports.length + (pendingApplicantCount > 0 ? 1 : 0)}</span>
+                <span className={`count${inboxCount > 0 ? " count-active" : ""}`}>{inboxCount}</span>
               </div>
+              {showBlockedMsg && !dayEndAllowed && (
+                <div className="inbox-blocked-notice">
+                  아직 처리하지 않은 업무가 남아 있습니다.
+                </div>
+              )}
               <div className="report-list">
-                {state.returnReports.map((rr) => (
-                  <button
-                    className="report"
-                    key={rr.id}
-                    onMouseEnter={playHover}
-                    onClick={() => { playSelect(); setActiveReport(rr); }}
-                  >
-                    <span className="report-icon gold">귀</span>
-                    <span>
-                      <strong>귀환 보고 — {rr.partyNameSnapshot}</strong>
-                      <small>{rr.questTitle} · 정산 대기</small>
-                    </span>
-                    <b>›</b>
-                  </button>
-                ))}
-                {pendingApplicantCount > 0 && (
-                  <button
-                    className="report"
-                    onMouseEnter={playHover}
-                    onClick={() => { playSelect(); handleTabChange("recruitment"); }}
-                  >
-                    <span className="report-icon green">+</span>
-                    <span>
-                      <strong>가입 심사 대기</strong>
-                      <small>지원자 {pendingApplicantCount}명이 심사를 기다리고 있습니다.</small>
-                    </span>
-                    <b>›</b>
-                  </button>
-                )}
-                {state.reports.map((report) => {
-                  const ui = reportPresentation[report.kind];
+                {inboxItems.map((item) => {
+                  const ui = INBOX_ICON[item.type] ?? { icon: "?", tone: "gold" };
+                  const priorityLabel = PRIORITY_LABEL[item.priority];
                   return (
                     <button
-                      className="report"
-                      key={report.id}
+                      className={`report inbox-item${item.isUrgent ? " inbox-item-urgent" : ""}`}
+                      key={item.id}
                       onMouseEnter={playHover}
-                      onClick={playSelect}
+                      onClick={() => handleInboxItemClick(item)}
                     >
                       <span className={`report-icon ${ui.tone}`}>{ui.icon}</span>
                       <span>
-                        <strong>{report.title}</strong>
-                        <small>{report.description}</small>
+                        <strong>
+                          {item.title}
+                          {priorityLabel && (
+                            <span className={`inbox-priority-badge inbox-priority-${item.priority}`}>
+                              {priorityLabel}
+                            </span>
+                          )}
+                        </strong>
+                        <small>{item.summary}</small>
                       </span>
                       <b>›</b>
                     </button>
                   );
                 })}
-                {state.reports.length === 0 && state.returnReports.length === 0 && pendingApplicantCount === 0 && (
+                {inboxItems.length === 0 && (
                   <p className="report-list-empty">결재 대기 항목이 없습니다.</p>
                 )}
               </div>

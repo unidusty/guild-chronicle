@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (0019-I) 작성.
+현재 구현 기준 (0020-A) 작성.
 
 ---
 
@@ -30,11 +30,11 @@
 
 - **지표 카드** (metric-card) — 보유 골드 / 모험가 수 / 명성 / 의뢰 성공률
 - **오늘의 모험가 현황** (ACTIVE ROSTER) — 현재 활동 중(파견·부상·훈련)인 모험가 목록
-- **결재 대기** (MASTER'S DESK) — 처리가 필요한 항목. 가입 심사 대기자가 1명 이상이면 상단에 자동 추가됨
+- **결재 대기** (MASTER'S DESK) — Guild Inbox UI. 귀환 보고·가입 신청·Quest 미결정 이벤트를 우선순위 순으로 표시. 미처리 항목이 있으면 업무 종료 차단됨
 - **진행 중인 의뢰** (LIVE OPERATIONS) — 파견된 파티와 의뢰 진행률
 - **최근 연대기** (CHRONICLE) — 최근 주요 사건 3건
 
-**"오늘 업무 종료" 버튼**은 대시보드 탭에서만 표시된다.
+**"오늘 업무 종료" 버튼**은 대시보드 탭에서만 표시된다. `canEndDay(state)`가 false이면 클릭 시 차단 안내 문구가 표시되며 날짜가 진행되지 않는다.
 
 ### 시설 탭
 
@@ -779,6 +779,46 @@ actualDurationDays = prog.currentDay + 1
 ```
 
 `currentDay`는 0-indexed이며 완료 당일에는 증가하지 않는다. +1이 완료 당일을 보정한다.
+
+---
+
+## Guild Inbox (0020-A)
+
+**파일:** `src/game/simulation/inboxSelectors.ts`  
+**타입:** `src/types/game.ts` — `InboxItem`, `InboxItemType`, `InboxPriority`, `InboxTarget`
+
+길드장이 처리해야 하는 모든 업무를 공통 구조로 통합한 중앙 결재 시스템.
+
+### InboxItemType
+
+| 값 | 설명 | 원본 |
+|----|------|------|
+| `return_report` | 귀환 보고 정산 대기 | `state.returnReports` |
+| `recruitment_application` | 가입 신청 심사 대기 | `state.recruitment.applicants` (pending만) |
+| `quest_decision` | Quest 미결정 이벤트 | `state.questProgress[x].events` (!read) |
+
+### InboxPriority
+
+| 값 | 설명 |
+|----|------|
+| `normal` | 기본 이벤트 가입 신청 |
+| `important` | 귀환 보고, 특별 이벤트 가입 신청 |
+| `urgent` | Quest 미결정 이벤트 (일반) |
+| `critical` | Quest 미결정 이벤트 (Director urgency = critical) |
+
+### 주요 Selector
+
+| 함수 | 반환값 |
+|------|--------|
+| `getInboxItems(state)` | 우선순위 정렬된 전체 Inbox 항목 배열 |
+| `canEndDay(state)` | requiresAction 항목이 없으면 true |
+| `getInboxCount(state)` | requiresAction 항목 수 |
+
+### 보류 지원자 정책
+
+- `held` 지원자는 Inbox 미포함 (보류 = 당일 처리 완료)
+- 보류 해제 후 `pending` 복귀 시 자동 재등록
+- 탭 배지(숫자)는 기존대로 pending + held 합산 표시
 
 ---
 

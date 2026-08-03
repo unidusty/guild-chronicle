@@ -39,6 +39,7 @@ export default function App() {
   const [state, setState] = useState(initialGameState);
   const [page, setPage] = useState<Page>("guildHall");
   const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null);
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [dayEndOpen, setDayEndOpen] = useState(false);
   const [partiesFormationDirty, setPartiesFormationDirty] = useState(false);
@@ -52,6 +53,11 @@ export default function App() {
   function navigateToParty(partyId: string) {
     setSelectedPartyId(partyId);
     setPage("parties");
+  }
+
+  function navigateToQuest(questId: string) {
+    setSelectedQuestId(questId);
+    setPage("quests");
   }
 
   function handleNavClick(newPage: Page) {
@@ -140,13 +146,23 @@ export default function App() {
 
       <main>
         {page === "guildHall" ? (
-          <GuildHallPage state={state} onStateChange={setState} onDayEnd={handleDayEnd} />
+          <GuildHallPage
+            state={state}
+            onStateChange={setState}
+            onDayEnd={handleDayEnd}
+            onNavigate={(_page, params) => navigateToQuest(params.questId)}
+          />
         ) : page === "adventurers" ? (
           <AdventurersPage state={state} onNavigateToParty={navigateToParty} />
         ) : page === "parties" ? (
           <PartiesPage state={state} onStateChange={setState} initialSelectedId={selectedPartyId} onInitialIdConsumed={() => setSelectedPartyId(null)} onFormationDirtyChange={setPartiesFormationDirty} />
         ) : page === "quests" ? (
-          <QuestBoardPage state={state} onStateChange={setState} />
+          <QuestBoardPage
+            state={state}
+            onStateChange={setState}
+            initialSelectedId={selectedQuestId}
+            onInitialConsumed={() => setSelectedQuestId(null)}
+          />
         ) : page === "warehouse" ? (
           <WarehousePage state={state} onStateChange={setState} />
         ) : null}

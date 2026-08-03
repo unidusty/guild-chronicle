@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { EntityId, GameState, QuestDecisionType } from "../../types/game";
 import { playHover, playSelect } from "../../lib/audio";
@@ -13,11 +13,22 @@ type QuestBoardTab = "available" | "active" | "chronicle";
 interface Props {
   state: GameState;
   onStateChange: Dispatch<SetStateAction<GameState>>;
+  initialSelectedId?: EntityId | null;
+  onInitialConsumed?: () => void;
 }
 
-export default function QuestBoardPage({ state, onStateChange }: Props) {
+export default function QuestBoardPage({ state, onStateChange, initialSelectedId, onInitialConsumed }: Props) {
   const [tab, setTab] = useState<QuestBoardTab>("available");
   const [selectedId, setSelectedId] = useState<EntityId | null>(null);
+
+  useEffect(() => {
+    if (initialSelectedId) {
+      setTab("active");
+      setSelectedId(initialSelectedId);
+      onInitialConsumed?.();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSelectedId]);
 
   const availableCount = Object.values(state.quests).filter(q => q.status === "available").length;
   const activeQuests   = Object.values(state.quests).filter(q => q.status === "assigned" || q.status === "in_progress");
