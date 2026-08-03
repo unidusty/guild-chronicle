@@ -30,7 +30,15 @@ export default function QuestBoardPage({ state, onStateChange, initialSelectedId
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSelectedId]);
 
-  const availableCount = Object.values(state.quests).filter(q => q.status === "available").length;
+  const reputation = state.guild.reputation;
+  const availableCount = Object.values(state.quests).filter(q => {
+    if (q.status !== "available") return false;
+    const cond = q.reputationCondition;
+    if (!cond) return true;
+    if (cond.minReputation != null && reputation < cond.minReputation) return false;
+    if (cond.maxReputation != null && reputation > cond.maxReputation) return false;
+    return true;
+  }).length;
   const activeQuests   = Object.values(state.quests).filter(q => q.status === "assigned" || q.status === "in_progress");
   const activeCount    = activeQuests.length;
 

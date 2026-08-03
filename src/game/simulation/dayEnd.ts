@@ -10,6 +10,7 @@ import {
 } from "./recruitment";
 import { getWorldEventDefinition, tickWorldEvents, trySpawnWorldEvent } from "./worldEvents";
 import { applyDailyOperatingCost } from "./operatingCost";
+import { getReputationTier } from "../constants/reputation";
 
 export function processDayEnd(state: GameState): { newState: GameState; report: DailyReport } {
   const previousDate = state.currentDate;
@@ -238,6 +239,31 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
       title: `세계 이벤트 — ${def?.name ?? spawnedEvent.definitionId}`,
       description: `${def?.startNotification ?? ""} (${spawnedEvent.remainingDays}일간 지속)`,
     });
+  }
+
+  // Reputation changes that occurred today (before dayEnd — settled during the day)
+  const prevAbsDay = toAbsoluteDay(previousDate);
+  const todayRepChanges = state.reputationChanges.filter(
+    (c) => toAbsoluteDay(c.date) === prevAbsDay,
+  );
+  for (const c of todayRepChanges) {
+    const tierBefore = getReputationTier(c.reputationBefore);
+    const tierAfter  = getReputationTier(c.reputationAfter);
+    const tierChanged = tierBefore.label !== tierAfter.label;
+    if (tierChanged) {
+      items.push({
+        kind: "reputation_tier_changed",
+        title: `명성 등급 상승 — ${tierAfter.label}`,
+        description: `길드가 '${tierBefore.label}'에서 '${tierAfter.label}'(으)로 성장했습니다. 현재 명성 ${c.reputationAfter}.`,
+      });
+    } else {
+      const sign = c.delta > 0 ? "+" : "";
+      items.push({
+        kind: "reputation_changed",
+        title: `명성 ${sign}${c.delta}`,
+        description: `${c.description} (현재 ${c.reputationAfter})`,
+      });
+    }
   }
 
   // Quest duration changes that occurred during this advance

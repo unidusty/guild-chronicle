@@ -1,5 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { GameState, InboxItem, ReturnReport } from "../../types/game";
+import { dismissReputationEvent } from "../../game/simulation/reputationEvents";
 import {
   formatGameDate,
   formatShortGameDate,
@@ -31,6 +32,7 @@ const INBOX_ICON: Record<string, { icon: string; tone: string }> = {
   return_report:           { icon: "귀", tone: "gold" },
   recruitment_application: { icon: "+", tone: "green" },
   quest_decision:          { icon: "!", tone: "danger" },
+  reputation_event:        { icon: "명", tone: "gold" },
 };
 
 const PRIORITY_LABEL: Record<string, string> = {
@@ -87,6 +89,8 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd, onNaviga
       handleTabChange("recruitment");
     } else if (item.type === "quest_decision" && item.target.entityId) {
       onNavigate?.("quests", { questId: item.target.entityId });
+    } else if (item.type === "reputation_event") {
+      onStateChange((s) => dismissReputationEvent(s, item.sourceId));
     }
   }
 

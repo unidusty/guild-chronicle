@@ -79,10 +79,40 @@ interface ReputationChange {
 }
 ```
 
+### ReputationCondition (0020-B)
+
+콘텐츠에 명성 조건을 걸기 위한 공통 구조.
+
+```ts
+interface ReputationCondition {
+  minReputation?: number;
+  maxReputation?: number;
+}
+```
+
+Quest, WorldEvent 등 다양한 콘텐츠에 선택적으로 붙인다.
+
+### ReputationEventDefinition (0020-B)
+
+명성 등급 도달 시 Inbox에 등록되는 이벤트 정의.
+
+```ts
+interface ReputationEventDefinition {
+  id: EntityId;
+  title: string;
+  description: string;
+  triggerOnTier: string;   // 이 등급에 도달하면 이벤트 발생
+  inboxTitle: string;
+  inboxSummary: string;
+  priority: InboxPriority;
+}
+```
+
 ### GameState 필드
 
 ```ts
-reputationChanges: ReputationChange[];  // 최신 우선 배열
+reputationChanges: ReputationChange[];           // 최신 우선 배열
+pendingReputationEvents: Array<{ id: EntityId; day: number }>;  // 미확인 명성 이벤트
 ```
 
 ### Guild 필드
@@ -101,6 +131,8 @@ reputation: number;  // 현재 명성 수치 (0 이상)
 | 타입 정의 | `src/types/game.ts` |
 | 등급·변화량 상수 | `src/game/constants/reputation.ts` |
 | 명성 변경 공통 함수 | `src/game/simulation/reputation.ts` |
+| 명성 이벤트 데이터 | `src/data/reputationEventData.ts` |
+| 명성 이벤트 트리거 | `src/game/simulation/reputationEvents.ts` |
 | 의뢰 정산 연동 | `src/game/simulation/returnReport.ts` |
 | 명성 selector | `src/game/simulation/selectors.ts` |
 | UI | `src/features/guildHall/GuildHallPage.tsx` (명성 탭) |
@@ -115,6 +147,36 @@ reputation: number;  // 현재 명성 수치 (0 이상)
 - 변화량의 절댓값이 20 이상인 경우
 
 작은 변화는 `reputationChanges` 배열에만 기록되며 연대기에는 남기지 않는다.
+
+---
+
+## 명성 이벤트 흐름 (0020-B)
+
+1. `applyReputationChange` — 등급 변경 감지
+2. `tryTriggerReputationEvent(state, tierLabel, day)` — `pendingReputationEvents`에 추가
+3. `getInboxItems(state)` — `pendingReputationEvents`를 `InboxItem`(type: `reputation_event`)으로 변환
+4. 길드장이 Inbox에서 클릭 → `dismissReputationEvent(state, eventId)` — `pendingReputationEvents`에서 제거
+
+이벤트 정의 데이터는 `src/data/reputationEventData.ts`의 `REPUTATION_EVENT_DATA`에서 관리한다.
+
+---
+
+## 의뢰 명성 조건 (0020-B)
+
+`Quest.reputationCondition?: ReputationCondition`
+
+의뢰 게시판은 `state.guild.reputation < cond.minReputation` 이면 해당 의뢰를 숨긴다.
+
+명성이 조건을 충족하면 자동으로 게시판에 표시된다.
+
+---
+
+## 하루 종료 보고 연동 (0020-B)
+
+`processDayEnd`에서 당일 명성 변화(`state.reputationChanges.filter(date === today)`)를 스캔하여:
+
+- 등급 변경: `reputation_tier_changed` 보고 항목
+- 일반 변화: `reputation_changed` 보고 항목
 
 ---
 
@@ -135,7 +197,7 @@ if (sourceId && state.reputationChanges.some(c => c.sourceId === sourceId)) retu
 - 도시별 / 지역별 / 국가별 명성
 - 세력 평판 (귀족·왕실·상인 길드·타 길드)
 - 세계 이벤트 명성 연동 (구조만 준비됨 — `type: "world_event"`)
-- 명성에 따른 의뢰 품질·가입 신청 확률 변화
 - 명성 하락에 따른 불이익
+- 명성 이벤트의 선택지 분기 (현재는 정보 알림만)
 - 일일 보고서 명성 항목 (`reputation_changed` / `reputation_tier_changed` 타입 정의만 추가)
 - 명성 그래프·통계·필터

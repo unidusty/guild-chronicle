@@ -70,9 +70,15 @@ export default function AvailableQuestsTab({
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedId, onSelect]);
 
-  const availableQuests = Object.values(state.quests).filter(
-    (q) => q.status === "available",
-  );
+  const reputation = state.guild.reputation;
+  const availableQuests = Object.values(state.quests).filter((q) => {
+    if (q.status !== "available") return false;
+    const cond = q.reputationCondition;
+    if (!cond) return true;
+    if (cond.minReputation != null && reputation < cond.minReputation) return false;
+    if (cond.maxReputation != null && reputation > cond.maxReputation) return false;
+    return true;
+  });
 
   const filtered = availableQuests.filter(
     (q) => rankFilter === "all" || q.grade === rankFilter,

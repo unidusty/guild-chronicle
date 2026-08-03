@@ -312,6 +312,33 @@ const _rawState: GameState = {
       rewardGold: 15000, durationDays: 30, remainingDays: 30, progress: 0,
       assignedPartyId: null, expectedReturnAt: null, riskTags: ["고룡", "극한 추위", "공격대 필요", "단독 불가"], enemyHint: "고룡 서리날개",
     },
+    "quest-city-request": {
+      id: "quest-city-request", title: "시 집무실 긴급 서류 호송", grade: "C", regionId: "region-borderpass",
+      type: "escort", questType: "normal", status: "available",
+      description: "시장 집무실에서 국경 관문으로 이송해야 할 기밀 서류가 있습니다. 공식 길드에만 의뢰 가능한 안건으로, 신뢰할 수 있는 파티가 필요합니다.",
+      clientName: "시장 집무실", dangerLevel: 3, recommendedPartySize: 3, expiresInDays: 14,
+      rewardGold: 1400, durationDays: 5, remainingDays: 5, progress: 0,
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["산적", "기밀 문서"], enemyHint: "산적",
+      reputationCondition: { minReputation: 600 },
+    },
+    "quest-noble-escort": {
+      id: "quest-noble-escort", title: "르네 남작가 귀공녀 호위", grade: "B", regionId: "region-westcanal",
+      type: "escort", questType: "normal", status: "available",
+      description: "르네 남작가에서 왕도로 향하는 귀공녀의 호위를 요청했습니다. 귀족 행사 참석을 위한 이동으로, 명망 있는 길드만 의뢰를 수락할 수 있습니다.",
+      clientName: "르네 남작가 집사장", dangerLevel: 3, recommendedPartySize: 4, expiresInDays: 20,
+      rewardGold: 3800, durationDays: 7, remainingDays: 7, progress: 0,
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["귀족 호위", "의전 필요"], enemyHint: null,
+      reputationCondition: { minReputation: 1500 },
+    },
+    "quest-royal-mission": {
+      id: "quest-royal-mission", title: "왕실 고문관 긴급 호위 임무", grade: "A", regionId: "region-northmountain",
+      type: "escort", questType: "normal", status: "available",
+      description: "왕실 고문관이 북부 산맥 지역 시찰을 위해 길드 동행을 요청했습니다. 왕국 내 최상위 명문 길드만이 이 의뢰를 수락할 수 있습니다.",
+      clientName: "왕실 고문관 집무실", dangerLevel: 5, recommendedPartySize: 6, expiresInDays: 30,
+      rewardGold: 9000, durationDays: 14, remainingDays: 14, progress: 0,
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["왕실 의전", "극한 지형", "고위험"], enemyHint: null,
+      reputationCondition: { minReputation: 3500 },
+    },
   },
   regions: {
     "region-grayridge":     { id: "region-grayridge",     name: "회색등성이",   danger: 54, control: "contested" },
@@ -462,6 +489,7 @@ const _rawState: GameState = {
   },
   activeWorldEvents: [],
   reputationChanges: [],
+  pendingReputationEvents: [],
 };
 
 export const initialGameState: GameState = (() => {

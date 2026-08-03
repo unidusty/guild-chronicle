@@ -1,5 +1,6 @@
 import type { GameDate, GameState, InboxItem, InboxPriority, RecruitmentEventType } from "../../types/game";
 import { getDirectorState } from "./questDirector";
+import { getReputationEventById } from "../../data/reputationEventData";
 
 const PRIORITY_ORDER: Record<InboxPriority, number> = {
   critical: 0,
@@ -107,6 +108,24 @@ export function getInboxItems(state: GameState): InboxItem[] {
         isUrgent: isCritical,
       });
     }
+  }
+
+  // ── Reputation Events (informational — do not block day-end) ─────────────────
+  for (const pending of state.pendingReputationEvents) {
+    const def = getReputationEventById(pending.id);
+    if (!def) continue;
+    items.push({
+      id: `inbox-reputation-${pending.id}`,
+      type: "reputation_event",
+      priority: def.priority,
+      title: def.inboxTitle,
+      summary: def.inboxSummary,
+      sourceId: pending.id,
+      target: { page: "guildHall" },
+      createdDay: pending.day,
+      requiresAction: false,
+      isUrgent: false,
+    });
   }
 
   // Sort: priority (critical first), then older items first within same priority

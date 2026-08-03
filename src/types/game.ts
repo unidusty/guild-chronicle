@@ -191,6 +191,7 @@ export interface Quest {
   expectedReturnAt: GameDate | null;
   riskTags: string[];
   enemyHint?: string | null;
+  reputationCondition?: ReputationCondition;
 }
 
 export interface QuestEvent {
@@ -603,6 +604,13 @@ export interface ReputationChange {
   sourceId?: EntityId;
 }
 
+// ── Reputation Condition ──────────────────────────────────────────────────────
+
+export interface ReputationCondition {
+  minReputation?: number;
+  maxReputation?: number;
+}
+
 export interface Guild {
   id: EntityId;
   name: string;
@@ -655,7 +663,8 @@ export interface DecisionReport {
 export type InboxItemType =
   | "return_report"
   | "recruitment_application"
-  | "quest_decision";
+  | "quest_decision"
+  | "reputation_event";
 
 export type InboxPriority = "normal" | "important" | "urgent" | "critical";
 
@@ -676,6 +685,16 @@ export interface InboxItem {
   createdDay: number;
   requiresAction: boolean;
   isUrgent: boolean;
+}
+
+export interface ReputationEventDefinition {
+  id: EntityId;
+  title: string;
+  description: string;
+  triggerOnTier: string;
+  inboxTitle: string;
+  inboxSummary: string;
+  priority: InboxPriority;
 }
 
 export interface GameState {
@@ -704,4 +723,5 @@ export interface GameState {
   recruitment: RecruitmentState;
   activeWorldEvents: ActiveWorldEvent[];
   reputationChanges: ReputationChange[];
+  pendingReputationEvents: Array<{ id: EntityId; day: number }>;
 }

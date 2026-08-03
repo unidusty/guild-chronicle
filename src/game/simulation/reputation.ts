@@ -6,6 +6,7 @@ import type {
   ReputationChangeType,
 } from "../../types/game";
 import { getReputationTier } from "../constants/reputation";
+import { tryTriggerReputationEvent } from "./reputationEvents";
 
 interface ReputationChangeParams {
   type: ReputationChangeType;
@@ -75,10 +76,18 @@ export function applyReputationChange(
     ];
   }
 
-  return {
+  let next: GameState = {
     ...state,
     guild: { ...state.guild, reputation: after },
     reputationChanges: [change, ...state.reputationChanges],
     chronicle,
   };
+
+  if (tierChanged) {
+    const si = ["spring", "summer", "autumn", "winter"].indexOf(date.season);
+    const absoluteDay = date.year * 120 + si * 30 + date.day;
+    next = tryTriggerReputationEvent(next, tierAfter.label, absoluteDay);
+  }
+
+  return next;
 }

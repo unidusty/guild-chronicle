@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0020-A — Quest Director 콘텐츠 확장 및 길드 업무(Inbox) 시스템**
+**0020-B — 길드 명성 활용 시스템**
 
 ## 완료
 
@@ -313,15 +313,28 @@
   - `EVENT_POOL` 10개 이벤트 추가 (탐사 2·인물 3·위험 2·전투 2·보상 1) — 총 100개
   - 문서: `GUILD_INBOX_SYSTEM_GUIDE.md` (신규), `GUILD_INBOX_SYSTEM_BRIEFING.md` (신규), `QUEST_DIRECTOR_BRIEFING.md` (신규)
 
+- 길드 명성 활용 시스템 (0020-B)
+  - `ReputationCondition` / `ReputationEventDefinition` 타입 추가 (`game.ts`)
+  - `"reputation_event"` InboxItemType 추가, `Quest.reputationCondition?: ReputationCondition` 추가
+  - `GameState.pendingReputationEvents` 추가 — 미확인 명성 이벤트 배열
+  - `src/data/reputationEventData.ts` (신규) — 6종 명성 이벤트 정의 (신생→전설)
+  - `src/game/simulation/reputationEvents.ts` (신규) — `tryTriggerReputationEvent` / `dismissReputationEvent`
+  - `reputation.ts` — 등급 변경 시 `tryTriggerReputationEvent` 연동
+  - `inboxSelectors.ts` — `pendingReputationEvents` 기반 `reputation_event` 항목 파생
+  - `dayEnd.ts` — 당일 명성 변화 스캔 → `reputation_changed` / `reputation_tier_changed` 보고 항목 추가
+  - `AvailableQuestsTab.tsx` / `QuestBoardPage.tsx` — `reputationCondition` 기반 퀘스트 필터링
+  - `GuildHallPage.tsx` — `reputation_event` Inbox 클릭 → `dismissReputationEvent` 처리, `INBOX_ICON` 추가
+  - `gameState.ts` — `pendingReputationEvents: []` 초기값 추가, 명성 조건 퀘스트 3개 추가
+  - 문서: `GUILD_REPUTATION_SYSTEM_GUIDE.md` 업데이트, `GUILD_REPUTATION_SYSTEM_BRIEFING.md` 업데이트
+
 ## 다음 작업
 
-**0020-B 이후 — 시스템 확장 (계속)**
+**0020-C 이후 — 시스템 확장 (계속)**
 - Quest Director 선택지 구조 확장 (선택 효과 → 기간·위험·성공률 영향)
 - 재정 확장 (실패 패널티, 직원 급여, 시설 수익 등)
 - 길드 직접 발주 의뢰
 - 세계 이벤트 추가 종류 (타 길드 경쟁, 도시·계절·지역재난 이벤트)
 - 가입 신청 시스템 확장 (소꿉친구, 스승과 제자 등 추가 이벤트)
-- 명성 활용 시스템 (지원자 변화, 의뢰 품질 변화 연동)
 
 **0021 이후 — 모험가 성장 및 관계**
 
