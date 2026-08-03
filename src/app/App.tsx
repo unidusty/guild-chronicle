@@ -9,11 +9,13 @@ import QuestResultPanel from "../features/quests/QuestResultPanel";
 import WarehousePage from "../features/warehouse/WarehousePage";
 import DayEndOverlay from "../features/dayEnd/DayEndOverlay";
 import SettingsModal from "../components/SettingsModal";
+import TitleScreen from "../features/title/TitleScreen";
 import DevPanel from "../features/devTools/DevPanel";
 import { useAudio, playHover, playSelect } from "../lib/audio";
 
 const DEV_MODE = import.meta.env.DEV;
 
+type Screen = "title" | "game";
 type Page = "guildHall" | "adventurers" | "parties" | "quests" | "warehouse";
 
 interface NavItem {
@@ -33,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function App() {
   const audio = useAudio();
+  const [screen, setScreen] = useState<Screen>(DEV_MODE ? "game" : "title");
   const [state, setState] = useState(initialGameState);
   const [page, setPage] = useState<Page>("guildHall");
   const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null);
@@ -64,6 +67,30 @@ export default function App() {
     setDayEndOpen(false);
   }
   function handleDayEndCancel() { setDayEndOpen(false); }
+
+  if (screen === "title") {
+    return (
+      <>
+        <TitleScreen
+          onNewGame={() => setScreen("game")}
+          onSettings={openSettings}
+        />
+        {settingsOpen && (
+          <SettingsModal
+            bgmVolume={audio.bgmVolume}
+            sfxVolume={audio.sfxVolume}
+            bgmMuted={audio.bgmMuted}
+            sfxMuted={audio.sfxMuted}
+            onBgmVolume={audio.setBgmVolume}
+            onSfxVolume={audio.setSfxVolume}
+            onBgmMute={audio.toggleBgmMute}
+            onSfxMute={audio.toggleSfxMute}
+            onClose={closeSettings}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="app-shell">

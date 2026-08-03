@@ -13,6 +13,7 @@ import type {
 } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { applyFinanceIncome, applyFinanceExpense } from "./finance";
+import { calcGuildPurchaseValue } from "../constants/economy";
 
 export const GUILD_FEE_RATE = 0.10;
 
@@ -34,11 +35,13 @@ export function createReturnReport(
 
   const lootEntries: LootEntry[] = loot.map(({ itemId, quantity }) => {
     const item = LOOT_TABLE[itemId];
+    const baseValue = item?.baseValue ?? 0;
     return {
       itemId,
       itemName: item?.name ?? itemId,
       quantity,
-      unitValue: item?.baseValue ?? 0,
+      unitValue: baseValue,
+      purchaseUnitValue: calcGuildPurchaseValue(baseValue),
     };
   });
 
@@ -76,8 +79,8 @@ export function calcSettlement(
       itemId: entry.itemId,
       itemName: entry.itemName,
       quantity: entry.quantity,
-      unitValue: entry.unitValue,
-      totalValue: entry.unitValue * entry.quantity,
+      unitValue: entry.purchaseUnitValue,
+      totalValue: entry.purchaseUnitValue * entry.quantity,
     }));
 
   const lootPurchaseTotal = purchasedLoot.reduce((sum, p) => sum + p.totalValue, 0);

@@ -192,6 +192,20 @@
   - CSS: `--font-xsmall` `:root` 추가, `.finance-*` 클래스 군 추가
   - 설계 문서: `docs/01_SYSTEM/GUILD_FINANCE_SYSTEM.md`, `docs/02_DATABASE/FINANCE_DATABASE.md` 추가
 
+- 전리품 가치 경제 밸런스 및 타이틀 화면 (0019-C)
+  - `src/game/constants/economy.ts` (신규) — `GUILD_PURCHASE_RATE = 0.80` / `calcGuildPurchaseValue(baseValue)`
+  - `LootEntry.purchaseUnitValue` 필드 추가 — `floor(baseValue × 0.80)` 스냅샷
+  - `createReturnReport`: `purchaseUnitValue` 함께 스냅샷
+  - `calcSettlement`: `LootPurchaseResult.unitValue` = `purchaseUnitValue` (80% 적용)
+  - `ReturnReportModal`: 매입가 + 시장가 분리 표시 (`.rrm-loot-market` 취소선)
+  - 창고 판매가: `baseValue` 유지 (변경 없음) — 매입 80% / 판매 100%로 20% 마진 확보
+  - `src/features/title/TitleScreen.tsx` (신규) — 로고·부제·메뉴 4개 (새 게임/이어하기/설정/종료)
+  - `App.tsx`: `screen: "title" | "game"` 상태 추가; 개발 모드에서는 즉시 game 진입
+  - 이어하기: `disabled` (저장 기능 미구현), 설정: 기존 `SettingsModal` 재사용, 종료: `window.close()` 안전 처리
+  - BGM: 기존 `guild-hall-bgm.mp3` 사용 (타이틀 전용 BGM 에셋 없음)
+  - CSS: `.title-*` 클래스 군 추가, `.rrm-loot-market` 추가
+  - 문서: `LOOT_DATABASE.md` (0019-C 반영), `TITLE_SCREEN_GUIDE.md` (구현 현행화)
+
 ## 다음 작업
 
 **0020 이후 — 세계 이벤트, 명성 시스템 (예정)**

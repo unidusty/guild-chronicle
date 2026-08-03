@@ -96,7 +96,7 @@ export default function ReturnReportModal({ report, state, onClose, onSettle }: 
               <div className="rrm-loot-list">
                 {report.loot.map(entry => {
                   const checked = selectedIds.has(entry.itemId);
-                  const total = entry.unitValue * entry.quantity;
+                  const purchaseTotal = entry.purchaseUnitValue * entry.quantity;
                   return (
                     <label key={entry.itemId} className={`rrm-loot-item${checked ? " checked" : ""}`}>
                       <input
@@ -106,7 +106,10 @@ export default function ReturnReportModal({ report, state, onClose, onSettle }: 
                       />
                       <span className="rrm-loot-name">{entry.itemName}</span>
                       <span className="rrm-loot-qty">×{entry.quantity}</span>
-                      <span className="rrm-loot-val">{total.toLocaleString("ko-KR")} G</span>
+                      <span className="rrm-loot-val">
+                        {purchaseTotal.toLocaleString("ko-KR")} G
+                        <small className="rrm-loot-market">시장가 {(entry.unitValue * entry.quantity).toLocaleString("ko-KR")} G</small>
+                      </span>
                     </label>
                   );
                 })}

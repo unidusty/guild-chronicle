@@ -1302,3 +1302,24 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .finance-amount.expense { color: #c87070; }
 .finance-balance { color: #a8b8a8; white-space: nowrap; }
 .text-right { text-align: right; }
+
+/* ── Return Report Modal — loot market price label ─────────────────────────── */
+.rrm-loot-val { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.rrm-loot-market { font-size: var(--font-xsmall); color: #5a7060; text-decoration: line-through; }
+
+/* ── Title Screen ─────────────────────────────────────────────────────────── */
+.title-screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(ellipse at 50% 30%, #1a2e20 0%, #0d1a10 45%, #080e09 100%); overflow: hidden; }
+.title-screen::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent calc(40px * var(--ui-scale)), rgba(255,255,255,.012) calc(40px * var(--ui-scale)), rgba(255,255,255,.012) calc(41px * var(--ui-scale))); pointer-events: none; }
+.title-content { display: flex; flex-direction: column; align-items: center; gap: calc(28px * var(--ui-scale)); z-index: 1; }
+.title-header { display: flex; flex-direction: column; align-items: center; gap: calc(8px * var(--ui-scale)); }
+.title-emblem { width: calc(60px * var(--ui-scale)); height: calc(60px * var(--ui-scale)); border: 1px solid #9a8451; color: #d2bb7e; font-family: Georgia, serif; font-size: calc(22px * var(--ui-scale)); display: grid; place-items: center; margin-bottom: calc(4px * var(--ui-scale)); letter-spacing: .05em; }
+.title-logo { font-family: Georgia, "Times New Roman", serif; font-size: calc(52px * var(--ui-scale)); font-weight: 400; letter-spacing: .18em; color: #d2bb7e; margin: 0; text-shadow: 0 0 calc(40px * var(--ui-scale)) rgba(180,150,60,.35); }
+.title-subtitle { font-size: calc(15px * var(--ui-scale)); letter-spacing: .35em; color: #7a8e74; margin: 0; text-transform: uppercase; }
+.title-divider { width: calc(280px * var(--ui-scale)); height: 1px; background: linear-gradient(to right, transparent, #3a5040, transparent); }
+.title-menu { display: flex; flex-direction: column; align-items: center; gap: calc(10px * var(--ui-scale)); width: calc(240px * var(--ui-scale)); }
+.title-menu-btn { width: 100%; padding: calc(12px * var(--ui-scale)) calc(24px * var(--ui-scale)); background: transparent; border: 1px solid #2a3a2e; color: #b8c8b4; font: inherit; font-size: var(--font-important); letter-spacing: .08em; cursor: pointer; transition: background .15s, border-color .15s, color .15s; text-align: center; }
+.title-menu-btn:hover:not(:disabled) { background: rgba(60,90,60,.25); border-color: #4a6050; color: #d8e8d4; }
+.title-menu-btn.primary { border-color: #9a8451; color: #d2bb7e; }
+.title-menu-btn.primary:hover { background: rgba(140,110,40,.2); border-color: #c0a060; color: #e8d090; }
+.title-menu-btn.disabled, .title-menu-btn:disabled { border-color: #1e2820; color: #3a4838; cursor: not-allowed; }
+.title-footer { position: absolute; bottom: calc(20px * var(--ui-scale)); font-size: var(--font-xsmall); color: #3a4838; letter-spacing: .06em; }

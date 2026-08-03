@@ -1,6 +1,6 @@
 # LOOT DATABASE
 
-Guild Chronicle 전리품 데이터 기준서. (0019-A)
+Guild Chronicle 전리품 데이터 기준서. (0019-C)
 
 ---
 
@@ -15,7 +15,7 @@ interface LootItem {
   id: EntityId;           // "loot-{식별자}"
   name: string;           // 한국어 이름
   category: LootCategory; // "monster" | "herb" | "mineral" | "misc"
-  baseValue: number;      // 기본 골드 가치 (길드 매입 기준가)
+  baseValue: number;      // 시장 기준가 (창고 판매가 = baseValue)
 }
 ```
 
@@ -42,11 +42,25 @@ interface LootDrop {
 ```typescript
 interface LootEntry {
   itemId: EntityId;
-  itemName: string;    // 이름 스냅샷
+  itemName: string;         // 이름 스냅샷
   quantity: number;
-  unitValue: number;   // baseValue 스냅샷
+  unitValue: number;        // baseValue 스냅샷 (시장 기준가)
+  purchaseUnitValue: number; // 길드 매입가 = floor(baseValue × GUILD_PURCHASE_RATE)
 }
 ```
+
+### 전리품 가격 구조 (0019-C)
+
+| 구분 | 계산식 | 설명 |
+|------|--------|------|
+| 시장 기준가 (`unitValue`) | `LootItem.baseValue` | 플레이어에게 표시되는 아이템 가치 |
+| 길드 매입가 (`purchaseUnitValue`) | `floor(baseValue × 0.80)` | 정산 시 길드가 파티에 지급하는 금액 |
+| 창고 판매가 | `baseValue` | 창고에서 외부에 판매 시 수익 (시장가 그대로) |
+
+`GUILD_PURCHASE_RATE = 0.80` — `src/game/constants/economy.ts` 정의.  
+`calcGuildPurchaseValue(baseValue)` — 공통 계산 함수.
+
+길드는 전리품을 시장가의 80%에 매입하고 100%로 판매하여 20% 마진을 확보한다.
 
 ---
 
@@ -112,7 +126,7 @@ finalizeSettlement()
 
 - 전리품의 기본 소유자는 수행 파티다.
 - 길드가 매입(길드장 정산 확인)해야만 창고에 들어간다.
-- 매입 가격 = `LootEntry.unitValue × quantity`
+- 매입 가격 = `LootEntry.purchaseUnitValue × quantity` (baseValue의 80%)
 - 미매입 전리품은 파티 소유이나 현재 개별 파티 인벤토리는 미구현이다.
 
 ---

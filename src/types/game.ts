@@ -291,7 +291,8 @@ export interface LootEntry {
   itemId: EntityId;
   itemName: string;
   quantity: number;
-  unitValue: number;
+  unitValue: number;         // baseValue — 시장 기준가
+  purchaseUnitValue: number; // 길드 매입가 (baseValue × GUILD_PURCHASE_RATE)
 }
 
 export interface LootPurchaseResult {

@@ -221,7 +221,8 @@
 
 - 의뢰 완료 시 `ReturnReport` 생성 → `state.returnReports` 적재
 - MASTER'S DESK에서 귀환 보고 버튼 클릭 → `ReturnReportModal` 열림
-- 전리품 중 길드 매입 선택 (체크박스) → 매입가 = `unitValue × quantity`
+- 전리품 중 길드 매입 선택 (체크박스) → 매입가 = `purchaseUnitValue × quantity` (baseValue의 80%)
+- 창고 판매가 = `baseValue` (100%) → 매입 80% · 판매 100%로 20% 마진 확보
 - 길드 수수료: `totalRewardGold × 10%` (`GUILD_FEE_RATE = 0.10`)
 - 파티 지급액: `totalRewardGold - guildFeeGold`
 - 길드 순수입: `guildFeeGold - lootPurchaseTotal`
