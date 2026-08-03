@@ -30,6 +30,8 @@
 - 지역 데이터 → `02_DATABASE/REGION_DATABASE.md`
 - 세력 데이터 → `02_DATABASE/FACTION_DATABASE.md`
 - 몬스터 데이터 → `02_DATABASE/MONSTER_DATABASE.md`
+- 비주얼 스타일 → `03_DESIGN/VISUAL_STYLE_GUIDE.md`
+- 타이틀 화면 → `03_DESIGN/TITLE_SCREEN_GUIDE.md`
 - 설계 가이드 → `03_DESIGN/`
 
 ---

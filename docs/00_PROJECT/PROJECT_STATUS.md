@@ -126,6 +126,12 @@
 - `briefings/WORLD_SYSTEM_BRIEFING.md` — 세계 시스템 문서 구성 개요 및 설계 철학
 - 전투 시스템 문서 신규 생성
 - `docs/01_SYSTEM/BATTLE_SYSTEM_GUIDE.md` — 전투 철학·전투력 계산·진형·성공률·지원 파티·향후 계획
+- UI·디자인 문서 개편 (0018-Q 이후)
+- `docs/03_DESIGN/VISUAL_STYLE_GUIDE.md` — 색상 팔레트·타이포그래피·컴포넌트 스타일·분위기 기준
+- `docs/03_DESIGN/TITLE_SCREEN_GUIDE.md` — 타이틀 화면 구성·로고·메뉴·오디오 연동·향후 확장
+- `docs/03_DESIGN/UI_REFERENCE.md` 개정 — 비주얼 스타일·타이틀 화면 문서 연결
+- `docs/03_DESIGN/ASSET_NAMING_GUIDE.md` 개정 — 초상화 파일명 규칙 현행화 (`{종족}_{m|f}_{직업}_{순번}.webp`)
+- `docs/03_DESIGN/PORTRAIT_ASSET_GUIDE.md` 개정 — 파일명·매니페스트 구조 현행화, 비주얼 스타일 연결
 
 ## 현재 데이터 원칙
 

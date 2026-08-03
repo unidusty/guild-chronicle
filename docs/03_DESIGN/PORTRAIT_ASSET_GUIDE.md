@@ -13,33 +13,39 @@ public/
   portraits/
     human/
       male/
-        swordsman-01.png
-        warrior-01.png
+        human_m_swordsman_01.webp
+        human_m_warrior_01.webp
       female/
-        archer-01.png
+        human_f_archer_01.webp
     elf/
       male/
-        mage-01.png
+        elf_m_mage_01.webp
       female/
-        ...
+        elf_f_priest_01.webp
     dwarf/
       male/
-        ...
+        dwarf_m_guardian_01.webp
       female/
-        ...
+        dwarf_f_rogue_01.webp
 ```
 
 ---
 
 ## 파일명 규칙
 
-`{직업}-{순번}.png`
+`{종족}_{성별초기}_{직업}_{순번}.webp`
 
-- 직업은 영문 소문자 (예: `swordsman`, `archer`, `mage`)
-- 순번은 두 자리 숫자 (예: `01`, `02`)
-- 확장자: `.png` 권장 (`.jpg`도 허용)
+| 필드 | 유효값 | 설명 |
+|------|--------|------|
+| 종족 | `human` `elf` `dwarf` | 소문자 |
+| 성별초기 | `m` `f` | male→m, female→f |
+| 직업 | `warrior` `swordsman` `spearman` `archer` `mage` `paladin` `rogue` `priest` `guardian` | 소문자 |
+| 순번 | `01` `02` ... | 두 자리 숫자 |
+| 확장자 | `.webp` 권장 | `.png` `.jpg` `.jpeg`도 허용 |
 
-예시: `swordsman-01.png`, `archer-02.png`
+예시: `human_m_swordsman_01.webp`, `elf_f_mage_02.webp`
+
+파일명 전체 패턴을 벗어나면 매니페스트 스크립트가 파일을 건너뛴다.
 
 ---
 
@@ -60,22 +66,41 @@ npm run manifest
 
 ```typescript
 // src/generated/assetManifest.ts (자동 생성, 직접 편집 금지)
-export const portraitManifest: PortraitManifestEntry[] = [
-  { race: "human", gender: "male", classId: "swordsman", path: "/portraits/human/male/swordsman-01.png" },
-  ...
-];
+export interface PortraitEntry {
+  id: string;       // "{race}-{gender}-{파일명(확장자 제외)}"
+  path: string;     // "/portraits/{race}/{gender}/{파일명}"
+  race: string;
+  gender: string;
+  classId: string;
+  source: "base" | "mod";
+}
+
+export const assetManifest: AssetManifest = {
+  generatedAt: "...",
+  portraits: [
+    {
+      id: "human-male-human_m_swordsman_01",
+      path: "/portraits/human/male/human_m_swordsman_01.webp",
+      race: "human",
+      gender: "male",
+      classId: "swordsman",
+      source: "base"
+    },
+    ...
+  ]
+};
 ```
 
 ---
 
 ## 초상화 ID 부여
 
-모험가 생성 시점에 초상화 ID를 확정하고 `Adventurer.portrait: string | null` 필드에 저장한다.  
-ID는 매니페스트의 `path` 값이다. 파일이 없으면 `null`이고 플레이스홀더가 표시된다.
+모험가 생성 시점에 초상화를 확정하고 `Adventurer.portrait: string | null` 필드에 저장한다.  
+`portrait` 값은 매니페스트의 `path` 값이다. 파일이 없으면 `null`이고 플레이스홀더가 표시된다.
 
 ```typescript
-// 부여 예시 (generateAdventurer 내부)
-const candidates = portraitManifest.filter(
+// generateAdventurer 내부
+const candidates = assetManifest.portraits.filter(
   p => p.race === race && p.gender === gender && p.classId === classId
 );
 const portrait = candidates.length > 0
@@ -83,7 +108,18 @@ const portrait = candidates.length > 0
   : null;
 ```
 
-한 번 부여한 초상화 ID는 변경하지 않는다. 파일이 삭제되면 플레이스홀더로 자동 대체된다.
+한 번 부여한 초상화 경로는 변경하지 않는다. 파일이 삭제되면 플레이스홀더로 자동 대체된다.
+
+---
+
+## 모드 초상화 (Mod Override)
+
+`public/mods/portraits/` 폴더는 베이스 초상화를 덮어쓰는 모드용 폴더다.  
+같은 `id`를 가진 mod 파일이 있으면 base 파일을 대신한다.
+
+```
+public/mods/portraits/{종족}/{성별}/{파일명}
+```
 
 ---
 
@@ -93,14 +129,25 @@ const portrait = candidates.length > 0
 
 ```
 [manifest] 53 portrait(s) found (53 base, 0 mod)
-[manifest]   human/male: archer(1), mage(2), swordsman(2), ...
+[manifest]   dwarf/female: archer(1), guardian(1), mage(1), paladin(1), ...
+[manifest]   human/male:   swordsman(2), warrior(1), ...
 ```
 
 ---
 
 ## 추가 시 체크리스트
 
-1. 파일명이 `{직업}-{순번}.png` 규칙을 따르는지 확인한다.
+1. 파일명이 `{종족}_{m|f}_{직업}_{순번}.webp` 규칙을 따르는지 확인한다.
 2. 올바른 `{종족}/{성별}/` 폴더에 배치했는지 확인한다.
 3. `npm run manifest`를 실행해 매니페스트를 갱신한다.
 4. 개발 서버에서 해당 직업·종족·성별 모험가에 초상화가 표시되는지 확인한다.
+
+---
+
+## 초상화 비주얼 기준
+
+초상화 스타일 가이드는 `docs/03_DESIGN/VISUAL_STYLE_GUIDE.md` > 초상화 스타일 참조.
+
+- 썸네일 크기: 34×34px, 테두리 `#4d574e`
+- 이미지 없을 때: 배경 `#222923`, 골드 이니셜 표시
+- 상세 화면: `object-fit: cover`로 영역 채움

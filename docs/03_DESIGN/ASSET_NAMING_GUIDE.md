@@ -6,8 +6,9 @@ Guild Chronicle 에셋 파일명 통일 기준서.
 
 ## 공통 규칙
 
-- 모든 에셋 파일명은 **영문 소문자**와 **하이픈(`-`)** 만 사용한다.
-- 공백, 언더스코어, 대문자를 사용하지 않는다.
+- 모든 에셋 파일명은 **영문 소문자**만 사용한다.
+- 단어 구분자: 초상화는 **언더스코어(`_`)**, 오디오·아이콘·UI 이미지는 **하이픈(`-`)** 사용.
+- 공백, 대문자를 사용하지 않는다.
 - 확장자는 소문자로 통일한다.
 
 ---
@@ -17,13 +18,21 @@ Guild Chronicle 에셋 파일명 통일 기준서.
 위치: `public/portraits/{종족}/{성별}/`
 
 ```
-{직업}-{순번}.png
+{종족}_{성별초기}_{직업}_{순번}.webp
 
 예시:
-  swordsman-01.png
-  mage-02.png
-  priest-01.png
+  human_m_swordsman_01.webp
+  elf_f_mage_02.webp
+  dwarf_m_guardian_01.webp
 ```
+
+| 필드 | 유효값 | 설명 |
+|------|--------|------|
+| 종족 | `human` `elf` `dwarf` | 소문자 |
+| 성별초기 | `m` `f` | male=m, female=f |
+| 직업 | 아래 표 참조 | 소문자 |
+| 순번 | `01` `02` ... | 두 자리 숫자 |
+| 확장자 | `.webp` | `.png` `.jpg`도 허용 |
 
 | 유효한 직업 ID | 설명 |
 |--------------|------|
@@ -36,6 +45,9 @@ Guild Chronicle 에셋 파일명 통일 기준서.
 | `rogue` | 도적 |
 | `priest` | 사제 |
 | `guardian` | 수호자 |
+
+> `generate-manifest.js`는 이 형식을 파싱해 `race`, `gender`, `classId`를 추출한다.  
+> 형식을 벗어난 파일은 매니페스트에 포함되지 않고 경고가 출력된다.
 
 ---
 
@@ -64,9 +76,23 @@ Guild Chronicle 에셋 파일명 통일 기준서.
 
 ---
 
+## 배경 이미지
+
+위치: `public/backgrounds/` (현재 파일 없음)
+
+```
+{화면명}-bg.webp
+
+예시:
+  title-bg.webp
+  guild-hall-bg.webp
+```
+
+---
+
 ## 아이콘 / UI 이미지
 
-위치: `public/ui/` (미래)
+위치: `public/game-assets/icons/` (현재 파일 없음)
 
 ```
 {컴포넌트}-{상태}.png
