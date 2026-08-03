@@ -211,6 +211,7 @@
 **0019-A** 귀환 보고 및 정산 시스템 — ✅ 완료
 **0019-B** 길드 재정 거래 시스템 — ✅ 완료 (`FinanceTransaction`, `applyFinanceIncome/Expense`, 재정 탭)
 **0019-C** 전리품 경제 밸런스 및 타이틀 화면 — ✅ 완료 (매입 80% / 판매 100%, TitleScreen)
+**0019-D** 랜덤 세계 이벤트 시스템 — ✅ 완료 (8종 이벤트, modifier 구조, dayEnd 연동, 창고 판매가 보정)
 
 ---
 

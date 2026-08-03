@@ -466,6 +466,7 @@ const _rawState: GameState = {
     history: [],
     lastGeneratedDay: null,
   },
+  activeWorldEvents: [],
 };
 
 export const initialGameState: GameState = (() => {

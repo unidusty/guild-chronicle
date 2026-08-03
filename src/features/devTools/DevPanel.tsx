@@ -3,10 +3,12 @@
  * Remove this file (and its import in App.tsx) before shipping a release build.
  */
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { Facility, GameState } from "../../types/game";
+import type { ActiveWorldEvent, Facility, GameState } from "../../types/game";
 import { processDayEnd } from "../../game/simulation/dayEnd";
 import { generateDailyApplicants } from "../../game/simulation/recruitment";
 import { getDirectorState } from "../../game/simulation/questDirector";
+import { WORLD_EVENT_DEFINITIONS } from "../../data/worldEventData";
+import { getWorldEventDefinition } from "../../game/simulation/worldEvents";
 
 interface Props {
   state: GameState;
@@ -67,6 +69,28 @@ export default function DevPanel({ state, onStateChange }: Props) {
       }
       return { ...s, facilities };
     });
+  }
+
+  function forceSpawnWorldEvent(definitionId: string) {
+    onStateChange((s) => {
+      const def = getWorldEventDefinition(definitionId);
+      if (!def) return s;
+      const { year, season, day } = s.currentDate;
+      const id = `awe-dev-${def.id}-${year}${season[0]}${day}-${Math.random().toString(36).slice(2, 5)}`;
+      const duration = def.minDurationDays + Math.floor(Math.random() * (def.maxDurationDays - def.minDurationDays + 1));
+      const newEvent: ActiveWorldEvent = {
+        id,
+        definitionId: def.id,
+        startedAt: s.currentDate,
+        remainingDays: duration,
+        effects: [...def.effects],
+      };
+      return { ...s, activeWorldEvents: [...s.activeWorldEvents, newEvent] };
+    });
+  }
+
+  function clearWorldEvents() {
+    onStateChange((s) => ({ ...s, activeWorldEvents: [] }));
   }
 
   if (!open) {
@@ -137,6 +161,38 @@ export default function DevPanel({ state, onStateChange }: Props) {
           ))}
         </div>
       )}
+      <div style={{ marginTop: 8, borderTop: "1px solid #333", paddingTop: 8, fontSize: 11 }}>
+        <div style={{ color: "#aaa", marginBottom: 4, display: "flex", justifyContent: "space-between" }}>
+          <span>세계 이벤트 ({state.activeWorldEvents.length}/3)</span>
+          {state.activeWorldEvents.length > 0 && (
+            <button onClick={clearWorldEvents} style={{ fontSize: 10, padding: "1px 5px", background: "#2a1a1a", border: "1px solid #4a2a2a", color: "#9a6060", cursor: "pointer" }}>전체 해제</button>
+          )}
+        </div>
+        {state.activeWorldEvents.length === 0 && (
+          <div style={{ color: "#555", marginBottom: 4 }}>활성 이벤트 없음</div>
+        )}
+        {state.activeWorldEvents.map((event) => {
+          const def = getWorldEventDefinition(event.definitionId);
+          return (
+            <div key={event.id} style={{ marginBottom: 4, background: "#0e1a10", padding: "3px 6px", borderRadius: 3, borderLeft: "2px solid #3a6a4a" }}>
+              <div style={{ color: "#9ac8a0", fontWeight: "bold" }}>{def?.name ?? event.definitionId}</div>
+              <div style={{ color: "#556655" }}>잔여 {event.remainingDays}일 · {event.effects.map(e => `${e.target} ${e.modifier > 0 ? "+" : ""}${Math.round(e.modifier * 100)}%`).join(", ")}</div>
+            </div>
+          );
+        })}
+        <div style={{ color: "#aaa", marginBottom: 3, marginTop: 6 }}>강제 발생</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+          {WORLD_EVENT_DEFINITIONS.map((def) => (
+            <button
+              key={def.id}
+              onClick={() => forceSpawnWorldEvent(def.id)}
+              style={{ fontSize: 10, padding: "2px 5px", background: "#0e1a14", border: "1px solid #2a4a30", color: "#7ab08a", cursor: "pointer" }}
+            >
+              {def.name}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -206,9 +206,23 @@
   - CSS: `.title-*` 클래스 군 추가, `.rrm-loot-market` 추가
   - 문서: `LOOT_DATABASE.md` (0019-C 반영), `TITLE_SCREEN_GUIDE.md` (구현 현행화)
 
+- 랜덤 세계 이벤트 시스템 (0019-D)
+  - `WorldEventType` / `WorldEventEffectTarget` / `WorldEventEffect` / `WorldEventDefinition` / `ActiveWorldEvent` 타입 추가
+  - `DailyReportItemKind` — `world_event_started` / `world_event_ended` 추가
+  - `GameState.activeWorldEvents: ActiveWorldEvent[]` 추가
+  - `src/data/worldEventData.ts` — 8종 이벤트 정의 (왕국 축제·몬스터 증가·흉년·풍년·상인 방문·귀족 의뢰 증가·국경 분쟁·전염병)
+  - `src/game/simulation/worldEvents.ts` — `tickWorldEvents` / `trySpawnWorldEvent` / modifier accessor 3종
+  - `dayEnd.ts` — tick → spawn → 연대기 기록 → 보고서 항목 연동
+  - `warehouse.ts` — `getWarehouseSaleModifier` 적용 (판매가 실시간 보정)
+  - `worldEventTypeLabels` 추가 (`labels.ts`)
+  - DevPanel — 활성 이벤트 목록 + 강제 발생 버튼 + 전체 해제 버튼
+  - GuildHallPage 대시보드 — 활성 세계 이벤트 스트립 (이벤트명 + 잔여 일수 + 유형별 색상)
+  - CSS: `.world-event-strip` / `.we-tag` / 이벤트 유형별 색상 / `day-end-report-item.world_event_*`
+  - 문서: `WORLD_EVENT_SYSTEM_GUIDE.md` (신규), `WORLD_EVENT_DATABASE.md` (신규)
+
 ## 다음 작업
 
-**0020 이후 — 세계 이벤트, 명성 시스템 (예정)**
+**0020 이후 — 명성 시스템, 모험가 성장 (예정)**
 
 
 

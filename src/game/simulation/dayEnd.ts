@@ -8,6 +8,7 @@ import {
   releaseHeldApplicants,
   toAbsoluteDay,
 } from "./recruitment";
+import { getWorldEventDefinition, tickWorldEvents, trySpawnWorldEvent } from "./worldEvents";
 
 export function processDayEnd(state: GameState): { newState: GameState; report: DailyReport } {
   const previousDate = state.currentDate;
@@ -62,7 +63,51 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
   // 5. Generate new applicants for the new day
   const { state: afterGenerate, newApplicants } = generateDailyApplicants(afterAdvance);
 
-  const newState = afterGenerate;
+  // 6. Tick world events (decrement remaining days, collect expired)
+  const { state: afterTick, expired: expiredEvents } = tickWorldEvents(afterGenerate);
+
+  // 7. Try to spawn a new world event for the new day
+  const { state: afterWorldEvents, spawned: spawnedEvent } = trySpawnWorldEvent(afterTick, afterTick.currentDate);
+
+  // Add chronicle entries for world event changes
+  let afterChronicle = afterWorldEvents;
+  const worldEventChronicleEntries: ChronicleEntry[] = [];
+  for (const event of expiredEvents) {
+    const def = getWorldEventDefinition(event.definitionId);
+    if (def) {
+      worldEventChronicleEntries.push({
+        id: `chr-we-end-${event.id}`,
+        date: afterChronicle.currentDate,
+        scope: "world",
+        category: "world",
+        title: `${def.name} 종료`,
+        description: def.endNotification,
+        relatedEntityIds: [],
+      });
+    }
+  }
+  if (spawnedEvent) {
+    const def = getWorldEventDefinition(spawnedEvent.definitionId);
+    if (def) {
+      worldEventChronicleEntries.push({
+        id: `chr-we-start-${spawnedEvent.id}`,
+        date: afterChronicle.currentDate,
+        scope: "world",
+        category: "world",
+        title: `${def.name} 발생`,
+        description: def.startNotification,
+        relatedEntityIds: [],
+      });
+    }
+  }
+  if (worldEventChronicleEntries.length > 0) {
+    afterChronicle = {
+      ...afterChronicle,
+      chronicle: [...worldEventChronicleEntries, ...afterChronicle.chronicle],
+    };
+  }
+
+  const newState = afterChronicle;
 
   // 6. Collect report items (order: new → accepted → rejected → expired → facility → quest → injury → training)
   const items: DailyReportItem[] = [];
@@ -146,6 +191,26 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
         description: `${adv.name}이(가) 훈련을 마치고 대기 상태로 복귀했습니다.`,
       });
     }
+  }
+
+  // World events ended
+  for (const event of expiredEvents) {
+    const def = getWorldEventDefinition(event.definitionId);
+    items.push({
+      kind: "world_event_ended",
+      title: `이벤트 종료 — ${def?.name ?? event.definitionId}`,
+      description: def?.endNotification ?? "세계 이벤트가 종료되었습니다.",
+    });
+  }
+
+  // World events started
+  if (spawnedEvent) {
+    const def = getWorldEventDefinition(spawnedEvent.definitionId);
+    items.push({
+      kind: "world_event_started",
+      title: `세계 이벤트 — ${def?.name ?? spawnedEvent.definitionId}`,
+      description: `${def?.startNotification ?? ""} (${spawnedEvent.remainingDays}일간 지속)`,
+    });
   }
 
   // Active quest progress & event reports

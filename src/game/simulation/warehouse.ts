@@ -1,6 +1,7 @@
 import type { GameState, SaleTransaction } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { applyFinanceIncome } from "./finance";
+import { getWarehouseSaleModifier } from "./worldEvents";
 
 export function sellWarehouseItem(state: GameState, itemId: string, quantity: number): GameState {
   const item = LOOT_TABLE[itemId];
@@ -9,8 +10,12 @@ export function sellWarehouseItem(state: GameState, itemId: string, quantity: nu
   const currentQty = state.warehouse[itemId] ?? 0;
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > currentQty) return state;
 
-  const totalPrice = item.baseValue * quantity;
-  if (totalPrice <= 0 || !Number.isFinite(totalPrice)) return state;
+  const baseTotalPrice = item.baseValue * quantity;
+  if (baseTotalPrice <= 0 || !Number.isFinite(baseTotalPrice)) return state;
+  const saleModifier = getWarehouseSaleModifier(state);
+  const totalPrice = saleModifier !== 0
+    ? Math.max(1, Math.floor(baseTotalPrice * (1 + saleModifier)))
+    : baseTotalPrice;
 
   const newWarehouse = { ...state.warehouse };
   const remaining = currentQty - quantity;

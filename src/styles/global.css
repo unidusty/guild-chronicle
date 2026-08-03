@@ -1323,3 +1323,30 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .title-menu-btn.primary:hover { background: rgba(100,75,20,.5); border-color: #c0a060; color: #e8d090; }
 .title-menu-btn.disabled, .title-menu-btn:disabled { border-color: #1a241c; color: #304030; cursor: not-allowed; background: rgba(0,0,0,.3); }
 .title-footer { position: absolute; bottom: calc(20px * var(--ui-scale)); z-index: 2; font-size: var(--font-xsmall); color: #3a4838; letter-spacing: .06em; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+
+/* ── World Events ──────────────────────────────────────────────────────────── */
+.world-event-strip { display: flex; align-items: center; gap: calc(8px * var(--ui-scale)); flex-wrap: wrap; padding: calc(8px * var(--ui-scale)) calc(16px * var(--ui-scale)); background: rgba(10,20,12,.6); border-bottom: 1px solid #1a2a1c; }
+.we-strip-label { font-size: var(--font-xsmall); color: #5a7a5a; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; margin-right: calc(4px * var(--ui-scale)); }
+.we-tag { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); padding: calc(3px * var(--ui-scale)) calc(8px * var(--ui-scale)); border-radius: 2px; border: 1px solid #2a3a2c; background: rgba(14,26,16,.8); cursor: default; }
+.we-tag-name { font-size: var(--font-xsmall); font-weight: bold; color: #8ab08a; }
+.we-tag-days { font-size: calc(10px * var(--ui-scale)); color: #4a6a4a; }
+.we-tag.festival       { border-color: #5a4a2a; background: rgba(20,16,8,.8); }
+.we-tag.festival .we-tag-name { color: #c0a060; }
+.we-tag.monster_surge  { border-color: #4a2a2a; background: rgba(20,10,10,.8); }
+.we-tag.monster_surge .we-tag-name { color: #c06060; }
+.we-tag.famine         { border-color: #3a3a1a; background: rgba(14,14,6,.8); }
+.we-tag.famine .we-tag-name { color: #9a9040; }
+.we-tag.abundant_harvest { border-color: #2a4a2a; background: rgba(10,18,10,.8); }
+.we-tag.abundant_harvest .we-tag-name { color: #6ac06a; }
+.we-tag.merchant_visit { border-color: #2a3a5a; background: rgba(8,14,22,.8); }
+.we-tag.merchant_visit .we-tag-name { color: #60a0c0; }
+.we-tag.noble_quest_boom { border-color: #4a3a5a; background: rgba(16,12,22,.8); }
+.we-tag.noble_quest_boom .we-tag-name { color: #a080c0; }
+.we-tag.border_conflict { border-color: #5a3a2a; background: rgba(20,12,8,.8); }
+.we-tag.border_conflict .we-tag-name { color: #c08060; }
+.we-tag.epidemic       { border-color: #2a4a3a; background: rgba(8,18,14,.8); }
+.we-tag.epidemic .we-tag-name { color: #50a080; }
+.day-end-report-item.world_event_started { border-left: 2px solid #4a8a6a; background: rgba(10,22,16,.7); }
+.day-end-report-item.world_event_started strong { color: #7ac8a0; }
+.day-end-report-item.world_event_ended   { border-left: 2px solid #4a4a4a; background: rgba(14,14,14,.7); }
+.day-end-report-item.world_event_ended   strong { color: #8a8a8a; }

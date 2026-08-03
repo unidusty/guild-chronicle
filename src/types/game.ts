@@ -367,6 +367,51 @@ export interface FinanceSummary {
   recentTransactions: FinanceTransaction[];
 }
 
+// ── World Events ─────────────────────────────────────────────────────────────
+
+export type WorldEventType =
+  | "festival"
+  | "monster_surge"
+  | "famine"
+  | "abundant_harvest"
+  | "merchant_visit"
+  | "noble_quest_boom"
+  | "border_conflict"
+  | "epidemic";
+
+export type WorldEventEffectTarget =
+  | "warehouse_sale"
+  | "quest_reward"
+  | "recruitment"
+  | "region_danger";
+
+export interface WorldEventEffect {
+  target: WorldEventEffectTarget;
+  modifier: number; // fractional: 0.15 = +15%, −0.15 = −15%
+}
+
+export interface WorldEventDefinition {
+  id: EntityId;
+  type: WorldEventType;
+  name: string;
+  description: string;
+  weight: number;
+  minDurationDays: number;
+  maxDurationDays: number;
+  conflictGroup?: string;
+  effects: WorldEventEffect[];
+  startNotification: string;
+  endNotification: string;
+}
+
+export interface ActiveWorldEvent {
+  id: EntityId;
+  definitionId: EntityId;
+  startedAt: GameDate;
+  remainingDays: number;
+  effects: WorldEventEffect[];
+}
+
 export type DailyReportItemKind =
   | "quest_completed"
   | "quest_returned"
@@ -378,7 +423,9 @@ export type DailyReportItemKind =
   | "recruitment_accepted"
   | "recruitment_rejected"
   | "recruitment_expired"
-  | "recruitment_new_applicants";
+  | "recruitment_new_applicants"
+  | "world_event_started"
+  | "world_event_ended";
 
 export interface DailyReportItem {
   kind: DailyReportItemKind;
@@ -511,4 +558,5 @@ export interface GameState {
   saleTransactions: SaleTransaction[];
   financeTransactions: FinanceTransaction[];
   recruitment: RecruitmentState;
+  activeWorldEvents: ActiveWorldEvent[];
 }

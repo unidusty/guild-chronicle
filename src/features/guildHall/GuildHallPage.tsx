@@ -8,6 +8,7 @@ import {
   getRosterRows,
 } from "../../game/simulation/selectors";
 import { questStageLabels } from "../../game/constants/labels";
+import { WORLD_EVENT_DEFINITIONS } from "../../data/worldEventData";
 import FacilitiesPage from "../facilities/FacilitiesPage";
 import RecruitmentTab from "../recruitment/RecruitmentTab";
 import FinanceTab from "../finance/FinanceTab";
@@ -123,6 +124,21 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
               </article>
             ))}
           </section>
+
+          {state.activeWorldEvents.length > 0 && (
+            <section className="world-event-strip">
+              <span className="we-strip-label">세계 이벤트</span>
+              {state.activeWorldEvents.map((event) => {
+                const def = WORLD_EVENT_DEFINITIONS.find((d) => d.id === event.definitionId);
+                return (
+                  <div key={event.id} className={`we-tag we-${def?.type ?? "unknown"}`} title={def?.description ?? ""}>
+                    <span className="we-tag-name">{def?.name ?? event.definitionId}</span>
+                    <span className="we-tag-days">잔여 {event.remainingDays}일</span>
+                  </div>
+                );
+              })}
+            </section>
+          )}
 
           <section className="dashboard-grid">
             <article className="panel roster-panel">
