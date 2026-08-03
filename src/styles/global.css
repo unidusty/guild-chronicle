@@ -1574,3 +1574,15 @@ button.day-end-locked { opacity: 0.72; }
 
 /* Inbox blocked notice inside report panel */
 .inbox-blocked-notice { margin-bottom: calc(8px * var(--ui-scale)); padding: calc(8px * var(--ui-scale)) calc(12px * var(--ui-scale)); background: #1a0e0a; border: 1px solid #4a2418; color: #c47060; font-size: var(--font-tiny); }
+
+/* ── Arrival Modal (0020-C) ──────────────────────────────────────────────────── */
+.arr-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: flex; align-items: center; justify-content: center; z-index: 900; }
+.arr-modal { background: #12160e; border: 1px solid #3a4a2a; border-radius: 4px; padding: calc(32px * var(--ui-scale)); max-width: calc(420px * var(--ui-scale)); width: 90%; display: flex; flex-direction: column; gap: calc(14px * var(--ui-scale)); }
+.arr-badge { font-size: var(--font-tiny); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8aaa6a; background: #1e2818; border: 1px solid #3a4a2a; border-radius: 2px; padding: calc(3px * var(--ui-scale)) calc(8px * var(--ui-scale)); align-self: flex-start; }
+.arr-scene { font-size: var(--font-small); color: #c4c8b8; line-height: 1.75; font-style: italic; }
+.arr-count { font-size: var(--font-tiny); color: #8aaa6a; }
+.arr-actions { display: flex; justify-content: flex-end; gap: calc(8px * var(--ui-scale)); margin-top: calc(4px * var(--ui-scale)); }
+.arr-btn-later { background: transparent; border: 1px solid #3a4a2a; color: #8a9a7a; padding: calc(6px * var(--ui-scale)) calc(14px * var(--ui-scale)); font-size: var(--font-small); cursor: pointer; border-radius: 2px; }
+.arr-btn-later:hover { border-color: #5a7a4a; color: #aac48a; }
+.arr-btn-confirm { background: #2a3e1a; border: 1px solid #5a7a3a; color: #b0d080; padding: calc(6px * var(--ui-scale)) calc(16px * var(--ui-scale)); font-size: var(--font-small); font-weight: 600; cursor: pointer; border-radius: 2px; }
+.arr-btn-confirm:hover { background: #344e20; border-color: #7aaa4a; color: #c8e898; }

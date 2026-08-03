@@ -27,6 +27,8 @@ interface Props {
   onStateChange: Dispatch<SetStateAction<GameState>>;
   onDayEnd: () => void;
   onNavigate?: (page: "quests", params: { questId: string }) => void;
+  initialApplicantId?: string | null;
+  onInitialApplicantConsumed?: () => void;
 }
 
 const INBOX_ICON: Record<string, { icon: string; tone: string }> = {
@@ -44,8 +46,8 @@ const PRIORITY_LABEL: Record<string, string> = {
   normal:    "",
 };
 
-export default function GuildHallPage({ state, onStateChange, onDayEnd, onNavigate }: Props) {
-  const [tab, setTab] = useState<GuildTab>("dashboard");
+export default function GuildHallPage({ state, onStateChange, onDayEnd, onNavigate, initialApplicantId, onInitialApplicantConsumed }: Props) {
+  const [tab, setTab] = useState<GuildTab>(initialApplicantId ? "recruitment" : "dashboard");
   const [activeReport, setActiveReport] = useState<ReturnReport | null>(null);
   const [showBlockedMsg, setShowBlockedMsg] = useState(false);
 
@@ -394,7 +396,12 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd, onNaviga
 
       {/* Recruitment tab */}
       {tab === "recruitment" && (
-        <RecruitmentTab state={state} onStateChange={onStateChange} />
+        <RecruitmentTab
+          state={state}
+          onStateChange={onStateChange}
+          initialApplicantId={initialApplicantId}
+          onInitialApplicantConsumed={onInitialApplicantConsumed}
+        />
       )}
 
       {/* Finance tab */}

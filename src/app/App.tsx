@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { initialGameState } from "../data/gameState";
 import { formatGameDate } from "../game/simulation/selectors";
+import { dismissArrivalNotification } from "../game/simulation/recruitment";
 import GuildHallPage from "../features/guildHall/GuildHallPage";
 import AdventurersPage from "../features/adventurers/AdventurersPage";
 import PartiesPage from "../features/parties/PartiesPage";
@@ -8,6 +9,7 @@ import QuestBoardPage from "../features/quests/QuestBoardPage";
 import QuestResultPanel from "../features/quests/QuestResultPanel";
 import WarehousePage from "../features/warehouse/WarehousePage";
 import DayEndOverlay from "../features/dayEnd/DayEndOverlay";
+import ArrivalModal from "../features/recruitment/ArrivalModal";
 import SettingsModal from "../components/SettingsModal";
 import TitleScreen from "../features/title/TitleScreen";
 import DevPanel from "../features/devTools/DevPanel";
@@ -40,6 +42,7 @@ export default function App() {
   const [page, setPage] = useState<Page>("guildHall");
   const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
+  const [selectedApplicantId, setSelectedApplicantId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [dayEndOpen, setDayEndOpen] = useState(false);
   const [partiesFormationDirty, setPartiesFormationDirty] = useState(false);
@@ -151,6 +154,8 @@ export default function App() {
             onStateChange={setState}
             onDayEnd={handleDayEnd}
             onNavigate={(_page, params) => navigateToQuest(params.questId)}
+            initialApplicantId={selectedApplicantId}
+            onInitialApplicantConsumed={() => setSelectedApplicantId(null)}
           />
         ) : page === "adventurers" ? (
           <AdventurersPage state={state} onNavigateToParty={navigateToParty} />
@@ -181,6 +186,22 @@ export default function App() {
           state={state}
           onComplete={handleDayEndComplete}
           onCancel={handleDayEndCancel}
+        />
+      )}
+
+      {state.pendingArrivalNotifications.length > 0 && !dayEndOpen && (
+        <ArrivalModal
+          notification={state.pendingArrivalNotifications[0]}
+          onConfirm={() => {
+            const notif = state.pendingArrivalNotifications[0];
+            setState((s) => dismissArrivalNotification(s, notif.id));
+            setSelectedApplicantId(notif.applicantIds[0]);
+            setPage("guildHall");
+          }}
+          onLater={() => {
+            const notif = state.pendingArrivalNotifications[0];
+            setState((s) => dismissArrivalNotification(s, notif.id));
+          }}
         />
       )}
 

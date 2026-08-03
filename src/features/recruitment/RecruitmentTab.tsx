@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import type { Facility, GameState } from "../../types/game";
 import {
   acceptApplicant,
@@ -16,9 +16,11 @@ type ActionKind = "accept" | "reject" | "hold" | "release_hold";
 interface Props {
   state: GameState;
   onStateChange: Dispatch<SetStateAction<GameState>>;
+  initialApplicantId?: string | null;
+  onInitialApplicantConsumed?: () => void;
 }
 
-export default function RecruitmentTab({ state, onStateChange }: Props) {
+export default function RecruitmentTab({ state, onStateChange, initialApplicantId, onInitialApplicantConsumed }: Props) {
   const facility = state.facilities["facility-recruitment"] as Facility | undefined;
   const status = facility?.status ?? "unbuilt";
 
@@ -52,12 +54,17 @@ export default function RecruitmentTab({ state, onStateChange }: Props) {
     );
   }
 
-  return <ActiveRecruitmentTab state={state} onStateChange={onStateChange} />;
+  return <ActiveRecruitmentTab state={state} onStateChange={onStateChange} initialApplicantId={initialApplicantId} onInitialApplicantConsumed={onInitialApplicantConsumed} />;
 }
 
-function ActiveRecruitmentTab({ state, onStateChange }: Props) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+function ActiveRecruitmentTab({ state, onStateChange, initialApplicantId, onInitialApplicantConsumed }: Props) {
+  const [selectedId, setSelectedId] = useState<string | null>(initialApplicantId ?? null);
   const [pendingAction, setPendingAction] = useState<{ kind: ActionKind; id: string } | null>(null);
+
+  useEffect(() => {
+    if (initialApplicantId) onInitialApplicantConsumed?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const applicants = state.recruitment.applicants;
   const selectedApplicant = selectedId
