@@ -1,6 +1,6 @@
 # RECRUITMENT EVENT SYSTEM GUIDE
 
-현재 구현 기준 (0019-I).
+현재 구현 기준 (0020-C).
 
 ## 핵심 원칙
 
@@ -49,9 +49,9 @@
 3. 선택된 이벤트 규칙에 맞는 지원자 생성 (1명 또는 2명)
 4. 수용량 제한 내에서 지원자를 `recruitment.applicants`에 추가
 
-### 이벤트 풀 (15종)
+### 이벤트 풀 (26종)
 
-#### 기본 이벤트 (총 가중치: 40, ~56%)
+#### 기본 이벤트 (총 가중치: 40, ~37%)
 
 | id | name | weight | 비고 |
 |---|---|---|---|
@@ -61,7 +61,7 @@
 | `re-stable-life` | 안정적인 소속을 원하는 모험가 | 8 | minAge: 20 |
 | `re-quiet-proof` | 조용히 실력을 증명하고 싶은 지원자 | 6 | |
 
-#### 특별 이벤트 (총 가중치: 32, ~44%)
+#### 특별 이벤트 — 기존 (총 가중치: 32, ~30%)
 
 | id | name | weight | 비고 |
 |---|---|---|---|
@@ -76,6 +76,22 @@
 | `re-orphan` | 고아 출신 | 2 | maxAge: 28 |
 | `re-royal-recommendation` | 왕실 추천장 | 1 | |
 
+#### 신규 이벤트 — 0020-C (총 가중치: 35, ~33%)
+
+| id | name | weight | 분위기 |
+|---|---|---|---|
+| `re-rival` | 라이벌 | 2 | mystery |
+| `re-mentor` | 스승의 귀환 | 1 | veteran |
+| `re-apprentice` | 스승을 잃은 제자 | 2 | veteran |
+| `re-lover` | 연인을 따라 | 2 | bond |
+| `re-noble-family` | 귀족 가문 | 1 | royal |
+| `re-fallen-knight` | 몰락한 기사 | 2 | shadow |
+| `re-retired-adventurer` | 은퇴한 모험가 | 3 | veteran |
+| `re-famous-party` | 유명 파티 해산 | 1 | — |
+| `re-guild-survivor` | 멸망한 길드 생존자 | 2 | shadow |
+| `re-young-prodigy` | 어린 천재 | 1 | bright |
+| `re-late-starter` | 늦깎이 모험가 | 3 | — |
+
 ---
 
 ## 데이터 구조
@@ -89,14 +105,16 @@ interface RecruitmentEventDefinition {
   id: EntityId;
   type: RecruitmentEventType;
   name: string;
-  background: string;       // 가입 배경 (UI에 표시)
-  currentSituation: string; // 현재 상황 (UI에 표시)
+  background: string;        // 가입 배경 (UI에 표시)
+  currentSituation: string;  // 현재 상황 (UI에 표시)
   advantageText: string;
   disadvantageText: string;
   weight: number;
   applicantCount: number;
+  arrivalScene?: string;     // 0020-C: 등장 연출 문장 (UI 최상단 표시)
   recommenderText?: string;  // 있는 이벤트만 — UI에 추천인 표시
   specialNote?: string;      // 있는 이벤트만 — UI에 특별 사정 표시
+  followUpHints?: string[];  // 0020-C: 후속 이벤트 힌트 (미구현 구조 예약)
   conditions?: {
     minAge?: number;
     maxAge?: number;
@@ -164,13 +182,29 @@ recruitmentEventId?: string;  // 입단 시 이벤트 ID 보존 (향후 연대�
 이벤트에 따른 배지나 등급 표시 없음.
 모든 카드 동일 스타일. 이름·직업·종족·나이·이벤트 이름·상태·만료일 표시.
 
-### 지원자 상세
+### 지원자 상세 (0020-C 리뉴얼)
 
-모든 지원자가 동일한 레이아웃을 사용:
+스토리 중심 레이아웃. 이벤트 타입에 따라 분위기 CSS 클래스가 루트에 적용된다.
 
-- **상단**: 초상화 + 이름·종족·성별·나이·직업·성격 + 이벤트 제목·가입 배경·현재 상황·지원 동기·첫인상
-- **중단**: 장점 / 단점 (2열 비교), 추천인·함께 지원·특별 사정 (해당 필드 있는 경우만)
-- **하단**: 능력치, 승인·보류·반려 버튼
+1. **등장 연출** (`rd-arrival-scene`) — `arrivalScene` 필드가 있는 이벤트만 표시. 이탤릭 연출 문장.
+2. **히어로 섹션** (`rd-hero`) — 대형 초상화 + 이름(대형)·직업·종족·성별·나이·성격·이벤트 배지
+3. **스토리 카드 그리드** (`rd-story-grid`) — 가입 배경·현재 상황·지원 동기·첫인상 (2열 카드)
+4. **장점·단점** (`rd-adv-dis`) + 추천인·함께 지원·특별 사정 (해당 필드 있는 경우만)
+5. **능력치** (`rd-stats-section`)
+6. **액션 버튼** — 승인·보류·반려 (보류 상태 시 보류 해제)
+
+#### 분위기 클래스 (atmosphere)
+
+| 분위기 | CSS 클래스 | 적용 이벤트 |
+|---|---|---|
+| royal | `rda-royal` | royal_recommendation, noble_family |
+| bond | `rda-bond` | siblings, lover |
+| shadow | `rda-shadow` | fallen_knight, guild_survivor, fallen_noble, debt_motivated |
+| mystery | `rda-mystery` | suspicious_applicant, rival |
+| bright | `rda-bright` | young_prodigy |
+| veteran | `rda-veteran` | retired_knight, retired_adventurer, mentor |
+
+분위기 클래스는 `rd-arrival-scene`의 accent color와 텍스트 색상을 변경한다.
 
 ---
 
@@ -200,8 +234,7 @@ recruitmentEventId?: string;  // 입단 시 이벤트 ID 보존 (향후 연대�
 - 지원자 간 실제 관계 수치
 - 기존 모험가 지인 추천 이벤트
 - 이벤트 연계 전용 의뢰
-- 전직 용병, 멸망한 길드의 생존자 등 추가 이벤트
 - 개인 연대기·장기 스토리 분기
 - 정체 공개·재등장 이벤트
-- 접수대 방문 연출
+- `followUpHints` 실제 후속 이벤트 트리거
 - 시설 자동화 연동

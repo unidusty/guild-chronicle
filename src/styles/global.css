@@ -815,6 +815,33 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* Stats section */
 .rd-stats-section { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
 
+/* ── Story renewal (0020-C): arrival scene, hero, story grid, atmosphere ── */
+.rd-arrival-scene { padding: calc(12px * var(--ui-scale)) calc(16px * var(--ui-scale)); background: rgba(8,16,12,.7); border: 1px solid #1e3028; border-left: 3px solid #2a5040; }
+.rd-arrival-text { margin: 0; font-size: var(--font-small); color: #7a9a8c; line-height: 1.8; font-style: italic; }
+.rd-hero { display: flex; gap: calc(20px * var(--ui-scale)); align-items: flex-start; }
+.rd-portrait-lg { width: calc(120px * var(--ui-scale)); height: calc(180px * var(--ui-scale)); background: #0c1410; border: 1px solid #1e2c20; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+.rd-hero-info { display: flex; flex-direction: column; gap: calc(6px * var(--ui-scale)); min-width: 0; }
+.rd-name-lg { margin: 0; font-family: Georgia, serif; font-size: calc(24px * var(--ui-scale)); color: #d0e8d4; font-weight: 500; letter-spacing: .02em; }
+.rd-class-lg { margin: 0; font-size: var(--font-body); color: #9a8855; letter-spacing: .06em; }
+.rd-event-badge { display: inline-block; font-size: var(--font-tiny); color: #c0902a; border: 1px solid #4a3618; background: rgba(50,32,8,.45); padding: 2px 8px; margin-top: calc(4px * var(--ui-scale)); white-space: nowrap; }
+.rd-story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: calc(8px * var(--ui-scale)); }
+.rd-story-card { display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(12px * var(--ui-scale)); background: rgba(8,16,12,.5); border: 1px solid #1a2820; }
+.rd-story-label { margin: 0; font-size: var(--font-tiny); color: #4a5a50; letter-spacing: .12em; }
+.rd-story-text { margin: 0; font-size: var(--font-small); color: #8a9a8c; line-height: 1.7; }
+/* Atmosphere variants — accent on arrival scene */
+.rda-royal .rd-arrival-scene { border-left-color: #7a6090; background: rgba(20,12,30,.7); }
+.rda-royal .rd-arrival-text { color: #9a80b8; }
+.rda-bond .rd-arrival-scene { border-left-color: #8a5060; background: rgba(24,10,16,.7); }
+.rda-bond .rd-arrival-text { color: #9a7080; }
+.rda-shadow .rd-arrival-scene { border-left-color: #5a3030; background: rgba(16,6,6,.7); }
+.rda-shadow .rd-arrival-text { color: #7a6060; }
+.rda-mystery .rd-arrival-scene { border-left-color: #3a5070; background: rgba(6,12,20,.7); }
+.rda-mystery .rd-arrival-text { color: #7a8898; }
+.rda-bright .rd-arrival-scene { border-left-color: #5a8040; background: rgba(10,20,8,.7); }
+.rda-bright .rd-arrival-text { color: #8aaa70; }
+.rda-veteran .rd-arrival-scene { border-left-color: #506070; background: rgba(8,14,18,.7); }
+.rda-veteran .rd-arrival-text { color: #7a8898; }
+
 /* Recruitment event section (detail) */
 .rec-event-section { display: flex; flex-direction: column; gap: calc(7px * var(--ui-scale)); border-left: 2px solid #4a3618; padding-left: calc(14px * var(--ui-scale)); }
 .rec-event-section-title { margin: 0; font-size: var(--font-tiny); color: #8a6020; letter-spacing: .1em; }

@@ -293,6 +293,17 @@ function generateEventApplicants(
     "re-suspicious":          "출신 불명의 지원자",
     "re-famous-apprentice":   "유명 모험가의 제자",
     "re-orphan":              "고아 출신",
+    "re-rival":               "라이벌이 찾아왔습니다",
+    "re-mentor":              "베테랑 모험가의 복귀",
+    "re-apprentice":          "스승을 잃은 제자",
+    "re-lover":               "연인을 따라 지원한 모험가",
+    "re-noble-family":        "귀족 가문 출신의 지원자",
+    "re-fallen-knight":       "몰락한 기사",
+    "re-retired-adventurer":  "은퇴 모험가의 복귀",
+    "re-famous-party":        "유명 파티 출신 모험가",
+    "re-guild-survivor":      "멸망한 길드의 생존자",
+    "re-young-prodigy":       "어린 천재 지원자",
+    "re-late-starter":        "늦깎이 모험가",
   };
 
   return [{

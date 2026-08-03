@@ -508,7 +508,18 @@ export type RecruitmentEventType =
   | "new_start"
   | "first_guild"
   | "stable_membership"
-  | "quiet_proof";
+  | "quiet_proof"
+  | "rival"
+  | "mentor"
+  | "apprentice"
+  | "lover"
+  | "noble_family"
+  | "fallen_knight"
+  | "retired_adventurer"
+  | "famous_party_disbandment"
+  | "guild_survivor"
+  | "young_prodigy"
+  | "late_starter";
 
 export interface RecruitmentEventDefinition {
   id: EntityId;
@@ -522,6 +533,8 @@ export interface RecruitmentEventDefinition {
   applicantCount: number;
   recommenderText?: string;
   specialNote?: string;
+  arrivalScene?: string;
+  followUpHints?: string[];
   conditions?: {
     minAge?: number;
     maxAge?: number;

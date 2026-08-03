@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0020-B — 길드 명성 활용 시스템**
+**0020-C — 가입 신청 스토리 확장 및 연출 리뉴얼**
 
 ## 완료
 
@@ -327,14 +327,24 @@
   - `gameState.ts` — `pendingReputationEvents: []` 초기값 추가, 명성 조건 퀘스트 3개 추가
   - 문서: `GUILD_REPUTATION_SYSTEM_GUIDE.md` 업데이트, `GUILD_REPUTATION_SYSTEM_BRIEFING.md` 업데이트
 
+- 가입 신청 스토리 확장 및 연출 리뉴얼 (0020-C)
+  - `RecruitmentEventType` — 11개 신규 이벤트 타입 추가 (rival, mentor, apprentice, lover, noble_family, fallen_knight, retired_adventurer, famous_party_disbandment, guild_survivor, young_prodigy, late_starter)
+  - `RecruitmentEventDefinition` — `arrivalScene?: string` / `followUpHints?: string[]` 필드 추가
+  - `recruitmentEventData.ts` — 11개 신규 이벤트 데이터 추가 (arrivalScene·background·currentSituation·advantageText·disadvantageText·weight 완비)
+  - `recruitment.ts` — 11개 신규 이벤트 `originNotes` 추가
+  - `labels.ts` — `recruitmentEventTypeLabels` 11개 신규 항목 추가
+  - `inboxSelectors.ts` — `RECRUITMENT_EVENT_NAMES` 11개 신규 항목 추가
+  - `ApplicantDetail.tsx` — 전면 리뉴얼: 등장 연출 → 대형 초상화+신원 히어로 → 스토리 카드 그리드 → 장단점 → 능력치 → 액션
+  - `ATMOSPHERE_MAP` — 이벤트 타입 → 분위기 클래스 매핑 (royal·bond·shadow·mystery·bright·veteran)
+  - CSS: `.rd-arrival-scene` / `.rd-arrival-text` / `.rd-hero` / `.rd-portrait-lg` / `.rd-hero-info` / `.rd-name-lg` / `.rd-class-lg` / `.rd-event-badge` / `.rd-story-grid` / `.rd-story-card` / `.rd-story-label` / `.rd-story-text` / `.rda-*` 분위기 클래스 6종
+
 ## 다음 작업
 
-**0020-C 이후 — 시스템 확장 (계속)**
+**0021 이후 — 시스템 확장 (계속)**
 - Quest Director 선택지 구조 확장 (선택 효과 → 기간·위험·성공률 영향)
 - 재정 확장 (실패 패널티, 직원 급여, 시설 수익 등)
 - 길드 직접 발주 의뢰
 - 세계 이벤트 추가 종류 (타 길드 경쟁, 도시·계절·지역재난 이벤트)
-- 가입 신청 시스템 확장 (소꿉친구, 스승과 제자 등 추가 이벤트)
 
 **0021 이후 — 모험가 성장 및 관계**
 

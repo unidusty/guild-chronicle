@@ -1,4 +1,4 @@
-import type { EntityId, RecruitmentApplicant, Stats } from "../../types/game";
+import type { EntityId, RecruitmentApplicant, RecruitmentEventType, Stats } from "../../types/game";
 import { jobLabels, raceLabels, genderLabels, statLabels } from "../../game/constants/labels";
 import { RECRUITMENT_EVENT_DEFINITIONS } from "../../data/recruitmentEventData";
 import { MAX_STAT, STAT_TEMPLATES } from "../../data/recruitmentData";
@@ -11,6 +11,28 @@ interface Props {
   onReject: () => void;
   onHold: () => void;
   onReleaseHold: () => void;
+}
+
+const ATMOSPHERE_MAP: Partial<Record<RecruitmentEventType, string>> = {
+  royal_recommendation:        "royal",
+  noble_family:                "royal",
+  siblings:                    "bond",
+  lover:                       "bond",
+  fallen_knight:               "shadow",
+  guild_survivor:              "shadow",
+  fallen_noble:                "shadow",
+  debt_motivated:              "shadow",
+  suspicious_applicant:        "mystery",
+  rival:                       "mystery",
+  young_prodigy:               "bright",
+  retired_knight:              "veteran",
+  retired_adventurer:          "veteran",
+  mentor:                      "veteran",
+};
+
+function getAtmosphere(type: RecruitmentEventType | undefined): string | null {
+  if (!type) return null;
+  return ATMOSPHERE_MAP[type] ?? null;
 }
 
 export default function ApplicantDetail({ applicant, allApplicants, onAccept, onReject, onHold, onReleaseHold }: Props) {
@@ -33,59 +55,59 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
     .map((rid) => allApplicants.find((a) => a.id === rid)?.name)
     .filter(Boolean) as string[] ?? [];
 
-  return (
-    <div className="rec-detail-pane">
+  const atmosphere = getAtmosphere(ctx?.eventType);
 
-      {/* ── 상단: 초상화 + 신원·가입 신청 정보 ──────────────────── */}
-      <div className="rd-top">
-        <div className="rd-portrait">
+  return (
+    <div className={`rec-detail-pane${atmosphere ? ` rda-${atmosphere}` : ""}`}>
+
+      {/* ── 등장 연출 ──────────────────────────────────────────────── */}
+      {def?.arrivalScene && (
+        <div className="rd-arrival-scene">
+          <p className="rd-arrival-text">{def.arrivalScene}</p>
+        </div>
+      )}
+
+      {/* ── 히어로: 대형 초상화 + 신원 ──────────────────────────────── */}
+      <div className="rd-hero">
+        <div className="rd-portrait-lg">
           {applicant.portrait
             ? <img className="rd-portrait-img" src={applicant.portrait} alt={applicant.name} />
             : <span className="rd-portrait-initials">{initials}</span>}
         </div>
-
-        <div className="rd-info">
-          {/* 신원 */}
-          <div className="rd-identity">
-            <div className="rd-name-row">
-              <p className="rd-name">{applicant.name}</p>
-            </div>
-            <p className="rd-meta">{raceLabels[applicant.race]} · {genderLabels[applicant.gender]} · {applicant.age}세</p>
-            <p className="rd-class">{jobLabels[applicant.classId] ?? applicant.classId}</p>
-            <p className="rd-personality">{applicant.personalityLabel}</p>
-          </div>
-
-          {/* 가입 신청 배경 */}
-          <div className="rd-bg">
-            <p className="rd-section-label">가입 신청</p>
-            {def && (
-              <p className="rd-event-title">{def.name}</p>
-            )}
-            {def?.background && (
-              <div className="rd-field">
-                <span className="rd-field-label">가입 배경</span>
-                <span className="rd-field-value">{def.background}</span>
-              </div>
-            )}
-            {def?.currentSituation && (
-              <div className="rd-field">
-                <span className="rd-field-label">현재 상황</span>
-                <span className="rd-field-value">{def.currentSituation}</span>
-              </div>
-            )}
-            <div className="rd-field">
-              <span className="rd-field-label">지원 동기</span>
-              <span className="rd-field-value">{applicant.motivation}</span>
-            </div>
-            <div className="rd-field">
-              <span className="rd-field-label">첫인상</span>
-              <span className="rd-field-value">{applicant.firstImpression}</span>
-            </div>
-          </div>
+        <div className="rd-hero-info">
+          <p className="rd-name-lg">{applicant.name}</p>
+          <p className="rd-class-lg">{jobLabels[applicant.classId] ?? applicant.classId}</p>
+          <p className="rd-meta">{raceLabels[applicant.race]} · {genderLabels[applicant.gender]} · {applicant.age}세</p>
+          <p className="rd-personality">{applicant.personalityLabel}</p>
+          {def && <span className="rd-event-badge">{def.name}</span>}
         </div>
       </div>
 
-      {/* ── 중단: 장단점 + 특별 정보 ────────────────────────────── */}
+      {/* ── 스토리 카드 ──────────────────────────────────────────────── */}
+      <div className="rd-story-grid">
+        {def?.background && (
+          <div className="rd-story-card">
+            <p className="rd-story-label">가입 배경</p>
+            <p className="rd-story-text">{def.background}</p>
+          </div>
+        )}
+        {def?.currentSituation && (
+          <div className="rd-story-card">
+            <p className="rd-story-label">현재 상황</p>
+            <p className="rd-story-text">{def.currentSituation}</p>
+          </div>
+        )}
+        <div className="rd-story-card">
+          <p className="rd-story-label">지원 동기</p>
+          <p className="rd-story-text">{applicant.motivation}</p>
+        </div>
+        <div className="rd-story-card">
+          <p className="rd-story-label">첫인상</p>
+          <p className="rd-story-text">{applicant.firstImpression}</p>
+        </div>
+      </div>
+
+      {/* ── 장점 / 단점 ──────────────────────────────────────────────── */}
       {def && (
         <div className="rd-mid">
           <div className="rd-adv-dis">
@@ -124,7 +146,7 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
         </div>
       )}
 
-      {/* ── 하단: 능력치 ─────────────────────────────────────────── */}
+      {/* ── 능력치 ─────────────────────────────────────────────────── */}
       <div className="rd-stats-section">
         <p className="rd-section-label">능력치</p>
         <div className="rec-detail-stats">
@@ -144,7 +166,7 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
         </div>
       </div>
 
-      {/* ── 승인·보류·반려 버튼 ──────────────────────────────────── */}
+      {/* ── 승인·보류·반려 버튼 ────────────────────────────────────── */}
       <div className="rec-action-bar">
         {isHeld ? (
           <>

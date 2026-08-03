@@ -148,6 +148,17 @@ export const recruitmentEventTypeLabels: Record<RecruitmentEventType, string> = 
   first_guild:                 "첫 길드를 찾는 초보",
   stable_membership:           "안정적인 소속",
   quiet_proof:                 "조용히 실력을 증명하고 싶은 지원자",
+  rival:                       "라이벌",
+  mentor:                      "스승의 귀환",
+  apprentice:                  "스승을 잃은 제자",
+  lover:                       "연인을 따라",
+  noble_family:                "귀족 가문",
+  fallen_knight:               "몰락한 기사",
+  retired_adventurer:          "은퇴한 모험가",
+  famous_party_disbandment:    "유명 파티 해산",
+  guild_survivor:              "멸망한 길드 생존자",
+  young_prodigy:               "어린 천재",
+  late_starter:                "늦깎이 모험가",
 };
 
 export const worldEventTypeLabels: Record<WorldEventType, string> = {
