@@ -1,5 +1,6 @@
 import type { GameState, SaleTransaction } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
+import { applyFinanceIncome } from "./finance";
 
 export function sellWarehouseItem(state: GameState, itemId: string, quantity: number): GameState {
   const item = LOOT_TABLE[itemId];
@@ -32,14 +33,19 @@ export function sellWarehouseItem(state: GameState, itemId: string, quantity: nu
     totalPrice,
   };
 
-  const prevGold = state.guild.gold;
-  const newGold = prevGold + totalPrice;
-  if (!Number.isFinite(newGold) || newGold < 0) return state;
+  if (!Number.isFinite(state.guild.gold + totalPrice) || state.guild.gold + totalPrice < 0) return state;
 
-  return {
+  const midState: GameState = {
     ...state,
-    guild: { ...state.guild, gold: newGold },
     warehouse: newWarehouse,
     saleTransactions: [transaction, ...state.saleTransactions],
   };
+
+  return applyFinanceIncome(midState, {
+    type: "warehouse_sale",
+    amount: totalPrice,
+    description: `창고 판매 — ${item.name} ×${quantity}`,
+    sourceType: "sale_transaction",
+    sourceId: id,
+  });
 }

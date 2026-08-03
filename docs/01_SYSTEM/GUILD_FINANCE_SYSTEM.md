@@ -1,6 +1,6 @@
 # GUILD FINANCE SYSTEM
 
-Guild Chronicle 길드 재정 시스템 설계 기준서. (0019-A)
+Guild Chronicle 길드 재정 시스템 설계 기준서. (0019-B)
 
 ---
 
@@ -107,12 +107,52 @@ guild.gold 순변화 = guildFeeGold - lootPurchaseTotal
 | `warehouse` | `Record<EntityId, number>` | 길드 창고 아이템 수량 |
 | `saleTransactions` | `SaleTransaction[]` | 창고 판매 기록 |
 | `returnReports` | `ReturnReport[]` | 정산 대기 귀환 보고 목록 |
+| `financeTransactions` | `FinanceTransaction[]` | 골드 변동 전체 거래 내역 (최신 우선) |
+
+---
+
+## FinanceTransaction 구조 (0019-B)
+
+모든 골드 변동을 `FinanceTransaction` 하나로 원자적으로 기록한다.
+
+```ts
+interface FinanceTransaction {
+  id: EntityId;
+  date: GameDate;
+  type: FinanceTransactionType;      // quest_commission | warehouse_sale | loot_purchase | facility_construction | facility_upgrade
+  direction: "income" | "expense";
+  amount: number;                    // 항상 양수
+  balanceBefore: number;
+  balanceAfter: number;
+  description: string;
+  sourceType?: string;               // 중복 방지용 출처 타입
+  sourceId?: string;                 // 중복 방지용 출처 ID
+}
+```
+
+### 원자성 규칙
+
+`applyFinanceIncome` / `applyFinanceExpense`는 `guild.gold` 갱신과 `financeTransactions` 추가를 단일 반환값으로 처리한다. 중간 상태가 존재하지 않는다.
+
+### 중복 방지
+
+같은 `(sourceType, sourceId, type)` 조합의 거래가 이미 존재하면 추가하지 않는다.
+
+### sourceId 규칙
+
+| 거래 유형 | sourceType | sourceId |
+|-----------|-----------|---------|
+| 의뢰 수수료 | `"return_report"` | `report.id` |
+| 전리품 구매 | `"return_report_loot"` | `report.id` |
+| 창고 판매 | `"sale_transaction"` | `transaction.id` |
+| 시설 건설 | `"facility"` | `"${facilityId}:lv1"` |
+| 시설 업그레이드 | `"facility"` | `"${facilityId}:lv${n}"` |
 
 ---
 
 ## 향후 설계 방향
 
-### 0019 (다음)
+### 0020 이후
 - 시설 유지비: 매일 업무 종료 시 자동 차감
 - 의뢰 실패 패널티: 결과 등급에 따른 보수 삭감
 - 파티 보수 내부 분배 (파티원 개인 지갑 도입)
@@ -131,4 +171,5 @@ guild.gold 순변화 = guildFeeGold - lootPurchaseTotal
 
 - 정산 시스템 → `docs/01_SYSTEM/QUEST_SETTLEMENT_SYSTEM.md`
 - 전리품 데이터 → `docs/02_DATABASE/LOOT_DATABASE.md`
+- 재정 데이터베이스 → `docs/02_DATABASE/FINANCE_DATABASE.md`
 - 전투 시스템 → `docs/01_SYSTEM/BATTLE_SYSTEM_GUIDE.md`

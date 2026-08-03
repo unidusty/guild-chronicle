@@ -332,6 +332,40 @@ export interface SettlementResult {
   netGuildGoldChange: number;
 }
 
+// ── Finance ───────────────────────────────────────────────────────────────────
+
+export type FinanceTransactionDirection = "income" | "expense";
+
+export type FinanceTransactionType =
+  | "quest_commission"
+  | "warehouse_sale"
+  | "loot_purchase"
+  | "facility_construction"
+  | "facility_upgrade";
+
+export interface FinanceTransaction {
+  id: EntityId;
+  date: GameDate;
+  type: FinanceTransactionType;
+  direction: FinanceTransactionDirection;
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  description: string;
+  sourceType?: string;
+  sourceId?: string;
+}
+
+export interface FinanceSummary {
+  currentGold: number;
+  todayIncome: number;
+  todayExpense: number;
+  todayNet: number;
+  totalIncome: number;
+  totalExpense: number;
+  recentTransactions: FinanceTransaction[];
+}
+
 export type DailyReportItemKind =
   | "quest_completed"
   | "quest_returned"
@@ -474,5 +508,6 @@ export interface GameState {
   returnReports: ReturnReport[];
   warehouse: Record<EntityId, number>;
   saleTransactions: SaleTransaction[];
+  financeTransactions: FinanceTransaction[];
   recruitment: RecruitmentState;
 }

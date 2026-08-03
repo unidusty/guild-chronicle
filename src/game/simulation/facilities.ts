@@ -1,5 +1,6 @@
 import type { GameState } from "../../types/game";
 import { FACILITY_DEFS } from "../../data/facilityData";
+import { applyFinanceExpense } from "./finance";
 
 export function startBuildFacility(state: GameState, facilityId: string): GameState {
   const facility = state.facilities[facilityId];
@@ -11,9 +12,8 @@ export function startBuildFacility(state: GameState, facilityId: string): GameSt
   const levelDef = def.levels[0];
   if (state.guild.gold < levelDef.cost) return state;
 
-  return {
+  const midState: GameState = {
     ...state,
-    guild: { ...state.guild, gold: state.guild.gold - levelDef.cost },
     facilities: {
       ...state.facilities,
       [facilityId]: {
@@ -26,6 +26,14 @@ export function startBuildFacility(state: GameState, facilityId: string): GameSt
       },
     },
   };
+
+  return applyFinanceExpense(midState, {
+    type: "facility_construction",
+    amount: levelDef.cost,
+    description: `시설 건설 — ${facility.name} Lv.1`,
+    sourceType: "facility",
+    sourceId: `${facilityId}:lv1`,
+  });
 }
 
 export function startUpgradeFacility(state: GameState, facilityId: string): GameState {
@@ -41,21 +49,30 @@ export function startUpgradeFacility(state: GameState, facilityId: string): Game
 
   if (state.guild.gold < nextDef.cost) return state;
 
-  return {
+  const targetLevel = facility.level + 1;
+
+  const midState: GameState = {
     ...state,
-    guild: { ...state.guild, gold: state.guild.gold - nextDef.cost },
     facilities: {
       ...state.facilities,
       [facilityId]: {
         ...facility,
         status: "upgrading" as const,
-        targetLevel: facility.level + 1,
+        targetLevel,
         constructionProgressDays: 0,
         constructionDurationDays: nextDef.constructionDays,
         constructionStartedDay: state.currentDate,
       },
     },
   };
+
+  return applyFinanceExpense(midState, {
+    type: "facility_upgrade",
+    amount: nextDef.cost,
+    description: `시설 업그레이드 — ${facility.name} Lv.${targetLevel}`,
+    sourceType: "facility",
+    sourceId: `${facilityId}:lv${targetLevel}`,
+  });
 }
 
 export function advanceFacilityConstruction(

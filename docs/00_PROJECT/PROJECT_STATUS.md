@@ -174,9 +174,27 @@
   - CSS: `.rrm-*` 클래스 군 추가 (overlay·modal·header·body·section·settlement·loot·footer)
   - 설계 문서: `docs/01_SYSTEM/GUILD_FINANCE_SYSTEM.md`, `docs/01_SYSTEM/QUEST_SETTLEMENT_SYSTEM.md`, `docs/02_DATABASE/LOOT_DATABASE.md`
 
+- 길드 재정 시스템 (0019-B)
+  - `FinanceTransaction` 타입 — 골드 변동 원자 기록 (type·direction·amount·balanceBefore·balanceAfter·sourceType·sourceId)
+  - `FinanceTransactionType` — quest_commission / warehouse_sale / loot_purchase / facility_construction / facility_upgrade
+  - `FinanceTransactionDirection` — income / expense
+  - `FinanceSummary` — 오늘 수입/지출/순익 + 누적 합계 + 최근 30건 (GameState 필드 없음, selector 계산)
+  - `GameState.financeTransactions: FinanceTransaction[]` — 최신 우선 배열
+  - `src/game/simulation/finance.ts` — `applyFinanceIncome` / `applyFinanceExpense` / `getFinanceSummary`
+  - 중복 방지 — sourceType + sourceId + type 트리플 검사
+  - `returnReport.ts` — 사전 검증 추가, `applyFinanceIncome`(quest_commission) + `applyFinanceExpense`(loot_purchase) 연동
+  - `warehouse.ts` — `applyFinanceIncome`(warehouse_sale) 연동
+  - `facilities.ts` — `applyFinanceExpense`(facility_construction / facility_upgrade) 연동
+  - `labels.ts` — `financeTransactionTypeLabels` / `financeDirectionLabels` 추가
+  - `src/features/finance/FinanceTab.tsx` — 요약 카드 4개 + 거래 내역 테이블
+  - `GuildHallPage` — "재정" 탭 추가 (4번째 탭)
+  - `ReturnReportModal` — canAfford 검사 + 골드 부족 시 정산 완료 버튼 비활성화
+  - CSS: `--font-xsmall` `:root` 추가, `.finance-*` 클래스 군 추가
+  - 설계 문서: `docs/01_SYSTEM/GUILD_FINANCE_SYSTEM.md`, `docs/02_DATABASE/FINANCE_DATABASE.md` 추가
+
 ## 다음 작업
 
-**0019-B 이후 — 길드 재정 및 세계 이벤트 (예정)**
+**0020 이후 — 세계 이벤트, 명성 시스템 (예정)**
 
 
 

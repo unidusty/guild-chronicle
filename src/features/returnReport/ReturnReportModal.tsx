@@ -24,8 +24,10 @@ export default function ReturnReportModal({ report, state, onClose, onSettle }: 
   }
 
   const settlement = calcSettlement(report, [...selectedIds]);
+  const canAfford = state.guild.gold + settlement.guildFeeGold >= settlement.lootPurchaseTotal;
 
   function handleSettle() {
+    if (!canAfford) return;
     playSelect();
     const newState = finalizeSettlement(state, report.id, [...selectedIds]);
     onSettle(newState);
@@ -123,7 +125,9 @@ export default function ReturnReportModal({ report, state, onClose, onSettle }: 
           </div>
           <div className="rrm-footer-actions">
             <button className="rrm-cancel" onClick={onClose}>취소</button>
-            <button className="rrm-confirm" onClick={handleSettle}>정산 완료</button>
+            <button className="rrm-confirm" onClick={handleSettle} disabled={!canAfford}>
+              {canAfford ? "정산 완료" : "골드 부족"}
+            </button>
           </div>
         </footer>
       </div>

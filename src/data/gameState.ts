@@ -460,6 +460,7 @@ const _rawState: GameState = {
   returnReports: [],
   warehouse: {},
   saleTransactions: [],
+  financeTransactions: [],
   recruitment: {
     applicants: [],
     history: [],

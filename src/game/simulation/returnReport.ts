@@ -12,6 +12,7 @@ import type {
   SettlementResult,
 } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
+import { applyFinanceIncome, applyFinanceExpense } from "./finance";
 
 export const GUILD_FEE_RATE = 0.10;
 
@@ -131,15 +132,39 @@ export function finalizeSettlement(
   // Remove ReturnReport
   const returnReports = state.returnReports.filter((r) => r.id !== reportId);
 
-  // Update guild gold
-  const newGold = state.guild.gold + settlement.netGuildGoldChange;
+  // Pre-validate: income first, then check expense coverage
+  if (state.guild.gold + settlement.guildFeeGold < settlement.lootPurchaseTotal) {
+    return state;
+  }
 
-  return {
+  // Build intermediate state with non-gold changes applied
+  const midState: GameState = {
     ...state,
-    guild: { ...state.guild, gold: newGold },
     parties,
     adventurers,
     warehouse,
     returnReports,
   };
+
+  // Apply income first (quest commission)
+  const afterIncome = applyFinanceIncome(midState, {
+    type: "quest_commission",
+    amount: settlement.guildFeeGold,
+    description: `의뢰 수수료 — ${report.questTitle}`,
+    sourceType: "return_report",
+    sourceId: report.id,
+  });
+
+  // Apply loot purchase expense if any
+  if (settlement.lootPurchaseTotal > 0) {
+    return applyFinanceExpense(afterIncome, {
+      type: "loot_purchase",
+      amount: settlement.lootPurchaseTotal,
+      description: `전리품 구매 — ${report.questTitle}`,
+      sourceType: "return_report_loot",
+      sourceId: report.id,
+    });
+  }
+
+  return afterIncome;
 }

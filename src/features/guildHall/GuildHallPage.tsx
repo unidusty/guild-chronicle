@@ -10,10 +10,11 @@ import {
 import { questStageLabels } from "../../game/constants/labels";
 import FacilitiesPage from "../facilities/FacilitiesPage";
 import RecruitmentTab from "../recruitment/RecruitmentTab";
+import FinanceTab from "../finance/FinanceTab";
 import ReturnReportModal from "../returnReport/ReturnReportModal";
 import { playHover, playSelect } from "../../lib/audio";
 
-type GuildTab = "dashboard" | "facilities" | "recruitment";
+type GuildTab = "dashboard" | "facilities" | "recruitment" | "finance";
 
 interface Props {
   state: GameState;
@@ -100,6 +101,13 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
           {hasRecruitmentRoom && pendingApplicantCount > 0 && (
             <span className="gh-tab-badge">{pendingApplicantCount}</span>
           )}
+        </button>
+        <button
+          className={`gh-tab${tab === "finance" ? " active" : ""}`}
+          onMouseEnter={playHover}
+          onClick={() => handleTabChange("finance")}
+        >
+          재정
         </button>
       </div>
 
@@ -309,6 +317,11 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
       {/* Recruitment tab */}
       {tab === "recruitment" && (
         <RecruitmentTab state={state} onStateChange={onStateChange} />
+      )}
+
+      {/* Finance tab */}
+      {tab === "finance" && (
+        <FinanceTab state={state} />
       )}
 
       {/* Return Report modal */}

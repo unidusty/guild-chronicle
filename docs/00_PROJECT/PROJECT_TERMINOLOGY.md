@@ -225,7 +225,29 @@
 - 길드 수수료: `totalRewardGold × 10%` (`GUILD_FEE_RATE = 0.10`)
 - 파티 지급액: `totalRewardGold - guildFeeGold`
 - 길드 순수입: `guildFeeGold - lootPurchaseTotal`
-- 정산 완료 시 `finalizeSettlement` 호출 → 파티·멤버 `idle` 전환, 골드 반영, 창고 업데이트
+- 정산 완료 시 `finalizeSettlement` 호출 → 파티·멤버 `idle` 전환, `applyFinanceIncome`(quest_commission) + `applyFinanceExpense`(loot_purchase) 적용, 창고 업데이트
+- 골드 부족(`guild.gold + guildFeeGold < lootPurchaseTotal`) 시 정산 버튼 비활성화
+
+---
+
+## 재정 거래 (`FinanceTransaction`)
+
+**소스:** `src/game/simulation/finance.ts`  
+**데이터:** `GameState.financeTransactions: FinanceTransaction[]` (최신 우선)
+
+모든 골드 변동은 `FinanceTransaction` 하나로 원자적으로 기록된다. `guild.gold` 변경과 거래 기록이 동일 함수 호출에서 처리된다.
+
+| 필드 | 설명 |
+|------|------|
+| `type` | quest_commission / warehouse_sale / loot_purchase / facility_construction / facility_upgrade |
+| `direction` | income / expense |
+| `amount` | 거래 금액 (항상 양수) |
+| `balanceBefore / balanceAfter` | 거래 전후 잔액 |
+| `sourceType + sourceId` | 중복 방지 트리플 키 (type 포함) |
+
+**중복 방지:** 같은 `(sourceType, sourceId, type)` 트리플이 존재하면 추가하지 않는다.
+
+**UI:** `GuildHallPage` 재정 탭 → `FinanceTab` — 요약 카드 4개 + 거래 내역 테이블
 
 ---
 

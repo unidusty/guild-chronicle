@@ -1,4 +1,4 @@
-import type { Adventurer, AdventurerStatus, Gender, PartyStatus, QuestCategory, QuestResultGrade, QuestStage, QuestStatus, QuestType, Race, Stats } from "../../types/game";
+import type { Adventurer, AdventurerStatus, FinanceTransactionDirection, FinanceTransactionType, Gender, PartyStatus, QuestCategory, QuestResultGrade, QuestStage, QuestStatus, QuestType, Race, Stats } from "../../types/game";
 
 export const raceLabels: Record<Race, string> = {
   human: "인간",
@@ -115,6 +115,19 @@ export const questResultGradeLabels: Record<QuestResultGrade, string> = {
   retreat:        "철수",
   failure:        "실패",
   great_failure:  "대실패",
+};
+
+export const financeTransactionTypeLabels: Record<FinanceTransactionType, string> = {
+  quest_commission:     "의뢰 수수료",
+  warehouse_sale:       "창고 판매",
+  loot_purchase:        "전리품 구매",
+  facility_construction:"시설 건설",
+  facility_upgrade:     "시설 업그레이드",
+};
+
+export const financeDirectionLabels: Record<FinanceTransactionDirection, string> = {
+  income:  "수입",
+  expense: "지출",
 };
 
 export function getBondStageLabel(questCount: number): string {
