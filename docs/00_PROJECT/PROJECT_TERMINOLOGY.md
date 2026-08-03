@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (0019-H) 작성.
+현재 구현 기준 (0019-I) 작성.
 
 ---
 
@@ -145,8 +145,7 @@
 
 ### 가입 신청 이벤트 (RecruitmentEvent)
 
-일일 생성 시 **20% 확률**로 특별 이벤트 지원자가 생성된다.
-이벤트 발생 시 정상 생성을 대체한다.
+모든 지원자는 이벤트 풀에서 선택된 이벤트를 통해 생성된다. 일반/특별 구분 없음.
 
 | 용어 | 설명 |
 |------|------|
@@ -156,7 +155,9 @@
 | `relatedApplicantIds` | 같은 그룹의 다른 지원자 ID 목록 |
 | `originNote` | 연대기 기록용 한 줄 이벤트 설명 |
 
-현재 이벤트 10종: 형제 함께 지원 / 몰락한 귀족 / 라이벌 길드 출신 / 왕실 추천장 / 은퇴 기사 / 수상한 지원자 / 유명 모험가의 제자 / 고아 출신 / 부상 후 재기 / 빚을 갚기 위한 지원
+현재 이벤트 **15종** (기본 5종 + 특별 10종, 전체 가중치 72):
+- 기본 (~56%): 성실한 신입 / 새로운 출발 / 첫 길드를 찾는 초보 / 안정적인 소속 / 조용히 실력을 증명하고 싶은 지원자
+- 특별 (~44%): 형제 함께 지원 / 몰락한 귀족 / 라이벌 길드 출신 / 왕실 추천장 / 은퇴 기사 / 수상한 지원자 / 유명 모험가의 제자 / 고아 출신 / 부상 후 재기 / 빚을 갚기 위한 지원
 
 ---
 
@@ -792,6 +793,9 @@ actualDurationDays = prog.currentDay + 1
 | 오늘의 영입 후보 | 가입 심사 (지원자 목록) | 016-B |
 | `status: "completed"` in quests | 의뢰 완료 후 `state.quests`에서 삭제 | 016-C |
 | `isBasic?: boolean` (RecruitmentEventDefinition) | 폐기 — 단일 이벤트 풀로 통합 | 0019-E |
-| 일반 지원 / 특별 지원 구분 | 폐기 — 이벤트 유무로만 구분 | 0019-E |
+| 일반 지원 / 특별 지원 구분 | 폐기 — 단일 이벤트 풀, 모든 지원자 이벤트 보유 | 0019-I |
+| `RECRUITMENT_EVENT_CHANCE = 0.20` | 폐기 — 100% 이벤트 기반 생성으로 전환 | 0019-I |
+| `RecruitmentEventDefinition.featureText` | 폐기 → `currentSituation`으로 이름 변경 | 0019-I |
+| `RecruitmentEventDefinition.description` | 폐기 → `background`으로 이름 변경 | 0019-I |
 | `reputationTier: number` (Guild) | 폐기 — `getReputationTier(reputation)`으로 실시간 계산 | 0019-F |
 | `이번 주 +2,140 G` (길드 자금 카드 note) | 폐기 — 미납 경고 또는 "일일 운영비 자동 처리" 표시 | 0019-G |

@@ -59,15 +59,18 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
           <div className="rd-bg">
             <p className="rd-section-label">가입 신청</p>
             {def && (
+              <p className="rd-event-title">{def.name}</p>
+            )}
+            {def?.background && (
               <div className="rd-field">
                 <span className="rd-field-label">가입 배경</span>
-                <span className="rd-field-value">{def.name}</span>
+                <span className="rd-field-value">{def.background}</span>
               </div>
             )}
-            {def?.featureText && (
+            {def?.currentSituation && (
               <div className="rd-field">
                 <span className="rd-field-label">현재 상황</span>
-                <span className="rd-field-value">{def.featureText}</span>
+                <span className="rd-field-value">{def.currentSituation}</span>
               </div>
             )}
             <div className="rd-field">

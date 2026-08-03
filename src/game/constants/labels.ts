@@ -143,6 +143,11 @@ export const recruitmentEventTypeLabels: Record<RecruitmentEventType, string> = 
   orphan_background:           "고아 출신",
   injury_comeback:             "부상 후 재기",
   debt_motivated:              "빚을 갚기 위한 지원",
+  basic_newcomer:              "성실한 신입",
+  new_start:                   "새로운 출발",
+  first_guild:                 "첫 길드를 찾는 초보",
+  stable_membership:           "안정적인 소속",
+  quiet_proof:                 "조용히 실력을 증명하고 싶은 지원자",
 };
 
 export const worldEventTypeLabels: Record<WorldEventType, string> = {

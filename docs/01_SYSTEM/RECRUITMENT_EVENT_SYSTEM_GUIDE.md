@@ -1,5 +1,7 @@
 # RECRUITMENT EVENT SYSTEM GUIDE
 
+현재 구현 기준 (0019-I).
+
 ## 핵심 원칙
 
 **Guild Chronicle에는 일반 지원자가 존재하지 않는다.**
@@ -20,6 +22,8 @@
 해당 이벤트의 배경과 조건에 따라 지원자가 구성된다.
 
 사연 없이 생성되는 지원자는 존재하지 않는다.
+이벤트 풀에는 기본 이벤트와 특별 이벤트가 함께 포함되어 있다.
+기본 이벤트는 평범하지만 고유한 배경을 가진 지원자를 생성한다.
 
 ---
 
@@ -41,11 +45,23 @@
 `generateDailyApplicants` 내에서 처리된다.
 
 1. 시설·수용량·일일 확률 기존 조건 판정
-2. 이벤트 풀에서 가중 랜덤으로 이벤트 선택
+2. 이벤트 풀에서 가중 랜덤으로 이벤트 선택 (항상 선택됨, null 없음)
 3. 선택된 이벤트 규칙에 맞는 지원자 생성 (1명 또는 2명)
 4. 수용량 제한 내에서 지원자를 `recruitment.applicants`에 추가
 
-### 현재 이벤트 풀 (10종)
+### 이벤트 풀 (15종)
+
+#### 기본 이벤트 (총 가중치: 40, ~56%)
+
+| id | name | weight | 비고 |
+|---|---|---|---|
+| `re-basic-newcomer` | 성실한 신입 | 10 | |
+| `re-new-start` | 새로운 출발 | 8 | |
+| `re-first-guild` | 첫 길드를 찾는 초보 | 8 | maxAge: 24 |
+| `re-stable-life` | 안정적인 소속을 원하는 모험가 | 8 | minAge: 20 |
+| `re-quiet-proof` | 조용히 실력을 증명하고 싶은 지원자 | 6 | |
+
+#### 특별 이벤트 (총 가중치: 32, ~44%)
 
 | id | name | weight | 비고 |
 |---|---|---|---|
@@ -73,14 +89,14 @@ interface RecruitmentEventDefinition {
   id: EntityId;
   type: RecruitmentEventType;
   name: string;
-  description: string;
-  featureText: string;
+  background: string;       // 가입 배경 (UI에 표시)
+  currentSituation: string; // 현재 상황 (UI에 표시)
   advantageText: string;
   disadvantageText: string;
   weight: number;
   applicantCount: number;
-  recommenderText?: string;   // 있는 이벤트만 — UI에 추천인 표시
-  specialNote?: string;       // 있는 이벤트만 — UI에 특별 사정 표시
+  recommenderText?: string;  // 있는 이벤트만 — UI에 추천인 표시
+  specialNote?: string;      // 있는 이벤트만 — UI에 특별 사정 표시
   conditions?: {
     minAge?: number;
     maxAge?: number;
@@ -107,7 +123,13 @@ interface RecruitmentEventContext {
 ### RecruitmentApplicant 이벤트 필드
 
 ```ts
-recruitmentEvent: RecruitmentEventContext;  // 모든 지원자에 항상 존재
+recruitmentEvent?: RecruitmentEventContext;  // 신규 지원자는 항상 존재
+```
+
+### Adventurer 보존 필드
+
+```ts
+recruitmentEventId?: string;  // 입단 시 이벤트 ID 보존 (향후 연대기·관계 시스템 활용)
 ```
 
 ---
@@ -139,13 +161,14 @@ recruitmentEvent: RecruitmentEventContext;  // 모든 지원자에 항상 존재
 
 ### 지원자 목록
 
-이벤트에 따른 배지나 등급 표시 없음. 이름·직업·종족·상태·만료일만 표시.
+이벤트에 따른 배지나 등급 표시 없음.
+모든 카드 동일 스타일. 이름·직업·종족·나이·이벤트 이름·상태·만료일 표시.
 
 ### 지원자 상세
 
 모든 지원자가 동일한 레이아웃을 사용:
 
-- **상단**: 초상화 + 이름·종족·성별·나이·직업·성격 + 가입 배경·현재 상황·지원 동기·첫인상
+- **상단**: 초상화 + 이름·종족·성별·나이·직업·성격 + 이벤트 제목·가입 배경·현재 상황·지원 동기·첫인상
 - **중단**: 장점 / 단점 (2열 비교), 추천인·함께 지원·특별 사정 (해당 필드 있는 경우만)
 - **하단**: 능력치, 승인·보류·반려 버튼
 
@@ -180,3 +203,5 @@ recruitmentEvent: RecruitmentEventContext;  // 모든 지원자에 항상 존재
 - 전직 용병, 멸망한 길드의 생존자 등 추가 이벤트
 - 개인 연대기·장기 스토리 분기
 - 정체 공개·재등장 이벤트
+- 접수대 방문 연출
+- 시설 자동화 연동

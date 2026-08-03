@@ -96,6 +96,7 @@ export interface Adventurer {
   questsCompleted: number;
   questsDispatched: number;
   totalActivityDays: number;
+  recruitmentEventId?: string;
 }
 
 export interface AdventurerClass {
@@ -501,14 +502,19 @@ export type RecruitmentEventType =
   | "famous_adventurer_apprentice"
   | "orphan_background"
   | "injury_comeback"
-  | "debt_motivated";
+  | "debt_motivated"
+  | "basic_newcomer"
+  | "new_start"
+  | "first_guild"
+  | "stable_membership"
+  | "quiet_proof";
 
 export interface RecruitmentEventDefinition {
   id: EntityId;
   type: RecruitmentEventType;
   name: string;
-  description: string;
-  featureText: string;
+  background: string;
+  currentSituation: string;
   advantageText: string;
   disadvantageText: string;
   weight: number;

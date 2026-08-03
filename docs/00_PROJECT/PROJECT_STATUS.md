@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0019-H — 동적 의뢰 기간 시스템**
+**0019-I — 가입 신청 이벤트 시스템 전면 개선**
 
 ## 완료
 
@@ -283,6 +283,21 @@
   - `ReturnReportModal.tsx` — 실제 기간 + 최초 예상 대비 변화 표시
   - CSS: `.aq-duration-delta` / `.quest-duration-info` / `.qdi-*` / `.rrm-duration-delta` / `.day-end-report-item.quest_duration_changed`
   - 문서: `docs/01_SYSTEM/DYNAMIC_QUEST_DURATION_SYSTEM_GUIDE.md` (신규), `briefings/DYNAMIC_QUEST_DURATION_BRIEFING.md` (신규)
+
+- 가입 신청 이벤트 시스템 전면 개선 (0019-I)
+  - `RecruitmentEventType` — 5개 기본 타입 추가 (`basic_newcomer` / `new_start` / `first_guild` / `stable_membership` / `quiet_proof`)
+  - `RecruitmentEventDefinition` 필드 정리 — `description` → `background`, `featureText` → `currentSituation`
+  - `Adventurer.recruitmentEventId?: string` 추가 — 승인 시 이벤트 ID 보존
+  - `src/data/recruitmentEventData.ts` — 기본 이벤트 5종 추가, 전체 15종 (가중치 합계 72)
+  - `pickEventDefinition` 반환 타입 non-nullable로 변경, null 가드 제거
+  - `generateDailyApplicants` — 100% 이벤트 기반 생성으로 전환 (20% 확률 제거, 단일 이벤트 풀)
+  - `convertApplicantToAdventurer` — `recruitmentEventId` 보존
+  - `originNotes` — 기본 이벤트 5종 한 줄 설명 추가
+  - `labels.ts` — `recruitmentEventTypeLabels` 기본 이벤트 5종 추가
+  - `ApplicantList.tsx` — 이벤트 이름 스팬 추가 (배지 없이 통일된 카드)
+  - `ApplicantDetail.tsx` — 이벤트 제목·가입 배경·현재 상황 레이아웃 개선
+  - CSS: `.rec-card-event` / `.rd-event-title` 추가
+  - 문서: `RECRUITMENT_EVENT_SYSTEM_GUIDE.md` / `RECRUITMENT_EVENT_DATABASE.md` 전면 개정
 
 ## 다음 작업
 

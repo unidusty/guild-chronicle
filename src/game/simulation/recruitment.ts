@@ -161,7 +161,7 @@ function generateSingleApplicant(
 
 // ── Recruitment event generation ─────────────────────────────────────────────
 
-function pickEventDefinition(rng: () => number): RecruitmentEventDefinition | null {
+function pickEventDefinition(rng: () => number): RecruitmentEventDefinition {
   const defs = RECRUITMENT_EVENT_DEFINITIONS;
   const total = defs.reduce((s, d) => s + d.weight, 0);
   let r = rng() * total;
@@ -279,6 +279,11 @@ function generateEventApplicants(
   const portrait = getPortraitAvoiding(race, gender, classId, usedPaths);
 
   const originNotes: Record<string, string> = {
+    "re-basic-newcomer":      "새로운 출발을 원하는 신입 모험가",
+    "re-new-start":           "새로운 출발을 원하는 모험가",
+    "re-first-guild":         "처음으로 길드를 찾은 초보 모험가",
+    "re-stable-life":         "안정적인 소속을 원하는 모험가",
+    "re-quiet-proof":         "조용히 실력을 증명하고 싶은 모험가",
     "re-injury-comeback":     "부상 후 재기를 꿈꾸는 경력자",
     "re-debt-motivated":      "채무 상환을 위해 지원한 모험가",
     "re-fallen-noble":        "몰락한 귀족 출신",
@@ -430,16 +435,14 @@ export function generateDailyApplicants(
   const newApplicants: RecruitmentApplicant[] = [];
 
   // All applicants are generated through the event pool.
-  // Basic events (isBasic: true) behave like ordinary applicants in the UI.
+  // Basic events (basic_newcomer, new_start, etc.) serve as the fallback for ordinary applicants.
   const eventDef = pickEventDefinition(rng);
-  if (eventDef) {
-    const eventApplicants = generateEventApplicants(eventDef, appliedAt, usedPaths, existingNames, rng);
-    const toAdd = eventApplicants.slice(0, spaceAvailable);
-    for (const a of toAdd) {
-      newApplicants.push(a);
-      if (a.portrait) usedPaths.add(a.portrait);
-      existingNames.add(a.name);
-    }
+  const eventApplicants = generateEventApplicants(eventDef, appliedAt, usedPaths, existingNames, rng);
+  const toAdd = eventApplicants.slice(0, spaceAvailable);
+  for (const a of toAdd) {
+    newApplicants.push(a);
+    if (a.portrait) usedPaths.add(a.portrait);
+    existingNames.add(a.name);
   }
 
   return {
@@ -616,5 +619,6 @@ function convertApplicantToAdventurer(
     questsCompleted: 0,
     questsDispatched: 0,
     totalActivityDays: 0,
+    recruitmentEventId: applicant.recruitmentEvent?.eventId,
   };
 }
