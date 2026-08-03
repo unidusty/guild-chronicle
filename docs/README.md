@@ -24,6 +24,7 @@
 - 로드맵 → `00_PROJECT/ROADMAP.md`
 - 변경 이력 → `00_PROJECT/CHANGELOG.md`
 - 게임 시스템 → `01_SYSTEM/GAME_SYSTEM.md`
+- 전투 시스템 → `01_SYSTEM/BATTLE_SYSTEM_GUIDE.md`
 - 세계 시스템 → `01_SYSTEM/WORLD_SYSTEM_GUIDE.md`
 - 몬스터 시스템 → `01_SYSTEM/MONSTER_SYSTEM_GUIDE.md`
 - 지역 데이터 → `02_DATABASE/REGION_DATABASE.md`
