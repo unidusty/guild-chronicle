@@ -50,7 +50,7 @@
 
 ## Claude Code 작업 규칙
 
-작업 시작 전 반드시 docs/design/reference 폴더를 확인한다.
+작업 시작 전 반드시 docs/03_DESIGN/reference 폴더를 확인한다.
 
 레퍼런스를 복제하지 말고 Guild Chronicle 스타일로 재해석한다.
 

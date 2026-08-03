@@ -284,6 +284,6 @@ const gfPool = hasCombat
 
 ## 참조 문서
 
-- `docs/design/ADVENTURE_LOG_GUIDE.md` — 로그 시스템 전체 개요
-- `docs/design/STORY_ENGINE_GUIDE.md` — Dynamic Story Engine (반복 억제, 희귀 장면)
-- `docs/design/QUEST_DIRECTOR_GUIDE.md` — 필수 이벤트 보장 시스템
+- `ADVENTURE_LOG_GUIDE.md` — 로그 시스템 전체 개요
+- `STORY_ENGINE_GUIDE.md` — Dynamic Story Engine (반복 억제, 희귀 장면)
+- `QUEST_DIRECTOR_GUIDE.md` — 필수 이벤트 보장 시스템

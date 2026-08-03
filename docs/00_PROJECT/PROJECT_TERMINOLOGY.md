@@ -448,7 +448,7 @@
 ### QuestTag
 
 의뢰 특성을 나타내는 공통 언어 타입. `"카테고리:값"` 형식.  
-→ 상세 내용: `docs/design/QUEST_TAG_GUIDE.md`
+→ 상세 내용: `docs/03_DESIGN/QUEST_TAG_GUIDE.md`
 
 | 카테고리 | 값 |
 |----------|---|
@@ -488,7 +488,7 @@
 
 ## Quest Validation & Director (018-M / 018-N)
 
-→ 상세 내용: `docs/design/QUEST_VALIDATION_GUIDE.md`, `docs/design/QUEST_DIRECTOR_GUIDE.md`
+→ 상세 내용: `docs/03_DESIGN/QUEST_VALIDATION_GUIDE.md`, `docs/03_DESIGN/QUEST_DIRECTOR_GUIDE.md`
 
 ### MandatoryStep
 
@@ -523,7 +523,7 @@
 
 ## Adventure Log (018-F ~ 018-N)
 
-→ 상세 내용: `docs/design/ADVENTURE_LOG_GUIDE.md`, `docs/design/SCENE_GENERATOR_GUIDE.md`
+→ 상세 내용: `docs/03_DESIGN/ADVENTURE_LOG_GUIDE.md`, `docs/03_DESIGN/SCENE_GENERATOR_GUIDE.md`
 
 ### Story Memory
 

@@ -1,4 +1,4 @@
-# 02. GAME SYSTEM
+# GAME SYSTEM
 
 ## 모험가
 종족, 성별, 이름, 초상화, 직업, 능력치, 잠재력, 숨은 특성, 성격, 소속감, 관계, 부상, 상태, 개인 연대기.
@@ -18,14 +18,14 @@
 의뢰의 특성을 나타내는 공통 언어. 지형·적·위험·목표·계절·난이도·테마 카테고리로 구성된다.  
 이벤트 선택, 어드벤처 로그 서사, 보상 등 모든 하위 시스템이 퀘스트 태그를 기준으로 동작한다.  
 태그는 의뢰 기존 데이터(type, riskTags, enemyHint, dangerLevel, regionId, season)에서 자동 파생되며 별도로 저장하지 않는다.  
-→ `docs/design/QUEST_TAG_GUIDE.md`
+→ `docs/03_DESIGN/QUEST_TAG_GUIDE.md`
 
 ## 이벤트 엔진 (Event Engine)
 Dynamic Event Engine이 90개 이상의 이벤트 정의(EventDefinition)를 관리한다.  
 퀘스트 태그를 기반으로 적합한 이벤트를 선택하며 Event Memory(최근 8개 억제)와 Event Chain(후속 이벤트 우선)을 통해 반복을 줄이고 자연스러운 사건 흐름을 만든다.  
 희귀 이벤트(rarity: "rare")는 매우 낮은 가중치로 pool에 포함되어 특별한 사건을 확률적으로 등장시킨다.  
 귀환 단계에서는 환경·위험 이벤트만 발생할 수 있다.  
-→ `docs/design/EVENT_ENGINE_GUIDE.md`
+→ `docs/03_DESIGN/EVENT_ENGINE_GUIDE.md`
 
 ## Quest Validation (퀘스트 검증)
 의뢰 유형마다 반드시 거쳐야 하는 필수 단계(MandatoryStep)가 정의되어 있다.
@@ -40,7 +40,7 @@ Dynamic Event Engine이 90개 이상의 이벤트 정의(EventDefinition)를 관
 | delivery (배달) | 장애 발생 |
 
 필수 단계가 충족되지 않으면 귀환 임박 시 관련 이벤트의 가중치가 1.5~3배 상승한다.  
-→ `docs/design/QUEST_VALIDATION_GUIDE.md`
+→ `docs/03_DESIGN/QUEST_VALIDATION_GUIDE.md`
 
 ## Quest Director
 Quest Director는 의뢰가 반드시 논리적인 흐름을 거쳐 진행되도록 보장하는 시스템이다.  
@@ -49,17 +49,17 @@ Quest Director는 의뢰가 반드시 논리적인 흐름을 거쳐 진행되도
 귀환까지 남은 기간이 미완료 필수 단계 수 이하로 줄어들면(urgency: critical),  
 Director가 해당 단계를 충족시키는 이벤트를 EVENT_POOL에서 직접 선택해 강제 생성한다.  
 이로써 와이번 토벌이 전투 없이 완료되는 상황을 방지한다.  
-→ `docs/design/QUEST_DIRECTOR_GUIDE.md`
+→ `docs/03_DESIGN/QUEST_DIRECTOR_GUIDE.md`
 
 ## 모험 기록 (Adventure Scene)
 의뢰 진행의 날별·사건별 장면(Scene) 기록이다. 출발부터 귀환까지 모든 사건이 문단 단위 한국어 장면으로 기록되며, 의뢰가 완료된 후에도 의뢰 연대기에서 확인할 수 있다. 각 Scene은 2~8 문단으로 구성되며 2~4명의 모험가가 직접 등장한다. 내러티브는 실제 게임 상태(파티원, 적 정보, 이벤트 결과)에서 파생되며 임의의 사실을 만들지 않는다.  
-→ `docs/design/ADVENTURE_LOG_GUIDE.md`, `docs/design/SCENE_GENERATOR_GUIDE.md`
+→ `docs/03_DESIGN/ADVENTURE_LOG_GUIDE.md`, `docs/03_DESIGN/SCENE_GENERATOR_GUIDE.md`
 
 ## Dynamic Story Engine
 직전 15개 로그에 사용된 문장을 기억하고 회피해 내러티브 반복을 최소화한다(Story Memory).  
 계절 분위기 문장이 33% 확률로 삽입되고, 2% 확률로 희귀 장면이 추가된다.  
 같은 questId·day·category 조합은 언제나 동일한 템플릿을 선택한다(결정적 해시).  
-→ `docs/design/STORY_ENGINE_GUIDE.md`
+→ `docs/03_DESIGN/STORY_ENGINE_GUIDE.md`
 
 ## 전투
 자동 계산한다. 플레이어는 파티 조합, 장비, 정보, 보급, 후퇴 기준을 관리한다.

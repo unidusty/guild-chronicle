@@ -208,6 +208,6 @@ ev-explore-004 (고대 비문 발견): allowedQuestTypes: ["exploration"]
 
 ## 참조 문서
 
-- `docs/design/EVENT_ENGINE_GUIDE.md` — 이벤트 선택 전체 흐름
-- `docs/design/QUEST_DIRECTOR_GUIDE.md` — 필수 단계와 태그 연동
-- `docs/design/STORY_ENGINE_GUIDE.md` — 태그 기반 서사 풀 선택
+- `EVENT_ENGINE_GUIDE.md` — 이벤트 선택 전체 흐름
+- `QUEST_DIRECTOR_GUIDE.md` — 필수 단계와 태그 연동
+- `STORY_ENGINE_GUIDE.md` — 태그 기반 서사 풀 선택

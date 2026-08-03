@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**018-O — Project Documentation Finalization**
+**0018-P — Project Documentation Refactor & Workflow System**
 
 ## 완료
 
@@ -97,15 +97,24 @@
 - `advance.ts` — Director → selectEvent fallback 흐름 통합, dev 모드 콘솔 로그
 - Event Memory 5→8개 확장, Story Memory 10→15개 확장 (반복 억제 강화)
 - DevPanel — "Quest Director" 섹션 추가 (긴급도·완료/미완료 필수 단계 표시)
-- `docs/design/QUEST_VALIDATION_GUIDE.md` 신규 작성
-- Project Documentation Finalization (018-O)
-- `docs/design/QUEST_TAG_GUIDE.md` 신규 — QuestTag 전체 목록, deriveTags 매핑, 이벤트·서사 영향
-- `docs/design/QUEST_DIRECTOR_GUIDE.md` 신규 — Director 철학, MandatoryStep 표, 알고리즘 전체
-- `docs/design/SCENE_GENERATOR_GUIDE.md` 신규 — Scene Generator 구조, 세그먼트 조립, 템플릿 목록
+- `docs/03_DESIGN/QUEST_VALIDATION_GUIDE.md` 신규 작성
+- Project Documentation Finalization (0018-O)
+- `docs/03_DESIGN/QUEST_TAG_GUIDE.md` 신규 — QuestTag 전체 목록, deriveTags 매핑, 이벤트·서사 영향
+- `docs/03_DESIGN/QUEST_DIRECTOR_GUIDE.md` 신규 — Director 철학, MandatoryStep 표, 알고리즘 전체
+- `docs/03_DESIGN/SCENE_GENERATOR_GUIDE.md` 신규 — Scene Generator 구조, 세그먼트 조립, 템플릿 목록
 - 기존 설계 문서 8개 현행화 (EVENT_ENGINE_GUIDE·STORY_ENGINE_GUIDE·ADVENTURE_LOG_GUIDE·RARE_EVENT_GUIDE 등)
 - `PROJECT_RULES.md` — 이벤트 엔진·Quest Director·모험 기록 규칙 추가
 - `PROJECT_TERMINOLOGY.md` — 버전 018-N 반영, Event Memory 8개·Story Memory 15개 현행화
-- `docs/02_GAME_SYSTEM.md` — Quest Validation 표, Quest Director 섹션, Dynamic Story Engine 섹션 추가
+- `docs/01_SYSTEM/GAME_SYSTEM.md` — Quest Validation 표, Quest Director 섹션, Dynamic Story Engine 섹션 추가
+- Project Documentation Refactor & Workflow System (0018-P)
+- `docs/` 5폴더 구조 도입 (00_PROJECT / 01_SYSTEM / 02_DATABASE / 03_DESIGN / 99_BRAINSTORM)
+- `tasks/` 폴더 도입 (todo / doing / archive), TASK_TEMPLATE.md 생성
+- 작업 번호 4자리 체계 적용 (018 → 0018)
+- 신규: PROJECT_OVERVIEW.md, PROJECT_WORKFLOW.md, CHANGELOG.md
+- 신규: tasks/archive/0018_ADVENTURE_SYSTEM.md — 0018 전체 아카이브
+- 이동: PROJECT_RULES.md, PROJECT_TERMINOLOGY.md → docs/00_PROJECT/
+- 이동: docs/design/* → docs/03_DESIGN/
+- 내부 링크 전체 업데이트
 
 ## 현재 데이터 원칙
 
@@ -132,7 +141,7 @@
 
 ## 다음 작업
 
-**019 — 길드 재정 및 세계 이벤트 (예정)**
+**0019 — 길드 재정 및 세계 이벤트 (예정)**
 
 
 

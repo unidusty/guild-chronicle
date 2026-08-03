@@ -239,6 +239,6 @@ DevPanel의 **Quest Director** 섹션에서 진행 중 모든 의뢰의 상태�
 
 ## 참조 문서
 
-- `docs/design/QUEST_VALIDATION_GUIDE.md` — 전체 시스템 개요
-- `docs/design/EVENT_ENGINE_GUIDE.md` — EVENT_POOL 및 selectEvent
-- `docs/design/QUEST_TAG_GUIDE.md` — 이벤트 필터링에 사용되는 태그
+- `QUEST_VALIDATION_GUIDE.md` — 전체 시스템 개요
+- `EVENT_ENGINE_GUIDE.md` — EVENT_POOL 및 selectEvent
+- `QUEST_TAG_GUIDE.md` — 이벤트 필터링에 사용되는 태그

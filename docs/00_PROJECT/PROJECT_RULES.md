@@ -24,7 +24,7 @@
 - 파일명은 영문 소문자와 하이픈을 사용한다.
 - 오디오 파일은 `public/audio/` 한 곳에만 둔다.
 - 오디오 경로는 코드에서 `/audio/파일명.mp3` 형식을 사용한다.
-- 설계 기준은 `docs/design/AUDIO_ASSET_GUIDE.md`를 따른다.
+- 설계 기준은 `docs/03_DESIGN/AUDIO_ASSET_GUIDE.md`를 따른다.
 
 ## 모험 기록 규칙
 - 모험 기록(AdventureLog) 내러티브는 실제 게임 상태에서 파생한다.
