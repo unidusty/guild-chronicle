@@ -29,7 +29,6 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
 
   const ctx = applicant.recruitmentEvent;
   const def = ctx ? RECRUITMENT_EVENT_DEFINITIONS.find((d) => d.id === ctx.eventId) : undefined;
-  const isSpecial = def ? !def.isBasic : false;
   const relatedNames = ctx?.relatedApplicantIds
     .map((rid) => allApplicants.find((a) => a.id === rid)?.name)
     .filter(Boolean) as string[] ?? [];
@@ -50,7 +49,6 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
           <div className="rd-identity">
             <div className="rd-name-row">
               <p className="rd-name">{applicant.name}</p>
-              {isSpecial && <span className="rec-event-badge">특별 지원</span>}
             </div>
             <p className="rd-meta">{raceLabels[applicant.race]} · {genderLabels[applicant.gender]} · {applicant.age}세</p>
             <p className="rd-class">{jobLabels[applicant.classId] ?? applicant.classId}</p>
@@ -98,15 +96,9 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
             </div>
           </div>
 
-          {isSpecial && (
+          {(def?.recommenderText || relatedNames.length > 0 || def?.specialNote) && (
             <div className="rd-special-extras">
-              {def.description && (
-                <div className="rd-field">
-                  <span className="rd-field-label">상세 배경</span>
-                  <span className="rd-field-value">{def.description}</span>
-                </div>
-              )}
-              {def.recommenderText && (
+              {def?.recommenderText && (
                 <div className="rd-field">
                   <span className="rd-field-label">추천인</span>
                   <span className="rd-field-value rd-recommender">{def.recommenderText}</span>
@@ -118,7 +110,7 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
                   <span className="rd-field-value rd-sibling">{relatedNames.join(", ")}</span>
                 </div>
               )}
-              {def.specialNote && (
+              {def?.specialNote && (
                 <div className="rd-special-note">
                   <p className="rd-special-note-label">특별 사정</p>
                   <p className="rd-special-note-text">{def.specialNote}</p>

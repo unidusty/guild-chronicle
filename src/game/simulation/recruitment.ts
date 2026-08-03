@@ -278,9 +278,9 @@ function generateEventApplicants(
   const name = generateName(race, gender, existingNames, rng);
   const portrait = getPortraitAvoiding(race, gender, classId, usedPaths);
 
-  // Basic events leave originNote empty (chronicle entry unmodified).
-  // Special events get a one-line note appended to the chronicle on accept.
   const originNotes: Record<string, string> = {
+    "re-injury-comeback":     "부상 후 재기를 꿈꾸는 경력자",
+    "re-debt-motivated":      "채무 상환을 위해 지원한 모험가",
     "re-fallen-noble":        "몰락한 귀족 출신",
     "re-rival-guild":         "라이벌 길드 출신",
     "re-royal-recommendation":"왕실 추천장 보유",

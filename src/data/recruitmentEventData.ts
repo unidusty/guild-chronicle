@@ -1,57 +1,6 @@
 import type { RecruitmentEventDefinition } from "../types/game";
 
 export const RECRUITMENT_EVENT_DEFINITIONS: RecruitmentEventDefinition[] = [
-  // ── 기본 이벤트 (isBasic: true) ──────────────────────────────────────────────
-  // UI에서 가입 신청 정보 섹션으로 표시 (배지·특별 섹션 없이 일반 스타일).
-
-  {
-    id: "re-plain-newcomer",
-    type: "plain_newcomer",
-    name: "평범하지만 성실한 신입",
-    description: "특별한 배경 없이 모험가를 꿈꾸며 찾아온 지원자입니다.",
-    featureText: "특별한 경력이나 배경 없이 처음 지원하는 초보 모험가입니다. 길드 소속 이력이 없습니다.",
-    advantageText: "선입견 없이 길드 방식을 받아들일 가능성이 높습니다.",
-    disadvantageText: "실전 경험이 전무합니다.",
-    weight: 20,
-    isBasic: true,
-    applicantCount: 1,
-  },
-  {
-    id: "re-financial-hardship",
-    type: "financial_hardship",
-    name: "생활고로 지원",
-    description: "당장의 생계를 위해 모험가 길드의 문을 두드린 지원자입니다.",
-    featureText: "당장의 생계 유지가 어려운 상황으로, 빠른 수입이 필요해 지원했습니다.",
-    advantageText: "빠르게 일을 시작하고자 하는 의지가 강합니다.",
-    disadvantageText: "장기적 비전보다 단기 수입에 집중할 수 있습니다.",
-    weight: 12,
-    isBasic: true,
-    applicantCount: 1,
-  },
-  {
-    id: "re-leaving-hometown",
-    type: "leaving_hometown",
-    name: "고향을 떠난 초보 모험가",
-    description: "고향을 떠나 새로운 삶을 찾아 도시에 온 초보 지원자입니다.",
-    featureText: "고향을 떠나 도시에서 새로운 삶을 시작하려는 지원자입니다. 도시와 길드 생활은 처음입니다.",
-    advantageText: "새로운 환경에 적응하려는 의욕이 있습니다.",
-    disadvantageText: "도시 생활과 길드 문화에 아직 낯섭니다.",
-    weight: 12,
-    isBasic: true,
-    applicantCount: 1,
-  },
-  {
-    id: "re-family-support",
-    type: "family_support",
-    name: "가족을 부양하기 위한 지원",
-    description: "가족의 생계를 책임지기 위해 안정적인 수입을 원하는 지원자입니다.",
-    featureText: "부양해야 할 가족이 있으며, 안정적이고 지속적인 수입을 위해 길드에 지원했습니다.",
-    advantageText: "꾸준히 의뢰를 수행하려는 책임감이 강합니다.",
-    disadvantageText: "위험한 의뢰에 소극적일 수 있습니다.",
-    weight: 10,
-    isBasic: true,
-    applicantCount: 1,
-  },
   {
     id: "re-injury-comeback",
     type: "injury_comeback",
@@ -60,8 +9,8 @@ export const RECRUITMENT_EVENT_DEFINITIONS: RecruitmentEventDefinition[] = [
     featureText: "과거 부상으로 한동안 활동을 중단했다가 다시 모험가 생활에 도전하는 경력자입니다.",
     advantageText: "강한 의지와 실전 경험을 갖추고 있습니다.",
     disadvantageText: "부상 부위의 재발 가능성에 대한 우려가 있습니다.",
+    specialNote: "과거 부상 이력과 회복 상태는 별도로 확인하지 못했습니다.",
     weight: 8,
-    isBasic: true,
     applicantCount: 1,
     conditions: {
       minAge: 22,
@@ -75,14 +24,10 @@ export const RECRUITMENT_EVENT_DEFINITIONS: RecruitmentEventDefinition[] = [
     featureText: "개인 또는 가족의 채무로 인해 빠른 수입이 절실한 상황입니다.",
     advantageText: "강한 활동 의지와 수입에 대한 높은 동기 부여가 있습니다.",
     disadvantageText: "경제적 압박이 판단력에 영향을 줄 수 있으며, 외부 문제에 얽힐 가능성이 있습니다.",
+    specialNote: "채무의 규모와 채권자에 대한 정보는 확인되지 않았습니다.",
     weight: 8,
-    isBasic: true,
     applicantCount: 1,
   },
-
-  // ── 특별 이벤트 ───────────────────────────────────────────────────────────────
-  // UI에서 특별 지원 배지 + 전체 이벤트 섹션 표시.
-
   {
     id: "re-siblings",
     type: "siblings",
