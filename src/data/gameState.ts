@@ -436,6 +436,7 @@ const _rawState: GameState = {
       currentDay: 2, totalDays: 4,
       currentStage: "executing",
       reportRead: true, hasIncident: false, incidentId: null, events: [], decisions: [],
+      initialEstimatedDays: 4, currentEstimatedDays: 4, durationChanges: [],
     },
     "quest-missing": {
       questId: "quest-missing", partyId: "party-bluelantern",
@@ -443,6 +444,7 @@ const _rawState: GameState = {
       currentDay: 1, totalDays: 2,
       currentStage: "returning",
       reportRead: true, hasIncident: false, incidentId: null, events: [], decisions: [],
+      initialEstimatedDays: 2, currentEstimatedDays: 2, durationChanges: [],
     },
   },
   questResults: {},

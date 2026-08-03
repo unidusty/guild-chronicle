@@ -201,6 +201,22 @@ export interface QuestEvent {
   title: string;
   description: string;
   read: boolean;
+  definitionId: string;  // EventDefinition.id — used for duration delta lookup
+}
+
+export type QuestDurationChangeSourceType = "event" | "decision" | "support" | "withdrawal";
+
+export interface QuestDurationChange {
+  id: EntityId;
+  questId: EntityId;
+  date: GameDate;
+  deltaDays: number;                         // positive = delay, negative = shortening
+  reason: string;
+  sourceType: QuestDurationChangeSourceType;
+  sourceId: EntityId;                        // eventId or decisionId
+  previousEstimatedDays: number;
+  nextEstimatedDays: number;
+  stage: QuestStage;
 }
 
 export interface QuestDecision {
@@ -226,6 +242,9 @@ export interface QuestProgress {
   incidentId: EntityId | null;
   events: QuestEvent[];
   decisions: QuestDecision[];
+  initialEstimatedDays: number;     // immutable — set at quest start
+  currentEstimatedDays: number;     // mutable — updated by duration changes
+  durationChanges: QuestDurationChange[];
 }
 
 export interface QuestChronicleEntry {
@@ -247,6 +266,9 @@ export interface QuestChronicleEntry {
   supportPartyIds: EntityId[];
   extraExplore: boolean;
   successRate: number;
+  initialEstimatedDays: number;
+  finalEstimatedDays: number;
+  actualDurationDays: number;
 }
 
 export interface QuestResult {
@@ -314,7 +336,9 @@ export interface ReturnReport {
   memberIdsSnapshot: EntityId[];
   regionId: EntityId;
   regionNameSnapshot: string;
-  durationDays: number;
+  durationDays: number;           // actual duration (= prog.currentDay + 1)
+  initialEstimatedDays: number;   // original planned duration
+  totalDurationDelta: number;     // durationDays - initialEstimatedDays (+ = took longer)
   completedAt: GameDate;
   resultGrade: QuestResultGrade;
   successRate: number;
@@ -450,7 +474,8 @@ export type DailyReportItemKind =
   | "reputation_changed"
   | "reputation_tier_changed"
   | "guild_operating_cost"
-  | "operating_cost_unpaid";
+  | "operating_cost_unpaid"
+  | "quest_duration_changed";
 
 export interface DailyReportItem {
   kind: DailyReportItemKind;

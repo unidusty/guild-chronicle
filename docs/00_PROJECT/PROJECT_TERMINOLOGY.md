@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (0019-G) 작성.
+현재 구현 기준 (0019-H) 작성.
 
 ---
 
@@ -717,6 +717,67 @@ selector: `getReputationLog(state, limit?)`
 | `SUPPORT_TRAVEL_DAYS` | 지원 파티 이동 소요 일수 (`2`) |
 | 이동 중 (en_route) | 파견 결정 후 도착 전 상태 |
 | 합류 완료 (arrived) | 현장 도착 후 상태 |
+
+---
+
+## 동적 의뢰 기간 (0019-H)
+
+→ 상세 내용: `docs/01_SYSTEM/DYNAMIC_QUEST_DURATION_SYSTEM_GUIDE.md`
+
+### QuestDurationChange
+
+기간 변경 사건 하나를 나타내는 감사 기록. `QuestProgress.durationChanges[]`에 누적된다.
+
+| 필드 | 설명 |
+|------|------|
+| `id` | 고유 ID |
+| `questId` | 대상 의뢰 ID |
+| `date` | 변경 발생 게임 날짜 |
+| `deltaDays` | 변화량 (양수 = 지연, 음수 = 단축) |
+| `reason` | 변경 사유 (이벤트 제목 또는 결정 설명) |
+| `sourceType` | `"event"` \| `"decision"` \| `"support"` \| `"withdrawal"` |
+| `sourceId` | 중복 방지용 출처 ID |
+| `previousEstimatedDays` | 변경 전 예상 기간 |
+| `nextEstimatedDays` | 변경 후 예상 기간 |
+| `stage` | 변경 당시 의뢰 진행 단계 |
+
+### 기간 관련 QuestProgress 필드
+
+| 필드 | 변경 여부 | 설명 |
+|------|-----------|------|
+| `initialEstimatedDays` | **불변** | 의뢰 시작 시 고정된 최초 예상 기간 |
+| `currentEstimatedDays` | 가변 | 현재 예상 기간 (변경 시 갱신) |
+| `durationChanges` | 누적 | 기간 변경 사건 배열 |
+
+### 제한 규칙
+
+| 규칙 | 공식 |
+|------|------|
+| 최대 연장 | `min(floor(initialDays × 50%), 10)` |
+| 최소 잔여일 | `max(1, 미완료 필수 단계 수 + 1)` |
+
+### 중복 방지 키
+
+`(sourceType, sourceId)` 조합. 동일 조합이 이미 `durationChanges`에 존재하면 적용하지 않는다.
+
+### 기간 변경 이벤트 (DURATION_DELTA_BY_EVENT)
+
+| 이벤트 ID | 변화 |
+|-----------|------|
+| ev-env-001 ~ ev-env-003 | +1일 |
+| ev-env-004 ~ ev-env-006 | +2일 |
+| ev-explore-010 | −1일 |
+| ev-person-004 | −1일 |
+
+단축 이벤트는 `selectEvent()`에서 귀환 단계에 이미 필터링되므로 귀환 중에는 발생하지 않는다.
+
+### actualDurationDays 계산
+
+```
+actualDurationDays = prog.currentDay + 1
+```
+
+`currentDay`는 0-indexed이며 완료 당일에는 증가하지 않는다. +1이 완료 당일을 보정한다.
 
 ---
 

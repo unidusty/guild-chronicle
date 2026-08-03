@@ -9,6 +9,7 @@ import { buildQuestResult } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
 import { generateDailyLog, generateIncidentLog, generateCompletionLog, generateSupportArrivalLog } from "./adventureLog";
 import { createReturnReport } from "./returnReport";
+import { getEventDurationDelta, tryApplyDurationChange } from "./questDuration";
 
 const SUPPORT_TRAVEL_DAYS = 2;
 
@@ -142,7 +143,7 @@ function updateQuests(state: GameState): GameState {
           const regionName = state.regions[quest.regionId]?.name ?? "";
           const questResult = newQuestResults.find(r => r.questId === quest.id);
           if (questResult) {
-            newReturnReports.push(createReturnReport(quest, party, questResult, loot, date, regionName));
+            newReturnReports.push(createReturnReport(quest, party, questResult, loot, date, regionName, prog));
           }
         }
 
@@ -256,6 +257,44 @@ function updateQuests(state: GameState): GameState {
             incidentId:  event.eventId,
             events:      [...existing.events, event],
           };
+
+          // Apply event-based duration change (if this event type has a delta)
+          const durDelta = getEventDurationDelta(event.definitionId);
+          if (durDelta !== 0) {
+            const durResult = tryApplyDurationChange({
+              questType:           quest.type,
+              currentRemainingDays: quests[quest.id].remainingDays,
+              prog:                updated,
+              requestedDelta:      durDelta,
+              sourceType:          "event",
+              sourceId:            event.eventId,
+              reason:              event.title,
+              date,
+            });
+            if (durResult) {
+              quests[quest.id] = { ...quests[quest.id], remainingDays: quests[quest.id].remainingDays + durResult.actualDelta };
+              updated = durResult.updatedProg;
+
+              // Adventure log entry for the duration change
+              const changeSign = durResult.actualDelta > 0 ? "+" : "";
+              const newRemaining = quests[quest.id].remainingDays;
+              const durLogEntry: AdventureLogEntry = {
+                id:          `adv-dur-${quest.id}-${absDay(date)}`,
+                questId:     quest.id,
+                partyId:     quest.assignedPartyId,
+                date,
+                questDay:    updated.currentDay,
+                category:    "incident",
+                importance:  "normal",
+                title:       `기간 변경 — ${changeSign}${durResult.actualDelta}일`,
+                narrative:   `${event.title}으로 인해 예상 수행 기간이 ${changeSign}${durResult.actualDelta}일 조정되었습니다. 현재 ${newRemaining}일 후 귀환 예정.`,
+                actorIds:    [],
+                targetIds:   [],
+                tags:        ["duration_change"],
+              };
+              appendLog(quest.id, durLogEntry);
+            }
+          }
 
           // Generate incident adventure log (with support party if present)
           const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;

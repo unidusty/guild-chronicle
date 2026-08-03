@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0019-G — 시설 유지비 및 길드 운영비 시스템**
+**0019-H — 동적 의뢰 기간 시스템**
 
 ## 완료
 
@@ -261,6 +261,28 @@
   - `FinanceTab.tsx` — 오늘의 운영비 섹션 추가, 미납 누적 시 경고 배너 표시
   - CSS: `.finance-unpaid-*` / `.finance-opcost-*` / `.fac-maintenance-*` / `.day-end-report-item.guild_operating_cost` 등
   - 문서: `GUILD_OPERATING_COST_SYSTEM_GUIDE.md` (신규), `GUILD_OPERATION_COST_BRIEFING.md` (신규)
+
+- 동적 의뢰 기간 시스템 (0019-H)
+  - `QuestDurationChange` 타입 추가 — 기간 변경 감사 기록 (id·questId·date·deltaDays·reason·sourceType·sourceId·previousEstimatedDays·nextEstimatedDays·stage)
+  - `QuestDurationChangeSourceType` — `"event" | "decision" | "support" | "withdrawal"`
+  - `QuestProgress` 확장 — `initialEstimatedDays` (불변) / `currentEstimatedDays` (가변) / `durationChanges[]` 추가
+  - `QuestEvent.definitionId` 필드 추가 — 기간 델타 조회를 위한 EventDefinition ID 참조
+  - `QuestChronicleEntry` 확장 — `initialEstimatedDays` / `finalEstimatedDays` / `actualDurationDays` 추가
+  - `ReturnReport` 확장 — `durationDays` (실제 수행 일수) / `initialEstimatedDays` / `totalDurationDelta` 추가
+  - `DailyReportItemKind` — `quest_duration_changed` 추가
+  - `src/game/simulation/questDuration.ts` (신규) — `DURATION_DELTA_BY_EVENT` 매핑(8종) / `tryApplyDurationChange` (중복 방지·상한·하한 검사)
+  - `advance.ts` — 이벤트 생성 후 `getEventDurationDelta` 조회 → `tryApplyDurationChange` 연동
+  - `questDecisions.ts` — 지원 파견 결정 시 `tryApplyDurationChange(sourceType: "support")` 연동
+  - `questProgress.ts` — `createQuestProgress`에 신규 필드 초기화 추가
+  - `eventEngine.ts` — `buildQuestEvent`에 `definitionId` 포함
+  - `questChronicle.ts` — 연대기 기록에 실제 수행 기간·예상 기간 스냅샷 추가
+  - `returnReport.ts` — `createReturnReport`에 `prog` 파라미터 추가, 실제 수행 기간 계산 (`currentDay + 1`)
+  - `dayEnd.ts` — `durationChanges.length` 비교로 당일 기간 변경 감지 → 보고서 항목 추가
+  - `ActiveQuestsTab.tsx` — 기간 변화 배지 (`.aq-duration-delta`) 표시
+  - `QuestDetail.tsx` — 기간 정보 블록 (최초 예상 / 현재 예상 / 최근 변경 사유) 추가
+  - `ReturnReportModal.tsx` — 실제 기간 + 최초 예상 대비 변화 표시
+  - CSS: `.aq-duration-delta` / `.quest-duration-info` / `.qdi-*` / `.rrm-duration-delta` / `.day-end-report-item.quest_duration_changed`
+  - 문서: `docs/01_SYSTEM/DYNAMIC_QUEST_DURATION_SYSTEM_GUIDE.md` (신규), `briefings/DYNAMIC_QUEST_DURATION_BRIEFING.md` (신규)
 
 ## 다음 작업
 

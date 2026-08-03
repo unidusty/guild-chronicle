@@ -90,9 +90,10 @@ export function generateQuestEvent(
     questId,
     partyId,
     day,
-    category: template.category,
-    title: template.title,
-    description: template.description,
-    read: false,
+    category:     template.category,
+    title:        template.title,
+    description:  template.description,
+    read:         false,
+    definitionId: "",  // legacy path — no duration delta lookup
   };
 }

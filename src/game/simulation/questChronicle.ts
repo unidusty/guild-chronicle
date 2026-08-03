@@ -122,6 +122,10 @@ export function buildQuestChronicleEntry(
   );
 
   const d = result.completedAt;
+  const initialEstimatedDays = prog?.initialEstimatedDays ?? quest.durationDays;
+  const finalEstimatedDays   = prog?.currentEstimatedDays ?? quest.durationDays;
+  const actualDurationDays   = prog ? prog.currentDay + 1 : quest.durationDays;
+
   return {
     id:                `qc-${quest.id}-${d.year}-${d.season}-${String(d.day).padStart(2, "0")}`,
     questId:           quest.id,
@@ -143,5 +147,8 @@ export function buildQuestChronicleEntry(
       .map(d => d.supportPartyId!),
     extraExplore:      result.extraExplore,
     successRate:       result.successRate,
+    initialEstimatedDays,
+    finalEstimatedDays,
+    actualDurationDays,
   };
 }

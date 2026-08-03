@@ -1466,3 +1466,29 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .day-end-report-item.guild_operating_cost strong { color: #c0a860; }
 .day-end-report-item.operating_cost_unpaid { border-left: 2px solid #6a3020; background: rgba(20,10,8,.8); }
 .day-end-report-item.operating_cost_unpaid strong { color: #e07050; }
+
+
+/* ── Dynamic Quest Duration ─────────────────────────────────────────────────── */
+.aq-duration-delta { font-size: var(--font-tiny); font-variant-numeric: tabular-nums; padding: 0 calc(4px * var(--ui-scale)); border-radius: 2px; }
+.aq-duration-delta.delayed { color: #c87070; background: rgba(80,20,20,.4); }
+.aq-duration-delta.shortened { color: #6a9a7a; background: rgba(20,50,30,.4); }
+
+/* Quest detail — duration info block */
+.quest-duration-info { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); margin-top: calc(8px * var(--ui-scale)); padding: calc(8px * var(--ui-scale)) calc(12px * var(--ui-scale)); background: rgba(8,14,10,.5); border: 1px solid #1a2620; border-left: 2px solid #3a4a3c; }
+.qdi-row { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--font-small); }
+.qdi-label { color: #4a5e50; }
+.qdi-value { color: #8a9a8c; }
+.qdi-current.delayed { color: #c87070; }
+.qdi-current.shortened { color: #6a9a7a; }
+.qdi-delta { font-size: var(--font-tiny); color: #5a6a5c; margin-left: calc(4px * var(--ui-scale)); }
+.qdi-current.delayed .qdi-delta { color: #9a6060; }
+.qdi-current.shortened .qdi-delta { color: #5a8a6a; }
+.qdi-reason .qdi-value { font-size: var(--font-tiny); color: #5a6a5c; }
+
+/* Return report — duration delta */
+.rrm-duration-delta { font-size: var(--font-xsmall); font-weight: 400; margin-left: calc(4px * var(--ui-scale)); }
+.rrm-duration-delta.delayed { color: #c87070; }
+.rrm-duration-delta.shortened { color: #6a9a7a; }
+
+/* Day-end report — duration changed item */
+.day-end-report-item.quest_duration_changed { border-left: 2px solid #3a4a60; background: rgba(10,12,20,.6); }

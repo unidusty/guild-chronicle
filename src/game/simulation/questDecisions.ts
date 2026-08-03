@@ -11,6 +11,7 @@ import type {
 import { calcCurrentDangerLevel } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
 import { generateDecisionLog, generateCompletionLog } from "./adventureLog";
+import { tryApplyDurationChange } from "./questDuration";
 
 export const DECISION_LABELS: Record<QuestDecisionType, string> = {
   continue:         "계속 진행",
@@ -172,14 +173,34 @@ export function applyQuestDecision(
           };
         }
       }
+
+      // Support travel adds waiting time — apply once per dispatch decision
+      const SUPPORT_TRAVEL_DAYS = 2;
+      const durResult = tryApplyDurationChange({
+        questType:            quest.type,
+        currentRemainingDays: quest.remainingDays,
+        prog:                 updatedProgress,
+        requestedDelta:       SUPPORT_TRAVEL_DAYS,
+        sourceType:           "support",
+        sourceId:             decisionEntry.decisionId,
+        reason:               "지원 파티 대기",
+        date,
+      });
+
+      const finalProgress = durResult ? durResult.updatedProg : updatedProgress;
+      const updatedQuests = durResult
+        ? { ...state.quests, [questId]: { ...quest, remainingDays: quest.remainingDays + durResult.actualDelta } }
+        : state.quests;
+
       return {
         ...state,
+        quests: updatedQuests,
         parties: {
           ...state.parties,
           [supportPartyId]: { ...supportParty, status: "dispatched", activeQuestId: questId },
         },
         adventurers: updatedAdventurers,
-        questProgress: { ...state.questProgress, [questId]: updatedProgress },
+        questProgress: { ...state.questProgress, [questId]: finalProgress },
         adventureLogs: { ...state.adventureLogs, [questId]: [...existingLogsForContinue, decisionLog] },
       };
     }

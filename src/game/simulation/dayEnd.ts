@@ -240,6 +240,23 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     });
   }
 
+  // Quest duration changes that occurred during this advance
+  for (const [questId, newProg] of Object.entries(afterAdvance.questProgress)) {
+    const oldProg = afterOpCost.questProgress[questId];
+    if (!oldProg) continue;
+    const addedCount = newProg.durationChanges.length - oldProg.durationChanges.length;
+    if (addedCount <= 0) continue;
+    const quest = afterAdvance.quests[questId];
+    if (!quest) continue;
+    const latestChange = newProg.durationChanges[newProg.durationChanges.length - 1];
+    const sign = latestChange.deltaDays > 0 ? "+" : "";
+    items.push({
+      kind: "quest_duration_changed",
+      title: `기간 변경 — ${quest.title}`,
+      description: `${sign}${latestChange.deltaDays}일 (${latestChange.reason}) · 현재 예상: ${newProg.currentEstimatedDays}일`,
+    });
+  }
+
   // Active quest progress & event reports
   const activeProgressList = Object.values(newState.questProgress);
   for (const prog of activeProgressList) {

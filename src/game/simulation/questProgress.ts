@@ -34,6 +34,9 @@ export function createQuestProgress(
     incidentId: null,
     events: [],
     decisions: [],
+    initialEstimatedDays: totalDays,
+    currentEstimatedDays: totalDays,
+    durationChanges: [],
   };
 }
 

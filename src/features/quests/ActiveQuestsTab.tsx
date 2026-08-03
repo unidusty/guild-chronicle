@@ -155,7 +155,7 @@ export default function ActiveQuestsTab({
                     )}
                   </div>
 
-                  {/* Footer: success rate + remaining days */}
+                  {/* Footer: success rate + remaining days + duration delta */}
                   <div className="aq-footer">
                     {successRate !== null && (
                       <span className={`aq-rate${rateClass}`}>
@@ -167,6 +167,16 @@ export default function ActiveQuestsTab({
                         ? `${quest.remainingDays}일 후 귀환`
                         : "귀환 대기"}
                     </span>
+                    {prog && prog.durationChanges.length > 0 && (() => {
+                      const delta = prog.currentEstimatedDays - prog.initialEstimatedDays;
+                      if (delta === 0) return null;
+                      const sign = delta > 0 ? "+" : "";
+                      return (
+                        <span className={`aq-duration-delta${delta > 0 ? " delayed" : " shortened"}`}>
+                          {sign}{delta}일
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
               </button>

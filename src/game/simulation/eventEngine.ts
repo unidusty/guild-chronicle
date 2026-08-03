@@ -1053,13 +1053,14 @@ export function buildQuestEvent(
   def: EventDefinition,
 ): QuestEvent {
   return {
-    eventId:     `ev-${def.id}-${questId}-${day}`,
+    eventId:      `ev-${def.id}-${questId}-${day}`,
     questId,
     partyId,
     day,
-    category:    def.category as QuestEventCategory,
-    title:       def.title,
-    description: def.description,
-    read:        false,
+    category:     def.category as QuestEventCategory,
+    title:        def.title,
+    description:  def.description,
+    read:         false,
+    definitionId: def.id,
   };
 }

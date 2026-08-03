@@ -61,7 +61,15 @@ export default function ReturnReportModal({ report, state, onClose, onSettle }: 
               </span>
               <span className="rrm-meta-item">
                 <label>기간</label>
-                <strong>{report.durationDays}일</strong>
+                <strong>
+                  {report.durationDays}일
+                  {report.totalDurationDelta !== 0 && (
+                    <span className={`rrm-duration-delta${report.totalDurationDelta > 0 ? " delayed" : " shortened"}`}>
+                      {report.totalDurationDelta > 0 ? " (예정 " : " (예정 "}
+                      {report.initialEstimatedDays}일, {report.totalDurationDelta > 0 ? "+" : ""}{report.totalDurationDelta}일)
+                    </span>
+                  )}
+                </strong>
               </span>
               <span className="rrm-meta-item">
                 <label>결과</label>

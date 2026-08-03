@@ -158,6 +158,30 @@ export default function QuestDetail({ questId, state, onAssign, onDecide }: Prop
                 <div className="quest-progress-remain">
                   예상 귀환 <strong>{quest.remainingDays}일 후</strong>
                 </div>
+                {prog.durationChanges.length > 0 && (() => {
+                  const totalDelta = prog.currentEstimatedDays - prog.initialEstimatedDays;
+                  const sign = totalDelta > 0 ? "+" : "";
+                  const lastChange = prog.durationChanges[prog.durationChanges.length - 1];
+                  return (
+                    <div className="quest-duration-info">
+                      <div className="qdi-row">
+                        <span className="qdi-label">최초 예상</span>
+                        <span className="qdi-value">{prog.initialEstimatedDays}일</span>
+                      </div>
+                      <div className="qdi-row">
+                        <span className="qdi-label">현재 예상</span>
+                        <span className={`qdi-value qdi-current${totalDelta > 0 ? " delayed" : totalDelta < 0 ? " shortened" : ""}`}>
+                          {prog.currentEstimatedDays}일
+                          <span className="qdi-delta">({sign}{totalDelta}일)</span>
+                        </span>
+                      </div>
+                      <div className="qdi-row qdi-reason">
+                        <span className="qdi-label">최근 변경</span>
+                        <span className="qdi-value">{lastChange.reason}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
                 {(() => {
                   const assignedParty = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
                   if (!assignedParty) return null;

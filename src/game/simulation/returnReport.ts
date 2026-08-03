@@ -7,6 +7,7 @@ import type {
   LootPurchaseResult,
   Party,
   Quest,
+  QuestProgress,
   QuestResult,
   ReturnReport,
   SettlementResult,
@@ -30,10 +31,16 @@ export function createReturnReport(
   loot: LootDrop[],
   date: GameDate,
   regionName: string,
+  prog?: QuestProgress,
 ): ReturnReport {
-  const totalRewardGold = quest.rewardGold;
-  const guildFeeGold = Math.floor(totalRewardGold * GUILD_FEE_RATE);
+  const totalRewardGold  = quest.rewardGold;
+  const guildFeeGold     = Math.floor(totalRewardGold * GUILD_FEE_RATE);
   const partyPaymentGold = totalRewardGold - guildFeeGold;
+
+  // Actual duration = last incremented currentDay + 1 (the completion day itself)
+  const actualDurationDays     = prog ? prog.currentDay + 1 : quest.durationDays;
+  const initialEstimatedDays   = prog ? prog.initialEstimatedDays : quest.durationDays;
+  const totalDurationDelta     = actualDurationDays - initialEstimatedDays;
 
   const lootEntries: LootEntry[] = loot.map(({ itemId, quantity }) => {
     const item = LOOT_TABLE[itemId];
@@ -58,7 +65,9 @@ export function createReturnReport(
     memberIdsSnapshot: [...party.memberIds],
     regionId: quest.regionId,
     regionNameSnapshot: regionName,
-    durationDays: quest.durationDays,
+    durationDays: actualDurationDays,
+    initialEstimatedDays,
+    totalDurationDelta,
     completedAt: date,
     resultGrade: questResult.resultGrade,
     successRate: questResult.successRate,
