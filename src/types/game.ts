@@ -416,6 +416,9 @@ export interface FinanceSummary {
 
 // ── World Events ─────────────────────────────────────────────────────────────
 
+export type WorldEventCategory =
+  | "social" | "economy" | "disaster" | "military" | "politics" | "disease" | "nature";
+
 export type WorldEventType =
   | "festival"
   | "monster_surge"
@@ -424,13 +427,23 @@ export type WorldEventType =
   | "merchant_visit"
   | "noble_quest_boom"
   | "border_conflict"
-  | "epidemic";
+  | "epidemic"
+  | "succession_crisis"
+  | "noble_dispute"
+  | "mine_discovery"
+  | "trade_boom"
+  | "flood"
+  | "memorial_ceremony"
+  | "monster_migration"
+  | "war"
+  | "bandit_surge";
 
 export type WorldEventEffectTarget =
   | "warehouse_sale"
   | "quest_reward"
   | "recruitment"
-  | "region_danger";
+  | "region_danger"
+  | "loot_value";
 
 export interface WorldEventEffect {
   target: WorldEventEffectTarget;
@@ -442,10 +455,15 @@ export interface WorldEventDefinition {
   type: WorldEventType;
   name: string;
   description: string;
+  category: WorldEventCategory;
   weight: number;
   minDurationDays: number;
   maxDurationDays: number;
   conflictGroup?: string;
+  regionId?: EntityId;
+  followUpIds?: EntityId[];
+  inboxTitle?: string;
+  inboxPriority?: InboxPriority;
   effects: WorldEventEffect[];
   startNotification: string;
   endNotification: string;
@@ -457,6 +475,13 @@ export interface ActiveWorldEvent {
   startedAt: GameDate;
   remainingDays: number;
   effects: WorldEventEffect[];
+}
+
+export interface WorldEventHistoryEntry {
+  id: EntityId;
+  definitionId: EntityId;
+  startedAt: GameDate;
+  endedAt: GameDate;
 }
 
 export type DailyReportItemKind =
@@ -677,7 +702,8 @@ export type InboxItemType =
   | "return_report"
   | "recruitment_application"
   | "quest_decision"
-  | "reputation_event";
+  | "reputation_event"
+  | "world_event";
 
 export type InboxPriority = "normal" | "important" | "urgent" | "critical";
 
@@ -735,6 +761,8 @@ export interface GameState {
   financeTransactions: FinanceTransaction[];
   recruitment: RecruitmentState;
   activeWorldEvents: ActiveWorldEvent[];
+  worldEventHistory: WorldEventHistoryEntry[];
+  pendingWorldEventNotifications: Array<{ id: EntityId; definitionId: EntityId; day: number }>;
   reputationChanges: ReputationChange[];
   pendingReputationEvents: Array<{ id: EntityId; day: number }>;
 }

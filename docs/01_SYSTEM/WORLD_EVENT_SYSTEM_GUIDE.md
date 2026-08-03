@@ -1,5 +1,7 @@
 # WORLD EVENT SYSTEM GUIDE
 
+현재 구현 기준 (0020-D).
+
 ## 개요
 
 세계 이벤트(World Event)는 길드 외부에서 발생하는 사건으로,
@@ -24,13 +26,25 @@ interface WorldEventDefinition {
   type: WorldEventType;
   name: string;
   description: string;
-  weight: number;           // 발생 가중치 (높을수록 자주 발생)
-  minDurationDays: number;  // 최소 지속 기간
-  maxDurationDays: number;  // 최대 지속 기간
-  conflictGroup?: string;   // 동일 그룹끼리 동시 활성화 불가
+  category: WorldEventCategory; // 0020-D: social|economy|disaster|military|politics|disease|nature
+  weight: number;               // 발생 가중치 (높을수록 자주 발생)
+  minDurationDays: number;      // 최소 지속 기간
+  maxDurationDays: number;      // 최대 지속 기간
+  conflictGroup?: string;       // 동일 그룹끼리 동시 활성화 불가
+  regionId?: EntityId;          // 0020-D: 특정 지역 이벤트 (구조 예약, 효과 미연동)
+  followUpIds?: EntityId[];     // 0020-D: 종료 시 연쇄 이벤트 ID 목록
+  inboxTitle?: string;          // 0020-D: 있으면 Inbox 알림 생성
+  inboxPriority?: InboxPriority;// 0020-D: Inbox 우선순위
   effects: WorldEventEffect[];
   startNotification: string;
   endNotification: string;
+}
+
+interface WorldEventHistoryEntry {
+  id: EntityId;
+  definitionId: EntityId;
+  startedAt: GameDate;
+  endedAt: GameDate;
 }
 ```
 
@@ -54,7 +68,7 @@ interface ActiveWorldEvent {
 
 ```ts
 interface WorldEventEffect {
-  target: WorldEventEffectTarget; // "warehouse_sale" | "quest_reward" | "recruitment" | "region_danger"
+  target: WorldEventEffectTarget; // warehouse_sale | quest_reward | recruitment | region_danger | loot_value
   modifier: number;               // 분수값: 0.15 = +15%, -0.15 = -15%
 }
 ```

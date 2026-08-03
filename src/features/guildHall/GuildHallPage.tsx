@@ -1,6 +1,7 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { GameState, InboxItem, ReturnReport } from "../../types/game";
 import { dismissReputationEvent } from "../../game/simulation/reputationEvents";
+import { dismissWorldEventNotification } from "../../game/simulation/worldEvents";
 import {
   formatGameDate,
   formatShortGameDate,
@@ -10,16 +11,16 @@ import {
   getRosterRows,
 } from "../../game/simulation/selectors";
 import { canEndDay, getInboxItems } from "../../game/simulation/inboxSelectors";
-import { questStageLabels, seasonLabels } from "../../game/constants/labels";
+import { questStageLabels, seasonLabels, worldEventTypeLabels } from "../../game/constants/labels";
 import { getReputationTier, REPUTATION_TIERS } from "../../game/constants/reputation";
-import { WORLD_EVENT_DEFINITIONS } from "../../data/worldEventData";
+import { WORLD_EVENT_DEFINITIONS, getWorldEventDefinitionById } from "../../data/worldEventData";
 import FacilitiesPage from "../facilities/FacilitiesPage";
 import RecruitmentTab from "../recruitment/RecruitmentTab";
 import FinanceTab from "../finance/FinanceTab";
 import ReturnReportModal from "../returnReport/ReturnReportModal";
 import { playHover, playSelect } from "../../lib/audio";
 
-type GuildTab = "dashboard" | "facilities" | "recruitment" | "finance" | "reputation";
+type GuildTab = "dashboard" | "facilities" | "recruitment" | "finance" | "reputation" | "world";
 
 interface Props {
   state: GameState;
@@ -33,6 +34,7 @@ const INBOX_ICON: Record<string, { icon: string; tone: string }> = {
   recruitment_application: { icon: "+", tone: "green" },
   quest_decision:          { icon: "!", tone: "danger" },
   reputation_event:        { icon: "명", tone: "gold" },
+  world_event:             { icon: "세", tone: "teal" },
 };
 
 const PRIORITY_LABEL: Record<string, string> = {
@@ -91,6 +93,9 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd, onNaviga
       onNavigate?.("quests", { questId: item.target.entityId });
     } else if (item.type === "reputation_event") {
       onStateChange((s) => dismissReputationEvent(s, item.sourceId));
+    } else if (item.type === "world_event") {
+      onStateChange((s) => dismissWorldEventNotification(s, item.sourceId));
+      handleTabChange("world");
     }
   }
 
@@ -169,6 +174,16 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd, onNaviga
           onClick={() => handleTabChange("reputation")}
         >
           명성
+        </button>
+        <button
+          className={`gh-tab${tab === "world" ? " active" : ""}`}
+          onMouseEnter={playHover}
+          onClick={() => handleTabChange("world")}
+        >
+          세계 소식
+          {state.activeWorldEvents.length > 0 && (
+            <span className="gh-tab-badge">{state.activeWorldEvents.length}</span>
+          )}
         </button>
       </div>
 
@@ -451,6 +466,86 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd, onNaviga
                       <span className="rep-log-after">{entry.reputationAfter.toLocaleString()}</span>
                     </div>
                   ))}
+                </div>
+              )}
+            </section>
+          </div>
+        );
+      })()}
+
+      {/* World News Board tab */}
+      {tab === "world" && (() => {
+        const CATEGORY_LABEL: Record<string, string> = {
+          social: "사회", economy: "경제", disaster: "재난",
+          military: "군사", politics: "정치", disease: "질병", nature: "자연",
+        };
+        const EFFECT_LABEL: Record<string, string> = {
+          warehouse_sale: "창고 판매가",
+          quest_reward:   "의뢰 보상",
+          recruitment:    "지원자",
+          region_danger:  "지역 위험도",
+          loot_value:     "전리품 가치",
+        };
+        return (
+          <div className="wnb-page">
+            <section className="wnb-active-section">
+              <p className="wnb-section-label">현재 진행 중인 세계 이벤트</p>
+              {state.activeWorldEvents.length === 0 ? (
+                <p className="wnb-empty">현재 진행 중인 세계 이벤트가 없습니다.</p>
+              ) : (
+                <div className="wnb-card-list">
+                  {state.activeWorldEvents.map((event) => {
+                    const def = getWorldEventDefinitionById(event.definitionId);
+                    if (!def) return null;
+                    return (
+                      <div key={event.id} className={`wnb-card wnb-card-active we-cat-${def.category}`}>
+                        <div className="wnb-card-head">
+                          <span className="wnb-card-name">{def.name}</span>
+                          <span className="wnb-card-cat">{CATEGORY_LABEL[def.category] ?? def.category}</span>
+                          <span className="wnb-card-days">잔여 {event.remainingDays}일</span>
+                        </div>
+                        <p className="wnb-card-desc">{def.description}</p>
+                        {def.effects.length > 0 && (
+                          <div className="wnb-card-effects">
+                            {def.effects.map((eff, i) => {
+                              const sign = eff.modifier >= 0 ? "+" : "";
+                              const pct = Math.round(Math.abs(eff.modifier) * 100);
+                              const isPos = eff.modifier >= 0;
+                              return (
+                                <span key={i} className={`wnb-effect${isPos ? " pos" : " neg"}`}>
+                                  {EFFECT_LABEL[eff.target] ?? eff.target} {sign}{pct}%
+                                </span>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            <section className="wnb-history-section">
+              <p className="wnb-section-label">최근 세계 기록</p>
+              {state.worldEventHistory.length === 0 ? (
+                <p className="wnb-empty">아직 기록이 없습니다.</p>
+              ) : (
+                <div className="wnb-history-list">
+                  {state.worldEventHistory.map((entry) => {
+                    const def = getWorldEventDefinitionById(entry.definitionId);
+                    const endLabel = `${seasonLabels[entry.endedAt.season]} ${entry.endedAt.day}일`;
+                    return (
+                      <div key={entry.id} className="wnb-history-row">
+                        <span className="wnb-history-name">{def?.name ?? entry.definitionId}</span>
+                        <span className="wnb-history-cat">{CATEGORY_LABEL[def?.category ?? ""] ?? ""}</span>
+                        <span className="wnb-history-date">{endLabel} 종료</span>
+                        {def && (
+                          <span className="wnb-history-type">{worldEventTypeLabels[def.type] ?? def.type}</span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </section>

@@ -1,6 +1,7 @@
 import type { GameDate, GameState, InboxItem, InboxPriority, RecruitmentEventType } from "../../types/game";
 import { getDirectorState } from "./questDirector";
 import { getReputationEventById } from "../../data/reputationEventData";
+import { getWorldEventDefinitionById } from "../../data/worldEventData";
 
 const PRIORITY_ORDER: Record<InboxPriority, number> = {
   critical: 0,
@@ -136,6 +137,27 @@ export function getInboxItems(state: GameState): InboxItem[] {
       createdDay: pending.day,
       requiresAction: false,
       isUrgent: false,
+    });
+  }
+
+  // ── World Event Notifications (informational — do not block day-end) ──────────
+  for (const notif of state.pendingWorldEventNotifications) {
+    const def = getWorldEventDefinitionById(notif.definitionId);
+    if (!def?.inboxTitle) continue;
+    // Only show if the event is still active
+    const isActive = state.activeWorldEvents.some((e) => e.id === notif.id);
+    if (!isActive) continue;
+    items.push({
+      id: `inbox-world-event-${notif.id}`,
+      type: "world_event",
+      priority: def.inboxPriority ?? "normal",
+      title: def.inboxTitle,
+      summary: def.description,
+      sourceId: notif.id,
+      target: { page: "guildHall" },
+      createdDay: notif.day,
+      requiresAction: false,
+      isUrgent: (def.inboxPriority === "urgent" || def.inboxPriority === "critical"),
     });
   }
 

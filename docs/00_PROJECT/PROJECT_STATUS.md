@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0020-C — 가입 신청 스토리 확장 및 연출 리뉴얼**
+**0020-D — 세계 이벤트 시스템 확장**
 
 ## 완료
 
@@ -337,6 +337,20 @@
   - `ApplicantDetail.tsx` — 전면 리뉴얼: 등장 연출 → 대형 초상화+신원 히어로 → 스토리 카드 그리드 → 장단점 → 능력치 → 액션
   - `ATMOSPHERE_MAP` — 이벤트 타입 → 분위기 클래스 매핑 (royal·bond·shadow·mystery·bright·veteran)
   - CSS: `.rd-arrival-scene` / `.rd-arrival-text` / `.rd-hero` / `.rd-portrait-lg` / `.rd-hero-info` / `.rd-name-lg` / `.rd-class-lg` / `.rd-event-badge` / `.rd-story-grid` / `.rd-story-card` / `.rd-story-label` / `.rd-story-text` / `.rda-*` 분위기 클래스 6종
+
+- 세계 이벤트 시스템 확장 (0020-D)
+  - `WorldEventCategory` 타입 추가 (social·economy·disaster·military·politics·disease·nature)
+  - `WorldEventType` 9개 신규 타입 추가 (succession_crisis·noble_dispute·mine_discovery·trade_boom·flood·memorial_ceremony·monster_migration·war·bandit_surge) → 총 17종
+  - `WorldEventEffectTarget` `loot_value` 추가
+  - `WorldEventDefinition` — category·regionId·followUpIds·inboxTitle·inboxPriority 필드 추가
+  - `WorldEventHistoryEntry` 인터페이스 추가
+  - `"world_event"` InboxItemType 추가
+  - `GameState` — worldEventHistory·pendingWorldEventNotifications 필드 추가
+  - `worldEvents.ts` — tickWorldEvents에 날짜·히스토리 반환, trySpawnFollowUpEvent, dismissWorldEventNotification 추가
+  - `dayEnd.ts` — 연쇄 이벤트(followUp) 트리거 연동
+  - `inboxSelectors.ts` — world_event Inbox 알림 파생
+  - World News Board UI — "세계 소식" 탭 신규 (활성 이벤트 카드·히스토리 목록)
+  - CSS: wnb-* 클래스 군, we-cat-* 카테고리 색상 추가
 
 ## 다음 작업
 

@@ -1438,6 +1438,38 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .day-end-report-item.world_event_ended   { border-left: 2px solid #4a4a4a; background: rgba(14,14,14,.7); }
 .day-end-report-item.world_event_ended   strong { color: #8a8a8a; }
 
+/* ── World News Board (wnb-*) ───────────────────────────────────────────────── */
+.wnb-page { display: flex; flex-direction: column; gap: calc(24px * var(--ui-scale)); padding: calc(20px * var(--ui-scale)) calc(24px * var(--ui-scale)); overflow-y: auto; flex: 1; }
+.wnb-section-label { margin: 0 0 calc(12px * var(--ui-scale)); font-size: var(--font-tiny); color: #4a5a50; letter-spacing: .12em; }
+.wnb-empty { margin: 0; font-size: var(--font-small); color: #3a4a3e; font-style: italic; }
+.wnb-card-list { display: flex; flex-direction: column; gap: calc(10px * var(--ui-scale)); }
+.wnb-card { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); padding: calc(14px * var(--ui-scale)) calc(16px * var(--ui-scale)); border: 1px solid #1e2c22; border-left: 3px solid #3a6050; background: rgba(10,18,14,.6); }
+.wnb-card-head { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); flex-wrap: wrap; }
+.wnb-card-name { font-size: var(--font-body); color: #c0d8c4; font-weight: 500; font-family: Georgia, serif; }
+.wnb-card-cat { font-size: var(--font-tiny); color: #4a6a5a; border: 1px solid #2a3a30; padding: 1px 6px; white-space: nowrap; }
+.wnb-card-days { font-size: var(--font-tiny); color: #5a8a6a; margin-left: auto; white-space: nowrap; }
+.wnb-card-desc { margin: 0; font-size: var(--font-small); color: #7a9a84; line-height: 1.7; }
+.wnb-card-effects { display: flex; flex-wrap: wrap; gap: calc(6px * var(--ui-scale)); }
+.wnb-effect { font-size: var(--font-tiny); padding: 2px 8px; border: 1px solid transparent; }
+.wnb-effect.pos { color: #6ab880; border-color: #2a5030; background: rgba(12,28,16,.6); }
+.wnb-effect.neg { color: #c07070; border-color: #4a2020; background: rgba(24,8,8,.6); }
+/* Category accent colors for active event cards */
+.we-cat-social   { border-left-color: #7a6040; }
+.we-cat-economy  { border-left-color: #4a7a5a; }
+.we-cat-disaster { border-left-color: #8a4a30; }
+.we-cat-military { border-left-color: #7a4040; }
+.we-cat-politics { border-left-color: #6a4a80; }
+.we-cat-disease  { border-left-color: #3a7060; }
+.we-cat-nature   { border-left-color: #4a7040; }
+/* History list */
+.wnb-history-list { display: flex; flex-direction: column; gap: 0; }
+.wnb-history-row { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); padding: calc(7px * var(--ui-scale)) calc(10px * var(--ui-scale)); border-bottom: 1px solid #1a2820; }
+.wnb-history-row:last-child { border-bottom: none; }
+.wnb-history-name { font-size: var(--font-small); color: #7a8a80; flex: 1; }
+.wnb-history-cat { font-size: var(--font-tiny); color: #3a5040; width: calc(40px * var(--ui-scale)); }
+.wnb-history-date { font-size: var(--font-tiny); color: #4a5a50; white-space: nowrap; }
+.wnb-history-type { display: none; }
+
 /* ── Reputation tab ─────────────────────────────────────────────────────────── */
 .rep-tab { display: flex; flex-direction: column; gap: calc(20px * var(--ui-scale)); padding: calc(20px * var(--ui-scale)) calc(24px * var(--ui-scale)); overflow-y: auto; flex: 1; }
 .rep-summary { display: grid; grid-template-columns: 1fr 1fr; gap: calc(16px * var(--ui-scale)); padding: calc(18px * var(--ui-scale)) calc(20px * var(--ui-scale)); background: rgba(14,22,16,.6); border: 1px solid #1e2c20; }

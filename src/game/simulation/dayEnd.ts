@@ -8,7 +8,7 @@ import {
   releaseHeldApplicants,
   toAbsoluteDay,
 } from "./recruitment";
-import { getWorldEventDefinition, tickWorldEvents, trySpawnWorldEvent } from "./worldEvents";
+import { getWorldEventDefinition, tickWorldEvents, trySpawnFollowUpEvent, trySpawnWorldEvent } from "./worldEvents";
 import { applyDailyOperatingCost } from "./operatingCost";
 import { getReputationTier } from "../constants/reputation";
 
@@ -68,11 +68,25 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
   // 5. Generate new applicants for the new day
   const { state: afterGenerate, newApplicants } = generateDailyApplicants(afterAdvance);
 
-  // 6. Tick world events (decrement remaining days, collect expired)
-  const { state: afterTick, expired: expiredEvents } = tickWorldEvents(afterGenerate);
+  // 6. Tick world events (decrement remaining days, collect expired, record history)
+  const { state: afterTick, expired: expiredEvents } = tickWorldEvents(afterGenerate, afterGenerate.currentDate);
+
+  // 6.5. Try to spawn follow-up events for expired events
+  let afterFollowUps = afterTick;
+  const followUpSpawned: typeof expiredEvents = [];
+  for (const expiredEvent of expiredEvents) {
+    const def = getWorldEventDefinition(expiredEvent.definitionId);
+    if (def?.followUpIds?.length) {
+      const result = trySpawnFollowUpEvent(afterFollowUps, def.followUpIds, afterTick.currentDate);
+      if (result.spawned) {
+        afterFollowUps = result.state;
+        followUpSpawned.push(result.spawned);
+      }
+    }
+  }
 
   // 7. Try to spawn a new world event for the new day
-  const { state: afterWorldEvents, spawned: spawnedEvent } = trySpawnWorldEvent(afterTick, afterTick.currentDate);
+  const { state: afterWorldEvents, spawned: spawnedEvent } = trySpawnWorldEvent(afterFollowUps, afterFollowUps.currentDate);
 
   // Add chronicle entries for world event changes
   let afterChronicle = afterWorldEvents;
@@ -91,11 +105,11 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
       });
     }
   }
-  if (spawnedEvent) {
-    const def = getWorldEventDefinition(spawnedEvent.definitionId);
+  for (const event of [...followUpSpawned, ...(spawnedEvent ? [spawnedEvent] : [])]) {
+    const def = getWorldEventDefinition(event.definitionId);
     if (def) {
       worldEventChronicleEntries.push({
-        id: `chr-we-start-${spawnedEvent.id}`,
+        id: `chr-we-start-${event.id}`,
         date: afterChronicle.currentDate,
         scope: "world",
         category: "world",
@@ -231,13 +245,13 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     });
   }
 
-  // World events started
-  if (spawnedEvent) {
-    const def = getWorldEventDefinition(spawnedEvent.definitionId);
+  // World events started (follow-ups + regular spawn)
+  for (const event of [...followUpSpawned, ...(spawnedEvent ? [spawnedEvent] : [])]) {
+    const def = getWorldEventDefinition(event.definitionId);
     items.push({
       kind: "world_event_started",
-      title: `세계 이벤트 — ${def?.name ?? spawnedEvent.definitionId}`,
-      description: `${def?.startNotification ?? ""} (${spawnedEvent.remainingDays}일간 지속)`,
+      title: `세계 이벤트 — ${def?.name ?? event.definitionId}`,
+      description: `${def?.startNotification ?? ""} (${event.remainingDays}일간 지속)`,
     });
   }
 

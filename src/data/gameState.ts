@@ -488,6 +488,8 @@ const _rawState: GameState = {
     lastGeneratedDay: null,
   },
   activeWorldEvents: [],
+  worldEventHistory: [],
+  pendingWorldEventNotifications: [],
   reputationChanges: [],
   pendingReputationEvents: [],
 };

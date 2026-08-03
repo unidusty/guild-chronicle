@@ -220,6 +220,7 @@
 **0020-A** Quest Director 콘텐츠 확장 및 길드 업무(Inbox) 시스템 — ✅ 완료 (InboxItem 타입, inboxSelectors, MASTER'S DESK Inbox 전환, 일일 종료 차단, Quest Board 네비게이션, EVENT_POOL 10개 추가 → 100개)
 **0020-B** 길드 명성 활용 시스템 — ✅ 완료 (ReputationCondition·ReputationEventDefinition 타입, reputation_event InboxItem, 명성 이벤트 데이터 6종, 의뢰 명성 조건 필터링, dayEnd 명성 보고, 클릭 dismiss)
 **0020-C** 가입 신청 스토리 확장 및 연출 리뉴얼 — ✅ 완료 (11개 신규 이벤트 타입, arrivalScene·followUpHints 구조, ApplicantDetail UI 전면 리뉴얼, 분위기 클래스 6종)
+**0020-D** 세계 이벤트 시스템 확장 — ✅ 완료 (WorldEventCategory, 17종 이벤트 풀, followUpIds 연쇄, WorldEventHistory, world_event Inbox, World News Board 탭)
 
 ---
 

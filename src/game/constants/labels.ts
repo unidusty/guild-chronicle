@@ -162,14 +162,23 @@ export const recruitmentEventTypeLabels: Record<RecruitmentEventType, string> = 
 };
 
 export const worldEventTypeLabels: Record<WorldEventType, string> = {
-  festival:          "왕국 축제",
-  monster_surge:     "몬스터 증가",
-  famine:            "흉년",
-  abundant_harvest:  "풍년",
-  merchant_visit:    "상인 방문",
-  noble_quest_boom:  "귀족 의뢰 증가",
-  border_conflict:   "국경 분쟁",
-  epidemic:          "전염병",
+  festival:            "왕국 축제",
+  monster_surge:       "몬스터 증가",
+  famine:              "흉년",
+  abundant_harvest:    "풍년",
+  merchant_visit:      "상인 방문",
+  noble_quest_boom:    "귀족 의뢰 증가",
+  border_conflict:     "국경 분쟁",
+  epidemic:            "전염병",
+  succession_crisis:   "왕위 계승 분쟁",
+  noble_dispute:       "귀족 분쟁",
+  mine_discovery:      "광맥 발견",
+  trade_boom:          "교역 활성화",
+  flood:               "홍수",
+  memorial_ceremony:   "영웅 추모식",
+  monster_migration:   "몬스터 대이동",
+  war:                 "전쟁",
+  bandit_surge:        "도적 증가",
 };
 
 export function getBondStageLabel(questCount: number): string {
