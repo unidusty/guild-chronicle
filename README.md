@@ -4,7 +4,7 @@
 
 ## 현재 버전
 
-**018-O — Project Documentation Finalization**
+**0018-P — Project Documentation Refactor & Workflow System**
 
 ## 실행 방법
 
@@ -24,20 +24,51 @@ npm run build
 
 ## 기술 스택
 
-- React
-- TypeScript
-- Vite
-- 순수 CSS
+- React 19 + TypeScript 5.8 + Vite 7
+- 순수 CSS (프레임워크 없음)
+- 상태: 순수 함수 `(state: GameState) => GameState`
 
-1차 목표는 브라우저 기반 싱글 플레이 MVP다. 데스크톱 앱 패키징은 게임 루프가 작동한 뒤 Tauri 적용을 검토한다.
+## 프로젝트 구조
+
+```
+Guild Chronicle/
+├── src/
+│   ├── game/           순수 게임 로직
+│   ├── features/       기능 단위 상태·화면 연결
+│   └── components/     공용 UI
+├── docs/               설계 문서
+│   ├── 00_PROJECT/     프로젝트 운영
+│   ├── 01_SYSTEM/      게임 시스템 설계
+│   ├── 02_DATABASE/    데이터 구조
+│   ├── 03_DESIGN/      구현 설계 가이드
+│   └── 99_BRAINSTORM/  아이디어·미확정 기획
+├── tasks/              작업지시서 관리
+│   ├── todo/           대기 중
+│   ├── doing/          진행 중
+│   └── archive/        완료된 작업
+└── public/             정적 에셋
+```
 
 ## 문서
 
-- `docs/01_GAME_VISION.md` — 변하지 않는 게임 방향
-- `docs/02_GAME_SYSTEM.md` — 주요 시스템
-- `docs/03_GAME_RULES.md` — 수치와 규칙
-- `docs/04_ROADMAP.md` — 개발 순서
-- `docs/05_PROJECT_STATUS.md` — 현재 상태
-- `PROJECT_RULES.md` — 개발 규칙
-- `PROJECT_TERMINOLOGY.md` — 공식 용어 사전
-- `docs/design/` — 에셋 및 시스템 설계 가이드
+| 문서 | 경로 |
+|------|------|
+| 프로젝트 개요 | `docs/00_PROJECT/PROJECT_OVERVIEW.md` |
+| 개발 규칙 | `docs/00_PROJECT/PROJECT_RULES.md` |
+| 공식 용어 사전 | `docs/00_PROJECT/PROJECT_TERMINOLOGY.md` |
+| 게임 비전 | `docs/00_PROJECT/GAME_VISION.md` |
+| 로드맵 | `docs/00_PROJECT/ROADMAP.md` |
+| 현재 상태 | `docs/00_PROJECT/PROJECT_STATUS.md` |
+| 변경 이력 | `docs/00_PROJECT/CHANGELOG.md` |
+| 게임 시스템 | `docs/01_SYSTEM/GAME_SYSTEM.md` |
+| 설계 가이드 | `docs/03_DESIGN/` |
+
+## 개발 방식
+
+모든 개발은 **문서 먼저 → 구현 나중** 원칙으로 진행한다.
+
+```
+기획 → tasks/todo/ 작업지시서 → docs/ 설계 문서 → 코드 → tasks/archive/ 보관
+```
+
+→ 상세: `docs/00_PROJECT/PROJECT_WORKFLOW.md`
