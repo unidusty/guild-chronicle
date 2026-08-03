@@ -247,6 +247,9 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
                     </button>
                   );
                 })}
+                {state.reports.length === 0 && state.returnReports.length === 0 && pendingApplicantCount === 0 && (
+                  <p className="report-list-empty">결재 대기 항목이 없습니다.</p>
+                )}
               </div>
             </article>
 

@@ -427,16 +427,7 @@ const _rawState: GameState = {
       relatedEntityIds: ["guild-westwind", "facility-smithy"],
     },
   ],
-  reports: [
-    {
-      id: "report-medical-ella", kind: "medical", title: "부상자 치료 방침",
-      description: "엘라 빈터의 고급 치료제 사용 여부", relatedEntityIds: ["adv-ella", "injury-ella-bruise"], priority: "high",
-    },
-    {
-      id: "report-rescue-mine", kind: "emergency", title: "긴급 구조 의뢰",
-      description: "북부 광산에서 다른 길드가 지원을 요청했다.", relatedEntityIds: [], priority: "critical",
-    },
-  ],
+  reports: [],
   questProgress: {
     "quest-caravan": {
       questId: "quest-caravan", partyId: "party-silverhawk",
