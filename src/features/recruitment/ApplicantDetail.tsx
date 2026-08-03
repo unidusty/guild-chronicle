@@ -36,108 +36,102 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
 
   return (
     <div className="rec-detail-pane">
-      {/* Header */}
-      <div className="rec-detail-header">
-        <div className="portrait bust rec-detail-bust">
+
+      {/* ── 상단: 초상화 + 신원·가입 신청 정보 ──────────────────── */}
+      <div className="rd-top">
+        <div className="rd-portrait">
           {applicant.portrait
-            ? <img src={applicant.portrait} alt={applicant.name} />
-            : <span className="rec-detail-initials">{initials}</span>}
+            ? <img className="rd-portrait-img" src={applicant.portrait} alt={applicant.name} />
+            : <span className="rd-portrait-initials">{initials}</span>}
         </div>
-        <div className="rec-detail-identity">
-          <p className="rec-detail-name">{applicant.name}</p>
-          <p className="rec-detail-meta">
-            {raceLabels[applicant.race]} · {genderLabels[applicant.gender]} · {applicant.age}세
-          </p>
-          <p className="rec-detail-class">{jobLabels[applicant.classId] ?? applicant.classId}</p>
-          <p className="rec-detail-personality">{applicant.personalityLabel}</p>
+
+        <div className="rd-info">
+          {/* 신원 */}
+          <div className="rd-identity">
+            <div className="rd-name-row">
+              <p className="rd-name">{applicant.name}</p>
+              {isSpecial && <span className="rec-event-badge">특별 지원</span>}
+            </div>
+            <p className="rd-meta">{raceLabels[applicant.race]} · {genderLabels[applicant.gender]} · {applicant.age}세</p>
+            <p className="rd-class">{jobLabels[applicant.classId] ?? applicant.classId}</p>
+            <p className="rd-personality">{applicant.personalityLabel}</p>
+          </div>
+
+          {/* 가입 신청 배경 */}
+          <div className="rd-bg">
+            <p className="rd-section-label">가입 신청</p>
+            {def && (
+              <div className="rd-field">
+                <span className="rd-field-label">가입 배경</span>
+                <span className="rd-field-value">{def.name}</span>
+              </div>
+            )}
+            {def?.featureText && (
+              <div className="rd-field">
+                <span className="rd-field-label">현재 상황</span>
+                <span className="rd-field-value">{def.featureText}</span>
+              </div>
+            )}
+            <div className="rd-field">
+              <span className="rd-field-label">지원 동기</span>
+              <span className="rd-field-value">{applicant.motivation}</span>
+            </div>
+            <div className="rd-field">
+              <span className="rd-field-label">첫인상</span>
+              <span className="rd-field-value">{applicant.firstImpression}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 가입 신청 정보 — all applicants */}
-      <div className={`rec-bg-section${isSpecial ? " special" : ""}`}>
-        <div className="rec-bg-heading">
-          <span className="rec-bg-heading-text">가입 신청</span>
-          {isSpecial && <span className="rec-event-badge">특별 지원</span>}
-        </div>
-
-        {/* 가입 배경 */}
-        {def && (
-          <div className="rec-bg-row">
-            <span className="rec-bg-label">가입 배경</span>
-            <span className="rec-bg-value">{def.name}</span>
-          </div>
-        )}
-
-        {/* 현재 상황 */}
-        {def?.featureText && (
-          <div className="rec-bg-row">
-            <span className="rec-bg-label">현재 상황</span>
-            <span className="rec-bg-value">{def.featureText}</span>
-          </div>
-        )}
-
-        {/* 상세 배경 — special events only */}
-        {isSpecial && def?.description && (
-          <div className="rec-bg-row">
-            <span className="rec-bg-label">상세 배경</span>
-            <span className="rec-bg-value">{def.description}</span>
-          </div>
-        )}
-
-        {/* 추천인 — if present */}
-        {def?.recommenderText && (
-          <div className="rec-bg-row">
-            <span className="rec-bg-label">추천인</span>
-            <span className="rec-bg-value rec-bg-recommender">{def.recommenderText}</span>
-          </div>
-        )}
-
-        {/* 함께 지원 — siblings etc. */}
-        {relatedNames.length > 0 && (
-          <div className="rec-bg-row">
-            <span className="rec-bg-label">함께 지원</span>
-            <span className="rec-bg-value rec-bg-sibling">{relatedNames.join(", ")}</span>
-          </div>
-        )}
-
-        {/* 지원 동기 */}
-        <div className="rec-bg-row">
-          <span className="rec-bg-label">지원 동기</span>
-          <span className="rec-bg-value">{applicant.motivation}</span>
-        </div>
-
-        {/* 첫인상 */}
-        <div className="rec-bg-row">
-          <span className="rec-bg-label">첫인상</span>
-          <span className="rec-bg-value">{applicant.firstImpression}</span>
-        </div>
-
-        {/* 장점 / 단점 */}
-        {def && (
-          <>
-            <div className="rec-bg-row">
-              <span className="rec-bg-label">장점</span>
-              <span className="rec-bg-value rec-bg-adv">{def.advantageText}</span>
+      {/* ── 중단: 장단점 + 특별 정보 ────────────────────────────── */}
+      {def && (
+        <div className="rd-mid">
+          <div className="rd-adv-dis">
+            <div className="rd-adv-card">
+              <p className="rd-adv-label">장점</p>
+              <p className="rd-adv-text">{def.advantageText}</p>
             </div>
-            <div className="rec-bg-row">
-              <span className="rec-bg-label">단점</span>
-              <span className="rec-bg-value rec-bg-dis">{def.disadvantageText}</span>
+            <div className="rd-dis-card">
+              <p className="rd-dis-label">단점</p>
+              <p className="rd-dis-text">{def.disadvantageText}</p>
             </div>
-          </>
-        )}
-
-        {/* 특별 사정 — special events only */}
-        {isSpecial && def?.specialNote && (
-          <div className="rec-bg-row rec-bg-special-note-row">
-            <span className="rec-bg-label">특별 사정</span>
-            <span className="rec-bg-value rec-bg-special-note">{def.specialNote}</span>
           </div>
-        )}
-      </div>
 
-      {/* Stats */}
-      <div className="rec-detail-section">
-        <p className="rec-detail-label">능력치</p>
+          {isSpecial && (
+            <div className="rd-special-extras">
+              {def.description && (
+                <div className="rd-field">
+                  <span className="rd-field-label">상세 배경</span>
+                  <span className="rd-field-value">{def.description}</span>
+                </div>
+              )}
+              {def.recommenderText && (
+                <div className="rd-field">
+                  <span className="rd-field-label">추천인</span>
+                  <span className="rd-field-value rd-recommender">{def.recommenderText}</span>
+                </div>
+              )}
+              {relatedNames.length > 0 && (
+                <div className="rd-field">
+                  <span className="rd-field-label">함께 지원</span>
+                  <span className="rd-field-value rd-sibling">{relatedNames.join(", ")}</span>
+                </div>
+              )}
+              {def.specialNote && (
+                <div className="rd-special-note">
+                  <p className="rd-special-note-label">특별 사정</p>
+                  <p className="rd-special-note-text">{def.specialNote}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── 하단: 능력치 ─────────────────────────────────────────── */}
+      <div className="rd-stats-section">
+        <p className="rd-section-label">능력치</p>
         <div className="rec-detail-stats">
           {(Object.keys(applicant.stats) as Array<keyof Stats>).map((stat) => {
             const val = applicant.stats[stat];
@@ -155,7 +149,7 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
         </div>
       </div>
 
-      {/* Actions */}
+      {/* ── 승인·보류·반려 버튼 ──────────────────────────────────── */}
       <div className="rec-action-bar">
         {isHeld ? (
           <>
