@@ -439,6 +439,46 @@ export interface DailyReport {
   items: DailyReportItem[];
 }
 
+// ── Recruitment Events ───────────────────────────────────────────────────────
+
+export type RecruitmentEventType =
+  | "siblings"
+  | "fallen_noble"
+  | "rival_guild_origin"
+  | "royal_recommendation"
+  | "retired_knight"
+  | "suspicious_applicant"
+  | "famous_adventurer_apprentice"
+  | "orphan_background"
+  | "injury_comeback"
+  | "debt_motivated";
+
+export interface RecruitmentEventDefinition {
+  id: EntityId;
+  type: RecruitmentEventType;
+  name: string;
+  description: string;
+  featureText: string;
+  advantageText: string;
+  disadvantageText: string;
+  weight: number;
+  applicantCount: number;
+  conditions?: {
+    minAge?: number;
+    maxAge?: number;
+    allowedRaces?: Race[];
+    allowedClasses?: string[];
+  };
+}
+
+export interface RecruitmentEventContext {
+  eventId: EntityId;
+  eventType: RecruitmentEventType;
+  groupId: EntityId;
+  relatedApplicantIds: EntityId[];
+  originNote: string;
+}
+
 // ── Recruitment ──────────────────────────────────────────────────────────────
 
 export type RecruitmentApplicantStatus =
@@ -471,6 +511,7 @@ export interface RecruitmentApplicant {
   appliedDay: number;       // toAbsoluteDay(appliedAt) for fast comparison
   expiresDay: number;       // appliedDay + EXPIRY_DAYS
   holdUntilDay: number | null;
+  recruitmentEvent?: RecruitmentEventContext;
 }
 
 export interface RecruitmentHistoryItem {

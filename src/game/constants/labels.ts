@@ -1,4 +1,4 @@
-import type { Adventurer, AdventurerStatus, FinanceTransactionDirection, FinanceTransactionType, Gender, PartyStatus, QuestCategory, QuestResultGrade, QuestStage, QuestStatus, QuestType, Race, Stats, WorldEventType } from "../../types/game";
+import type { Adventurer, AdventurerStatus, FinanceTransactionDirection, FinanceTransactionType, Gender, PartyStatus, QuestCategory, QuestResultGrade, QuestStage, QuestStatus, QuestType, Race, RecruitmentEventType, Stats, WorldEventType } from "../../types/game";
 
 export const raceLabels: Record<Race, string> = {
   human: "인간",
@@ -128,6 +128,19 @@ export const financeTransactionTypeLabels: Record<FinanceTransactionType, string
 export const financeDirectionLabels: Record<FinanceTransactionDirection, string> = {
   income:  "수입",
   expense: "지출",
+};
+
+export const recruitmentEventTypeLabels: Record<RecruitmentEventType, string> = {
+  siblings:                    "형제 함께 지원",
+  fallen_noble:                "몰락한 귀족",
+  rival_guild_origin:          "라이벌 길드 출신",
+  royal_recommendation:        "왕실 추천장",
+  retired_knight:              "은퇴 기사",
+  suspicious_applicant:        "수상한 지원자",
+  famous_adventurer_apprentice:"유명 모험가의 제자",
+  orphan_background:           "고아 출신",
+  injury_comeback:             "부상 후 재기",
+  debt_motivated:              "빚을 갚기 위한 지원",
 };
 
 export const worldEventTypeLabels: Record<WorldEventType, string> = {

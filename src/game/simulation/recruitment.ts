@@ -1,6 +1,6 @@
 import type {
   Adventurer, ChronicleEntry, EntityId, GameDate, GameState,
-  RecruitmentApplicant, RecruitmentHistoryItem, Stats,
+  Race, RecruitmentApplicant, RecruitmentEventDefinition, RecruitmentHistoryItem, Stats,
 } from "../../types/game";
 import { FACILITY_DEFS } from "../../data/facilityData";
 import { getPortraitAvoiding } from "../assets/portraits";
@@ -12,6 +12,10 @@ import {
   PERSONALITY_LABELS, POSITIVE_TRAITS, RACE_WEIGHTS, RARE_TRAITS,
   STAT_TEMPLATES,
 } from "../../data/recruitmentData";
+import {
+  RECRUITMENT_EVENT_CHANCE,
+  RECRUITMENT_EVENT_DEFINITIONS,
+} from "../../data/recruitmentEventData";
 import { jobLabels } from "../constants/labels";
 import { advanceDate } from "./advance";
 
@@ -158,6 +162,168 @@ function generateSingleApplicant(
   };
 }
 
+// ── Recruitment event generation ─────────────────────────────────────────────
+
+function pickEventDefinition(rng: () => number): RecruitmentEventDefinition | null {
+  const defs = RECRUITMENT_EVENT_DEFINITIONS;
+  const total = defs.reduce((s, d) => s + d.weight, 0);
+  let r = rng() * total;
+  for (const def of defs) {
+    r -= def.weight;
+    if (r <= 0) return def;
+  }
+  return defs[defs.length - 1];
+}
+
+function pickClassForEvent(def: RecruitmentEventDefinition, rng: () => number): string {
+  const allowed = def.conditions?.allowedClasses;
+  if (allowed && allowed.length > 0) return allowed[Math.floor(rng() * allowed.length)];
+  return pickRandom(CLASS_IDS, rng) as string;
+}
+
+function pickRaceForEvent(def: RecruitmentEventDefinition, rng: () => number): Race {
+  const allowed = def.conditions?.allowedRaces as Race[] | undefined;
+  if (allowed && allowed.length > 0) {
+    const pool = RACE_WEIGHTS.filter((rw) => allowed.includes(rw.race as Race));
+    if (pool.length > 0) return pickWeighted(pool.map(({ race, weight }) => ({ value: race as Race, weight })), rng);
+    return allowed[Math.floor(rng() * allowed.length)] as Race;
+  }
+  return pickWeighted(RACE_WEIGHTS.map(({ race, weight }) => ({ value: race as Race, weight })), rng);
+}
+
+function pickAgeForEvent(def: RecruitmentEventDefinition, race: Race, rng: () => number): number {
+  const { min: raceMin, max: raceMax } = AGE_RANGES[race];
+  const minAge = Math.max(raceMin, def.conditions?.minAge ?? raceMin);
+  const maxAge = Math.min(raceMax, def.conditions?.maxAge ?? raceMax);
+  if (minAge > maxAge) return raceMin;
+  return randInt(minAge, maxAge, rng);
+}
+
+function generateEventApplicants(
+  def: RecruitmentEventDefinition,
+  appliedAt: GameDate,
+  usedPaths: Set<string>,
+  existingNames: Set<string>,
+  rng: () => number,
+): RecruitmentApplicant[] {
+  const groupId: EntityId = `rgroup-${Math.random().toString(36).slice(2, 9)}`;
+  const appliedDay = toAbsoluteDay(appliedAt);
+
+  if (def.applicantCount === 2 && def.type === "siblings") {
+    const race = pickRaceForEvent(def, rng);
+    const familyName = pickRandom(FAMILY_NAMES[race], rng);
+
+    const makeOne = (gender: "male" | "female"): RecruitmentApplicant => {
+      const classId = pickRandom(CLASS_IDS, rng) as string;
+      const age = pickAgeForEvent(def, race, rng);
+      const firstName = (() => {
+        const pool = GIVEN_NAMES[race][gender];
+        let attempts = 0;
+        while (attempts < 12) {
+          const n = pickRandom(pool, rng);
+          const full = `${n} ${familyName}`;
+          if (!existingNames.has(full)) return n;
+          attempts++;
+        }
+        return pickRandom(pool, rng);
+      })();
+      const name = `${firstName} ${familyName}`;
+      const portrait = getPortraitAvoiding(race, gender, classId, usedPaths);
+      return {
+        id: `applicant-${Math.random().toString(36).slice(2, 9)}`,
+        name,
+        race,
+        gender,
+        age,
+        classId: classId as EntityId,
+        portrait,
+        stats: generateStats(classId, rng),
+        personalityLabel: pickRandom(PERSONALITY_LABELS, rng),
+        motivation: pickRandom(MOTIVATIONS, rng),
+        firstImpression: pickRandom(FIRST_IMPRESSIONS, rng),
+        hiddenPotential: generateHiddenPotential(rng),
+        hiddenTraits: generateHiddenTraits(rng),
+        hiddenGrowthType: pickRandom(HIDDEN_GROWTH_TYPES, rng),
+        hiddenLoyaltyTendency: randInt(10, 90, rng),
+        status: "pending",
+        appliedAt,
+        appliedDay,
+        expiresDay: appliedDay + EXPIRY_DAYS,
+        holdUntilDay: null,
+        recruitmentEvent: {
+          eventId: def.id,
+          eventType: def.type,
+          groupId,
+          relatedApplicantIds: [],
+          originNote: "형제 함께 지원",
+        },
+      };
+    };
+
+    const genderA: "male" | "female" = rng() < 0.5 ? "male" : "female";
+    const genderB: "male" | "female" = rng() < 0.4 ? genderA : (genderA === "male" ? "female" : "male");
+    const a = makeOne(genderA);
+    const b = makeOne(genderB);
+    if (a.portrait) usedPaths.add(a.portrait);
+    existingNames.add(a.name);
+    existingNames.add(b.name);
+
+    a.recruitmentEvent!.relatedApplicantIds = [b.id];
+    b.recruitmentEvent!.relatedApplicantIds = [a.id];
+    return [a, b];
+  }
+
+  // Single applicant events
+  const race = pickRaceForEvent(def, rng);
+  const gender: "male" | "female" = rng() < 0.5 ? "male" : "female";
+  const classId = pickClassForEvent(def, rng);
+  const age = pickAgeForEvent(def, race, rng);
+  const name = generateName(race, gender, existingNames, rng);
+  const portrait = getPortraitAvoiding(race, gender, classId, usedPaths);
+
+  const originNotes: Record<string, string> = {
+    "re-fallen-noble":       "몰락한 귀족 출신",
+    "re-rival-guild":        "라이벌 길드 출신",
+    "re-royal-recommendation":"왕실 추천장 보유",
+    "re-retired-knight":     "은퇴 기사",
+    "re-suspicious":         "출신 불명의 지원자",
+    "re-famous-apprentice":  "유명 모험가의 제자",
+    "re-orphan":             "고아 출신",
+    "re-injury-comeback":    "부상 후 재기 지원자",
+    "re-debt-motivated":     "빚을 갚기 위한 지원자",
+  };
+
+  return [{
+    id: `applicant-${Math.random().toString(36).slice(2, 9)}`,
+    name,
+    race,
+    gender,
+    age,
+    classId: classId as EntityId,
+    portrait,
+    stats: generateStats(classId, rng),
+    personalityLabel: pickRandom(PERSONALITY_LABELS, rng),
+    motivation: pickRandom(MOTIVATIONS, rng),
+    firstImpression: pickRandom(FIRST_IMPRESSIONS, rng),
+    hiddenPotential: generateHiddenPotential(rng),
+    hiddenTraits: generateHiddenTraits(rng),
+    hiddenGrowthType: pickRandom(HIDDEN_GROWTH_TYPES, rng),
+    hiddenLoyaltyTendency: randInt(10, 90, rng),
+    status: "pending",
+    appliedAt,
+    appliedDay,
+    expiresDay: appliedDay + EXPIRY_DAYS,
+    holdUntilDay: null,
+    recruitmentEvent: {
+      eventId: def.id,
+      eventType: def.type,
+      groupId,
+      relatedApplicantIds: [],
+      originNote: originNotes[def.id] ?? def.name,
+    },
+  }];
+}
+
 // ── Day advance: expire applicants ───────────────────────────────────────────
 
 export function expireApplicants(
@@ -244,15 +410,11 @@ export function generateDailyApplicants(
   }
 
   const spaceAvailable = config.capacity - pendingCount;
-  const count = Math.min(
-    randInt(config.minApplicants, config.maxApplicants, rng),
-    spaceAvailable,
-  );
-  if (count <= 0) {
+  if (spaceAvailable <= 0) {
     return { state: { ...state, recruitment: { ...state.recruitment, lastGeneratedDay: newAbsDay } }, newApplicants: [] };
   }
 
-  // Collect used portrait paths
+  // Collect used portrait paths and names
   const usedPaths = new Set<string>();
   for (const adv of Object.values(state.adventurers)) {
     if (adv.portrait) usedPaths.add(adv.portrait);
@@ -269,11 +431,31 @@ export function generateDailyApplicants(
 
   const appliedAt = state.currentDate;
   const newApplicants: RecruitmentApplicant[] = [];
-  for (let i = 0; i < count; i++) {
-    const applicant = generateSingleApplicant(appliedAt, usedPaths, existingNames, rng);
-    newApplicants.push(applicant);
-    if (applicant.portrait) usedPaths.add(applicant.portrait);
-    existingNames.add(applicant.name);
+
+  // Try recruitment event first (replaces normal generation when it fires)
+  if (rng() < RECRUITMENT_EVENT_CHANCE) {
+    const def = pickEventDefinition(rng);
+    if (def) {
+      const eventApplicants = generateEventApplicants(def, appliedAt, usedPaths, existingNames, rng);
+      const toAdd = eventApplicants.slice(0, spaceAvailable);
+      for (const a of toAdd) {
+        newApplicants.push(a);
+        if (a.portrait) usedPaths.add(a.portrait);
+        existingNames.add(a.name);
+      }
+    }
+  } else {
+    // Normal generation
+    const count = Math.min(
+      randInt(config.minApplicants, config.maxApplicants, rng),
+      spaceAvailable,
+    );
+    for (let i = 0; i < count; i++) {
+      const applicant = generateSingleApplicant(appliedAt, usedPaths, existingNames, rng);
+      newApplicants.push(applicant);
+      if (applicant.portrait) usedPaths.add(applicant.portrait);
+      existingNames.add(applicant.name);
+    }
   }
 
   return {
@@ -311,13 +493,16 @@ export function acceptApplicant(state: GameState, applicantId: string): GameStat
     adventurerId: newAdventurer.id,
   };
 
+  const eventNote = applicant.recruitmentEvent?.originNote;
   const chronicleEntry: ChronicleEntry = {
     id: `chr-rec-${newAdventurer.id}-${state.currentDate.year}-${state.currentDate.season}-${state.currentDate.day}`,
     date: state.currentDate,
     scope: "adventurer",
     category: "join",
     title: "길드 입단",
-    description: `${jobLabels[applicant.classId] ?? applicant.classId} ${applicant.name}이(가) 서풍 길드에 가입했다.`,
+    description: eventNote
+      ? `${jobLabels[applicant.classId] ?? applicant.classId} ${applicant.name}이(가) 서풍 길드에 가입했다. [${eventNote}]`
+      : `${jobLabels[applicant.classId] ?? applicant.classId} ${applicant.name}이(가) 서풍 길드에 가입했다.`,
     relatedEntityIds: [newAdventurer.id],
   };
 

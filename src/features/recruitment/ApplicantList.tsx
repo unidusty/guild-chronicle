@@ -1,5 +1,5 @@
 import type { EntityId, GameDate, RecruitmentApplicant, RecruitmentHistoryItem } from "../../types/game";
-import { jobLabels, raceLabels, genderLabels } from "../../game/constants/labels";
+import { jobLabels, raceLabels, genderLabels, recruitmentEventTypeLabels } from "../../game/constants/labels";
 import { toAbsoluteDay } from "../../game/simulation/recruitment";
 
 const ACTION_LABEL: Record<string, string> = {
@@ -55,6 +55,11 @@ export default function ApplicantList({ applicants, history, selectedId, current
                   <span className="rec-card-meta">
                     {jobLabels[a.classId] ?? a.classId} · {raceLabels[a.race]} {genderLabels[a.gender]} · {a.age}세
                   </span>
+                  {a.recruitmentEvent && (
+                    <span className="rec-event-badge">
+                      특별 지원 · {recruitmentEventTypeLabels[a.recruitmentEvent.eventType] ?? a.recruitmentEvent.eventType}
+                    </span>
+                  )}
                   <span className="rec-card-expiry">
                     {isHeld && holdLeft != null
                       ? `보류 ${holdLeft}일 후 해제 · 만료 ${daysLeft}일`

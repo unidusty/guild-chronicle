@@ -85,7 +85,13 @@ export function evaluateDirector(
 
   if (candidates.length === 0) return null;
 
-  const best = candidates.reduce((a, b) => scoreEvent(a, tags) >= scoreEvent(b, tags) ? a : b);
+  const totalWeight = candidates.reduce((s, def) => s + scoreEvent(def, tags), 0);
+  let r = Math.random() * totalWeight;
+  let best = candidates[candidates.length - 1];
+  for (const def of candidates) {
+    r -= scoreEvent(def, tags);
+    if (r <= 0) { best = def; break; }
+  }
 
   return {
     forcedEvent:  best,

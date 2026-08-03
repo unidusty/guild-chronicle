@@ -114,10 +114,12 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
 
   // New applicants arrived (next day's applicants)
   if (newApplicants.length > 0) {
+    const eventDef = newApplicants[0].recruitmentEvent;
+    const eventSuffix = eventDef ? ` (${eventDef.originNote})` : "";
     items.push({
       kind: "recruitment_new_applicants",
       title: `신규 지원자 ${newApplicants.length}명 도착`,
-      description: `${newApplicants.map((a) => a.name).join(", ")}이(가) 가입을 신청했습니다.`,
+      description: `${newApplicants.map((a) => a.name).join(", ")}이(가) 가입을 신청했습니다.${eventSuffix}`,
     });
   }
 

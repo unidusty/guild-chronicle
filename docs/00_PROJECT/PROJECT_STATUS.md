@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0018-P — Project Documentation Refactor & Workflow System**
+**0019-E — 가입 신청 이벤트 시스템**
 
 ## 완료
 
@@ -152,7 +152,6 @@
 - 파티원 간 관계 수치
 - 은닉 특성 발현
 - 길드 자금 소비 (유지비, 실패 패널티)
-- 랜덤 세계 이벤트
 - 명성 변동
 - 저장 및 불러오기
 - 능력치 실전 판정 (행동별 능력치 연결)
@@ -219,6 +218,21 @@
   - GuildHallPage 대시보드 — 활성 세계 이벤트 스트립 (이벤트명 + 잔여 일수 + 유형별 색상)
   - CSS: `.world-event-strip` / `.we-tag` / 이벤트 유형별 색상 / `day-end-report-item.world_event_*`
   - 문서: `WORLD_EVENT_SYSTEM_GUIDE.md` (신규), `WORLD_EVENT_DATABASE.md` (신규)
+
+- 가입 신청 이벤트 시스템 (0019-E)
+  - `RecruitmentEventType` / `RecruitmentEventDefinition` / `RecruitmentEventContext` 타입 추가
+  - `RecruitmentApplicant.recruitmentEvent?: RecruitmentEventContext` 필드 추가
+  - `src/data/recruitmentEventData.ts` (신규) — 10종 이벤트 정의 + `RECRUITMENT_EVENT_CHANCE = 0.20`
+  - `recruitment.ts` — `generateEventApplicants` / `pickEventDefinition` 추가; `generateDailyApplicants`에 이벤트 발생 판정 통합
+  - `acceptApplicant` — 이벤트 지원자 승인 시 연대기에 `originNote` 포함
+  - `dayEnd.ts` — `recruitment_new_applicants` 설명에 이벤트 이름 부기
+  - `labels.ts` — `recruitmentEventTypeLabels` 추가
+  - `ApplicantList.tsx` — 특별 지원 배지 (이벤트 이름)
+  - `ApplicantDetail.tsx` — 특별 지원 섹션 (이름·설명·특징·장단점·관계)
+  - `RecruitmentTab.tsx` — `allApplicants` prop 전달
+  - CSS: `.rec-event-badge` / `.rec-event-section` / `.rec-event-adv` / `.rec-event-dis` 등
+  - 문서: `RECRUITMENT_EVENT_SYSTEM_GUIDE.md` (신규), `RECRUITMENT_EVENT_DATABASE.md` (신규), `RECRUITMENT_EVENT_SYSTEM_BRIEFING.md` (신규)
+  - 버그 수정: `questDirector.ts` — critical 단계 이벤트 선택을 결정론적 reduce에서 가중 랜덤으로 교체 (매 게임 동일 이벤트 반복 방지)
 
 ## 다음 작업
 

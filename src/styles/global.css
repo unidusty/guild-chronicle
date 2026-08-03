@@ -768,6 +768,22 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .rec-action-reject  { padding: calc(9px * var(--ui-scale)) calc(22px * var(--ui-scale)); border: 1px solid #4a2a20; background: #2e1a14; color: #a06050; font: inherit; font-size: var(--font-small); cursor: pointer; }
 .rec-action-reject:hover  { background: #3a2018; }
 
+/* Recruitment event badge (list) */
+.rec-event-badge { font-size: var(--font-tiny); color: #c0902a; border: 1px solid #4a3618; background: rgba(50,32,8,.45); padding: 1px 6px; white-space: nowrap; display: inline-block; }
+
+/* Recruitment event section (detail) */
+.rec-event-section { display: flex; flex-direction: column; gap: calc(7px * var(--ui-scale)); border-left: 2px solid #4a3618; padding-left: calc(14px * var(--ui-scale)); }
+.rec-event-section-title { margin: 0; font-size: var(--font-tiny); color: #8a6020; letter-spacing: .1em; }
+.rec-event-name { margin: 0; font-size: var(--font-small); color: #c8922a; font-weight: 600; }
+.rec-event-desc { margin: 0; font-size: var(--font-small); color: #8a9a8c; line-height: 1.7; }
+.rec-event-feature { margin: 0; font-size: var(--font-tiny); color: #7a8070; font-style: italic; }
+.rec-event-adv-dis { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); }
+.rec-event-row { display: flex; gap: calc(8px * var(--ui-scale)); align-items: baseline; }
+.rec-event-row-label { font-size: var(--font-tiny); color: #5a6a5c; letter-spacing: .08em; flex-shrink: 0; min-width: 28px; }
+.rec-event-adv { font-size: var(--font-small); color: #5a9a7a; line-height: 1.6; }
+.rec-event-dis { font-size: var(--font-small); color: #9a6060; line-height: 1.6; }
+.rec-event-sibling { font-size: var(--font-small); color: #7a9ab0; }
+
 /* Action modal */
 .rec-modal-overlay { position: fixed; inset: 0; z-index: 400; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; }
 .rec-modal { background: #16201a; border: 1px solid #2a4030; padding: calc(26px * var(--ui-scale)) calc(30px * var(--ui-scale)); width: calc(320px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(14px * var(--ui-scale)); animation: modal-in .15s ease; }

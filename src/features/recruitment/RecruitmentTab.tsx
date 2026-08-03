@@ -111,6 +111,7 @@ function ActiveRecruitmentTab({ state, onStateChange }: Props) {
       />
       <ApplicantDetail
         applicant={selectedApplicant}
+        allApplicants={applicants}
         classes={state.classes}
         onAccept={() => requestAction("accept")}
         onReject={() => requestAction("reject")}
