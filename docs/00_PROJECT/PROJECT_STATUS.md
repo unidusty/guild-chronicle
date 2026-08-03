@@ -139,6 +139,15 @@
 - 명성 변동
 - 저장 및 불러오기
 
+- 세계관·세계지도 시스템 문서 기반 구축
+- `docs/01_SYSTEM/WORLD_SYSTEM_GUIDE.md` — 세계 구조·규칙·연동 시스템 설계
+- `docs/01_SYSTEM/MONSTER_SYSTEM_GUIDE.md` — 몬스터 분류·위협도·의뢰 연동 규칙
+- `docs/02_DATABASE/REGION_DATABASE.md` — 지역 데이터 구조·10개 지역 상세
+- `docs/02_DATABASE/FACTION_DATABASE.md` — 세력 데이터 구조·9개 세력 상세
+- `docs/02_DATABASE/MONSTER_DATABASE.md` — 몬스터 24종 상세 데이터
+- `docs/02_DATABASE/MONSTER_COLONY_GUIDE.md` — 군락 번식·이동·소탕·재유입 규칙
+- `briefings/WORLD_SYSTEM_BRIEFING.md` — 세계 시스템 문서 구성 개요 및 설계 철학
+
 ## 다음 작업
 
 **0019 — 길드 재정 및 세계 이벤트 (예정)**
