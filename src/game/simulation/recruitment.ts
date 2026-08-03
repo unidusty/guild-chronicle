@@ -12,10 +12,7 @@ import {
   PERSONALITY_LABELS, POSITIVE_TRAITS, RACE_WEIGHTS, RARE_TRAITS,
   STAT_TEMPLATES,
 } from "../../data/recruitmentData";
-import {
-  RECRUITMENT_EVENT_CHANCE,
-  RECRUITMENT_EVENT_DEFINITIONS,
-} from "../../data/recruitmentEventData";
+import { RECRUITMENT_EVENT_DEFINITIONS } from "../../data/recruitmentEventData";
 import { jobLabels } from "../constants/labels";
 import { advanceDate } from "./advance";
 
@@ -281,16 +278,16 @@ function generateEventApplicants(
   const name = generateName(race, gender, existingNames, rng);
   const portrait = getPortraitAvoiding(race, gender, classId, usedPaths);
 
+  // Basic events leave originNote empty (chronicle entry unmodified).
+  // Special events get a one-line note appended to the chronicle on accept.
   const originNotes: Record<string, string> = {
-    "re-fallen-noble":       "몰락한 귀족 출신",
-    "re-rival-guild":        "라이벌 길드 출신",
+    "re-fallen-noble":        "몰락한 귀족 출신",
+    "re-rival-guild":         "라이벌 길드 출신",
     "re-royal-recommendation":"왕실 추천장 보유",
-    "re-retired-knight":     "은퇴 기사",
-    "re-suspicious":         "출신 불명의 지원자",
-    "re-famous-apprentice":  "유명 모험가의 제자",
-    "re-orphan":             "고아 출신",
-    "re-injury-comeback":    "부상 후 재기 지원자",
-    "re-debt-motivated":     "빚을 갚기 위한 지원자",
+    "re-retired-knight":      "은퇴 기사",
+    "re-suspicious":          "출신 불명의 지원자",
+    "re-famous-apprentice":   "유명 모험가의 제자",
+    "re-orphan":              "고아 출신",
   };
 
   return [{
@@ -432,29 +429,16 @@ export function generateDailyApplicants(
   const appliedAt = state.currentDate;
   const newApplicants: RecruitmentApplicant[] = [];
 
-  // Try recruitment event first (replaces normal generation when it fires)
-  if (rng() < RECRUITMENT_EVENT_CHANCE) {
-    const def = pickEventDefinition(rng);
-    if (def) {
-      const eventApplicants = generateEventApplicants(def, appliedAt, usedPaths, existingNames, rng);
-      const toAdd = eventApplicants.slice(0, spaceAvailable);
-      for (const a of toAdd) {
-        newApplicants.push(a);
-        if (a.portrait) usedPaths.add(a.portrait);
-        existingNames.add(a.name);
-      }
-    }
-  } else {
-    // Normal generation
-    const count = Math.min(
-      randInt(config.minApplicants, config.maxApplicants, rng),
-      spaceAvailable,
-    );
-    for (let i = 0; i < count; i++) {
-      const applicant = generateSingleApplicant(appliedAt, usedPaths, existingNames, rng);
-      newApplicants.push(applicant);
-      if (applicant.portrait) usedPaths.add(applicant.portrait);
-      existingNames.add(applicant.name);
+  // All applicants are generated through the event pool.
+  // Basic events (isBasic: true) behave like ordinary applicants in the UI.
+  const eventDef = pickEventDefinition(rng);
+  if (eventDef) {
+    const eventApplicants = generateEventApplicants(eventDef, appliedAt, usedPaths, existingNames, rng);
+    const toAdd = eventApplicants.slice(0, spaceAvailable);
+    for (const a of toAdd) {
+      newApplicants.push(a);
+      if (a.portrait) usedPaths.add(a.portrait);
+      existingNames.add(a.name);
     }
   }
 

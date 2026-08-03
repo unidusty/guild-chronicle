@@ -131,6 +131,10 @@ export const financeDirectionLabels: Record<FinanceTransactionDirection, string>
 };
 
 export const recruitmentEventTypeLabels: Record<RecruitmentEventType, string> = {
+  plain_newcomer:              "평범한 신입",
+  financial_hardship:          "생활고 지원",
+  leaving_hometown:            "이향 지원자",
+  family_support:              "가족 부양 지원",
   siblings:                    "형제 함께 지원",
   fallen_noble:                "몰락한 귀족",
   rival_guild_origin:          "라이벌 길드 출신",

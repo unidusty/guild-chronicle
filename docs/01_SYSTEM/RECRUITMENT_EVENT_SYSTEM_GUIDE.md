@@ -2,20 +2,20 @@
 
 ## 개요
 
-가입 신청 이벤트(Recruitment Event)는 일부 지원자가 평범한 경로가 아닌
-특별한 배경이나 상황을 가지고 길드에 나타나는 시스템이다.
+가입 신청 이벤트(Recruitment Event)는 모든 지원자의 생성 진입점이다.
 
-지원자의 스토리와 개성을 강화하고,
-가입 심사 과정에 간단한 이야기와 선택의 재미를 추가한다.
+평범한 신입도 기본 이벤트를 통해 생성되며,
+특별한 배경을 가진 지원자는 특별 이벤트를 통해 생성된다.
 
 ---
 
 ## 시스템 원칙
 
-- 이벤트 지원자도 기존 `pending → held / accepted / rejected / expired` 상태를 그대로 사용한다.
+- **모든 지원자는 이벤트 풀에서 선택된 이벤트를 통해 생성된다.**
+- 기본 이벤트(`isBasic: true`)는 UI에 배지·상세 섹션을 표시하지 않는다.
+- 특별 이벤트는 지원자 목록과 상세 화면에서 시각적으로 구분된다.
 - 이벤트 설명의 장점·단점은 텍스트 정보이며, 실제 능력치 보정이나 판정 효과로 연결되지 않는다.
-- 원본 지원자 생성 로직(`generateSingleApplicant`)을 파괴하지 않는다.
-- 특별 이벤트가 없어도 기존 가입 심사가 정상 작동한다.
+- 이벤트 지원자도 기존 `pending → held / accepted / rejected / expired` 상태를 그대로 사용한다.
 - 이벤트 종류가 아닌 이벤트 그룹(groupId)으로 인스턴스를 추적한다.
 
 ---
@@ -27,16 +27,21 @@
 `generateDailyApplicants` 내에서 처리된다.
 
 1. 시설·수용량·일일 확률 기존 조건 판정
-2. 이벤트 발생 판정 (`RECRUITMENT_EVENT_CHANCE = 20%`)
-   - 이벤트 발생: 이벤트 지원자 생성 (기존 정상 생성 대체)
-   - 이벤트 없음: 기존 정상 지원자 생성
-3. 수용량 제한 내에서 지원자를 `recruitment.applicants`에 추가
+2. 이벤트 풀에서 가중 랜덤으로 이벤트 선택 (기본 이벤트 ~80%, 특별 이벤트 ~20%)
+3. 선택된 이벤트 규칙에 맞는 지원자 생성 (1명 또는 2명)
+4. 수용량 제한 내에서 지원자를 `recruitment.applicants`에 추가
+
+### 이벤트 분류
+
+| 분류 | isBasic | 가중치 합계 | UI 표시 |
+|---|---|---|---|
+| 기본 이벤트 (6종) | true | ~70 | 배지·섹션 미표시 |
+| 특별 이벤트 (8종) | false (미설정) | ~14 | 배지·섹션 표시 |
 
 ### 주요 상수
 
 | 상수 | 값 | 설명 |
 |---|---|---|
-| `RECRUITMENT_EVENT_CHANCE` | 0.20 | 이벤트 발생 확률 (20%) |
 | `EXPIRY_DAYS` | 5 | 지원 유효 기간 (기존과 동일) |
 
 ---
@@ -58,6 +63,7 @@ interface RecruitmentEventDefinition {
   disadvantageText: string;
   weight: number;
   applicantCount: number;
+  isBasic?: boolean;    // true: 기본 이벤트, UI 미표시
   conditions?: {
     minAge?: number;
     maxAge?: number;

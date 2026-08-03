@@ -78,10 +78,11 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
         </div>
       </div>
 
-      {/* Recruitment Event */}
+      {/* Recruitment Event — only shown for special (non-basic) events */}
       {applicant.recruitmentEvent && (() => {
         const ctx = applicant.recruitmentEvent;
         const def = RECRUITMENT_EVENT_DEFINITIONS.find((d) => d.id === ctx.eventId);
+        if (def?.isBasic) return null;
         const relatedNames = ctx.relatedApplicantIds
           .map((rid) => allApplicants.find((a) => a.id === rid)?.name)
           .filter(Boolean) as string[];

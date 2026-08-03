@@ -114,8 +114,8 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
 
   // New applicants arrived (next day's applicants)
   if (newApplicants.length > 0) {
-    const eventDef = newApplicants[0].recruitmentEvent;
-    const eventSuffix = eventDef ? ` (${eventDef.originNote})` : "";
+    const eventNote = newApplicants[0].recruitmentEvent?.originNote;
+    const eventSuffix = eventNote ? ` (${eventNote})` : "";
     items.push({
       kind: "recruitment_new_applicants",
       title: `신규 지원자 ${newApplicants.length}명 도착`,

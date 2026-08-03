@@ -442,6 +442,10 @@ export interface DailyReport {
 // ── Recruitment Events ───────────────────────────────────────────────────────
 
 export type RecruitmentEventType =
+  | "plain_newcomer"
+  | "financial_hardship"
+  | "leaving_hometown"
+  | "family_support"
   | "siblings"
   | "fallen_noble"
   | "rival_guild_origin"
@@ -463,6 +467,7 @@ export interface RecruitmentEventDefinition {
   disadvantageText: string;
   weight: number;
   applicantCount: number;
+  isBasic?: boolean;
   conditions?: {
     minAge?: number;
     maxAge?: number;

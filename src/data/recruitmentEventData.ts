@@ -1,8 +1,88 @@
 import type { RecruitmentEventDefinition } from "../types/game";
 
-export const RECRUITMENT_EVENT_CHANCE = 0.20;
-
 export const RECRUITMENT_EVENT_DEFINITIONS: RecruitmentEventDefinition[] = [
+  // ── 기본 이벤트 (isBasic: true) ──────────────────────────────────────────────
+  // UI 배지·상세 섹션 미표시. 일반 지원자 경험 유지.
+
+  {
+    id: "re-plain-newcomer",
+    type: "plain_newcomer",
+    name: "평범하지만 성실한 신입",
+    description: "특별한 배경 없이 모험가를 꿈꾸며 찾아온 지원자입니다.",
+    featureText: "일반 신규 지원.",
+    advantageText: "선입견 없이 길드 방식을 받아들일 가능성이 높습니다.",
+    disadvantageText: "실전 경험이 전무합니다.",
+    weight: 20,
+    isBasic: true,
+    applicantCount: 1,
+  },
+  {
+    id: "re-financial-hardship",
+    type: "financial_hardship",
+    name: "생활고로 지원",
+    description: "당장의 생계를 위해 모험가 길드의 문을 두드린 지원자입니다.",
+    featureText: "경제적 동기 지원.",
+    advantageText: "빠르게 일을 시작하고자 하는 의지가 강합니다.",
+    disadvantageText: "장기적 비전보다 단기 수입에 집중할 수 있습니다.",
+    weight: 12,
+    isBasic: true,
+    applicantCount: 1,
+  },
+  {
+    id: "re-leaving-hometown",
+    type: "leaving_hometown",
+    name: "고향을 떠난 초보 모험가",
+    description: "고향을 떠나 새로운 삶을 찾아 도시에 온 초보 지원자입니다.",
+    featureText: "이향(離鄕) 지원자.",
+    advantageText: "새로운 환경에 적응하려는 의욕이 있습니다.",
+    disadvantageText: "도시 생활과 길드 문화에 아직 낯섭니다.",
+    weight: 12,
+    isBasic: true,
+    applicantCount: 1,
+  },
+  {
+    id: "re-family-support",
+    type: "family_support",
+    name: "가족을 부양하기 위한 지원",
+    description: "가족의 생계를 책임지기 위해 안정적인 수입을 원하는 지원자입니다.",
+    featureText: "가족 부양 동기.",
+    advantageText: "꾸준히 의뢰를 수행하려는 책임감이 강합니다.",
+    disadvantageText: "위험한 의뢰에 소극적일 수 있습니다.",
+    weight: 10,
+    isBasic: true,
+    applicantCount: 1,
+  },
+  {
+    id: "re-injury-comeback",
+    type: "injury_comeback",
+    name: "부상 후 재기",
+    description: "과거에 큰 부상을 당했지만 긴 회복 끝에 다시 모험가 활동에 도전하는 지원자입니다.",
+    featureText: "과거 부상 경력, 재기 도전.",
+    advantageText: "강한 의지와 실전 경험을 갖추고 있습니다.",
+    disadvantageText: "부상 부위의 재발 가능성에 대한 우려가 있습니다.",
+    weight: 8,
+    isBasic: true,
+    applicantCount: 1,
+    conditions: {
+      minAge: 22,
+    },
+  },
+  {
+    id: "re-debt-motivated",
+    type: "debt_motivated",
+    name: "빚을 갚기 위한 지원",
+    description: "개인 또는 가족의 빚 때문에 돈이 필요하여 길드에 지원한 경우입니다. 표정에서 절박함이 느껴집니다.",
+    featureText: "경제적 압박으로 인한 지원.",
+    advantageText: "강한 활동 의지와 수입에 대한 높은 동기 부여가 있습니다.",
+    disadvantageText: "경제적 압박이 판단력에 영향을 줄 수 있으며, 외부 문제에 얽힐 가능성이 있습니다.",
+    weight: 8,
+    isBasic: true,
+    applicantCount: 1,
+  },
+
+  // ── 특별 이벤트 (isBasic 미설정) ─────────────────────────────────────────────
+  // UI 배지·상세 섹션 표시.
+
   {
     id: "re-siblings",
     type: "siblings",
@@ -103,35 +183,10 @@ export const RECRUITMENT_EVENT_DEFINITIONS: RecruitmentEventDefinition[] = [
     featureText: "고아 출신, 자립 성장.",
     advantageText: "뛰어난 자립심과 생존 본능을 지니고 있습니다.",
     disadvantageText: "정규 교육 경험이 부족하고 안정적인 인간 관계 형성에 어려움이 있을 수 있습니다.",
-    weight: 3,
+    weight: 2,
     applicantCount: 1,
     conditions: {
       maxAge: 28,
     },
-  },
-  {
-    id: "re-injury-comeback",
-    type: "injury_comeback",
-    name: "부상 후 재기",
-    description: "과거에 큰 부상을 당했지만 긴 회복 끝에 다시 모험가 활동에 도전하는 지원자입니다.",
-    featureText: "과거 부상 경력, 재기 도전.",
-    advantageText: "강한 의지와 실전 경험을 갖추고 있습니다.",
-    disadvantageText: "부상 부위의 재발 가능성에 대한 우려가 있습니다.",
-    weight: 2,
-    applicantCount: 1,
-    conditions: {
-      minAge: 25,
-    },
-  },
-  {
-    id: "re-debt-motivated",
-    type: "debt_motivated",
-    name: "빚을 갚기 위한 지원",
-    description: "개인 또는 가족의 빚 때문에 돈이 필요하여 길드에 지원한 경우입니다. 표정에서 절박함이 느껴집니다.",
-    featureText: "경제적 동기로 인한 지원.",
-    advantageText: "강한 활동 의지와 수입에 대한 높은 동기 부여가 있습니다.",
-    disadvantageText: "경제적 압박이 판단력에 영향을 줄 수 있으며, 외부 문제에 얽힐 가능성이 있습니다.",
-    weight: 3,
-    applicantCount: 1,
   },
 ];
