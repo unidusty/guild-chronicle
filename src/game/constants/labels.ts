@@ -123,6 +123,8 @@ export const financeTransactionTypeLabels: Record<FinanceTransactionType, string
   loot_purchase:        "전리품 구매",
   facility_construction:"시설 건설",
   facility_upgrade:     "시설 업그레이드",
+  facility_maintenance: "시설 유지비",
+  guild_operating_cost: "길드 운영비",
 };
 
 export const financeDirectionLabels: Record<FinanceTransactionDirection, string> = {

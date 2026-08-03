@@ -15,6 +15,7 @@ export interface FacilityLevelDef {
 export interface FacilityDef {
   id: string;
   levels: [FacilityLevelDef, FacilityLevelDef, FacilityLevelDef];
+  maintenanceCostByLevel: [number, number, number]; // Lv1, Lv2, Lv3 — active 상태에서만 부과
 }
 
 // levels[n] = 레벨 n+1 데이터.
@@ -28,6 +29,7 @@ export const FACILITY_DEFS: Record<string, FacilityDef> = {
       { cost: 3000, constructionDays: 14, effects: ["모험가 최대 등록 20명"] },
       { cost: 8000, constructionDays: 30, effects: ["모험가 최대 등록 35명"] },
     ],
+    maintenanceCostByLevel: [20, 40, 70],
   },
   "facility-reception": {
     id: "facility-reception",
@@ -36,6 +38,7 @@ export const FACILITY_DEFS: Record<string, FacilityDef> = {
       { cost: 2000, constructionDays: 10, effects: ["동시 수주 의뢰 5건"] },
       { cost: 5000, constructionDays: 20, effects: ["동시 수주 의뢰 7건"] },
     ],
+    maintenanceCostByLevel: [10, 20, 35],
   },
   "facility-storage": {
     id: "facility-storage",
@@ -44,6 +47,7 @@ export const FACILITY_DEFS: Record<string, FacilityDef> = {
       { cost: 3000, constructionDays: 10, effects: ["창고 보관 효율 증가"] },
       { cost: 7000, constructionDays: 20, effects: ["전리품 자동 분류"] },
     ],
+    maintenanceCostByLevel: [8, 16, 28],
   },
   "facility-recruitment": {
     id: "facility-recruitment",
@@ -55,5 +59,6 @@ export const FACILITY_DEFS: Record<string, FacilityDef> = {
       { cost: 9000, constructionDays: 14, effects: ["희귀 직업 확률 증가"],
         recruitment: { dailyChance: 0.75, minApplicants: 1, maxApplicants: 3, capacity: 8 } },
     ],
+    maintenanceCostByLevel: [15, 25, 40],
   },
 };

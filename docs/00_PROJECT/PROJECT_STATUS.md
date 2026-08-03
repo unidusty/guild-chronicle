@@ -2,7 +2,7 @@
 
 ## 현재 버전
 
-**0019-F — 길드 명성 시스템**
+**0019-G — 시설 유지비 및 길드 운영비 시스템**
 
 ## 완료
 
@@ -151,7 +151,7 @@
 - 모험가 경험치 및 스탯 성장 (의뢰 완료 시)
 - 파티원 간 관계 수치
 - 은닉 특성 발현
-- 길드 자금 소비 (유지비, 실패 패널티)
+- 길드 자금 소비 (실패 패널티)
 - 저장 및 불러오기
 - 능력치 실전 판정 (행동별 능력치 연결)
 - Battle Event 데이터 구조
@@ -245,6 +245,22 @@
   - `GuildHallPage` — "명성" 탭 추가 (5번째 탭): 현재 명성·등급·진행률·등급 기준표·변동 기록
   - CSS: `.rep-*` 클래스 군 추가
   - 문서: `GUILD_REPUTATION_SYSTEM_GUIDE.md` (신규), `GUILD_REPUTATION_SYSTEM_BRIEFING.md` (신규)
+
+- 시설 유지비 및 길드 운영비 시스템 (0019-G)
+  - `FinanceTransactionType` — `facility_maintenance` / `guild_operating_cost` 추가
+  - `DailyReportItemKind` — `guild_operating_cost` / `operating_cost_unpaid` 추가
+  - `FacilityMaintenanceEntry` / `DailyOperatingCostResult` 인터페이스 추가
+  - `Guild.unpaidOperatingCost: number` 추가
+  - `GameState.lastOperatingCostDay: number | null` 추가 (중복 차감 방지)
+  - `facilityData.ts` — `FacilityDef.maintenanceCostByLevel: [number, number, number]` 추가 (시설 4종 레벨별 유지비)
+  - `src/game/simulation/operatingCost.ts` (신규) — `BASE_DAILY_GUILD_OPERATING_COST = 30` / `calcDailyOperatingCost` / `applyDailyOperatingCost`
+  - `dayEnd.ts` — step 3.5에 `applyDailyOperatingCost` 연동 (advanceDay 이전, 날짜 정합성 유지)
+  - `labels.ts` — `facility_maintenance` / `guild_operating_cost` 레이블 추가
+  - `selectors.ts` — 길드 자금 카드 note에 미납 경고 표시
+  - `FacilitiesPage.tsx` — 시설 상세 패널에 일일 유지비 (현재 레벨 + 다음 레벨) 표시
+  - `FinanceTab.tsx` — 오늘의 운영비 섹션 추가, 미납 누적 시 경고 배너 표시
+  - CSS: `.finance-unpaid-*` / `.finance-opcost-*` / `.fac-maintenance-*` / `.day-end-report-item.guild_operating_cost` 등
+  - 문서: `GUILD_OPERATING_COST_SYSTEM_GUIDE.md` (신규), `GUILD_OPERATION_COST_BRIEFING.md` (신규)
 
 ## 다음 작업
 

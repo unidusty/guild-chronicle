@@ -1,5 +1,6 @@
 import type { GameState } from "../../types/game";
 import { getFinanceSummary } from "../../game/simulation/finance";
+import { calcDailyOperatingCost } from "../../game/simulation/operatingCost";
 import { formatShortGameDate } from "../../game/simulation/selectors";
 import { financeTransactionTypeLabels } from "../../game/constants/labels";
 
@@ -11,9 +12,17 @@ const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
 
 export default function FinanceTab({ state }: Props) {
   const summary = getFinanceSummary(state);
+  const todayOpCost = calcDailyOperatingCost(state);
+  const hasUnpaid = state.guild.unpaidOperatingCost > 0;
 
   return (
     <div className="finance-tab">
+      {hasUnpaid && (
+        <div className="finance-unpaid-banner">
+          <span className="finance-unpaid-icon">⚠</span>
+          <span>운영비 미납 누적 <strong>{fmt(state.guild.unpaidOperatingCost)} G</strong> — 자금이 부족하여 일부 운영비가 처리되지 못했습니다.</span>
+        </div>
+      )}
       <div className="finance-summary-grid">
         <article className="finance-card gold">
           <span>보유 골드</span>
@@ -33,6 +42,28 @@ export default function FinanceTab({ state }: Props) {
           <strong>{fmt(summary.totalExpense)} G</strong>
         </article>
       </div>
+
+      <section className="finance-opcost">
+        <div className="panel-heading">
+          <div>
+            <p className="eyebrow">DAILY OPERATIONS</p>
+            <h2>오늘의 운영비</h2>
+          </div>
+          <span className="finance-opcost-total">{fmt(todayOpCost.totalCost)} G</span>
+        </div>
+        <div className="finance-opcost-rows">
+          <div className="finance-opcost-row">
+            <span>길드 기본 운영비</span>
+            <span>{fmt(todayOpCost.baseOperatingCost)} G</span>
+          </div>
+          {todayOpCost.facilityMaintenanceEntries.map((e) => (
+            <div key={e.facilityId} className="finance-opcost-row">
+              <span>{e.facilityName} Lv{e.level} 유지비</span>
+              <span>{fmt(e.cost)} G</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="finance-ledger">
         <div className="panel-heading">

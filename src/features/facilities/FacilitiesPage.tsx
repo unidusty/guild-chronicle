@@ -228,6 +228,25 @@ function FacilityDetail({
         </div>
       )}
 
+      {/* Daily maintenance cost */}
+      {!isUnbuilt && def && (
+        <div className="fac-section fac-maintenance-section">
+          <p className="fac-section-label">일일 유지비</p>
+          <div className="fac-maintenance-row">
+            {facility.status === "active" ? (
+              <>
+                <span className="fac-maintenance-current">Lv{facility.level} — {fmt(def.maintenanceCostByLevel[facility.level - 1])} G / 일</span>
+                {facility.level < facility.maxLevel && (
+                  <span className="fac-maintenance-next">→ Lv{facility.level + 1} 업그레이드 시 {fmt(def.maintenanceCostByLevel[facility.level])} G</span>
+                )}
+              </>
+            ) : (
+              <span className="fac-maintenance-current">공사 완료 후 {fmt(def.maintenanceCostByLevel[(facility.targetLevel ?? 1) - 1])} G / 일</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Next level / build section */}
       {!isInProgress && !isMaxLevel && nextDef && (
         <div className="fac-section fac-next-section">

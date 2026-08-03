@@ -1442,3 +1442,27 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 .rep-log-delta.pos { color: #5a9a7a; }
 .rep-log-delta.neg { color: #9a6060; }
 .rep-log-after { text-align: right; color: #6a7e6c; font-size: var(--font-tiny); font-variant-numeric: tabular-nums; }
+
+/* ── Operating Cost — finance tab ──────────────────────────────────────────── */
+.finance-unpaid-banner { display: flex; align-items: center; gap: calc(10px * var(--ui-scale)); padding: calc(10px * var(--ui-scale)) calc(16px * var(--ui-scale)); background: rgba(50,20,16,.7); border: 1px solid #6a3030; color: #d48070; font-size: var(--font-small); }
+.finance-unpaid-icon { font-size: var(--font-important); }
+.finance-unpaid-banner strong { color: #e87060; }
+.finance-opcost { display: flex; flex-direction: column; gap: calc(8px * var(--ui-scale)); }
+.finance-opcost .panel-heading { margin-bottom: calc(4px * var(--ui-scale)); }
+.finance-opcost-total { font-family: Georgia, serif; font-size: calc(18px * var(--ui-scale)); color: #c87070; font-weight: 500; }
+.finance-opcost-rows { display: flex; flex-direction: column; gap: 0; border: 1px solid #1e2c20; }
+.finance-opcost-row { display: flex; justify-content: space-between; padding: calc(7px * var(--ui-scale)) calc(14px * var(--ui-scale)); border-bottom: 1px solid #171e18; font-size: var(--font-small); color: #8a9a8c; }
+.finance-opcost-row:last-child { border-bottom: none; }
+.finance-opcost-row span:last-child { color: #c87070; font-variant-numeric: tabular-nums; }
+
+/* ── Operating Cost — facility detail ──────────────────────────────────────── */
+.fac-maintenance-section { background: rgba(8,14,10,.4); border: 1px solid #1e2c20; padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale)); }
+.fac-maintenance-row { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); }
+.fac-maintenance-current { font-size: var(--font-small); color: #c87070; }
+.fac-maintenance-next { font-size: var(--font-xsmall); color: #5a6a5c; }
+
+/* ── Operating Cost — day-end report items ─────────────────────────────────── */
+.day-end-report-item.guild_operating_cost { border-left: 2px solid #4a4020; background: rgba(16,14,8,.7); }
+.day-end-report-item.guild_operating_cost strong { color: #c0a860; }
+.day-end-report-item.operating_cost_unpaid { border-left: 2px solid #6a3020; background: rgba(20,10,8,.8); }
+.day-end-report-item.operating_cost_unpaid strong { color: #e07050; }

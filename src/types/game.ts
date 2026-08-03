@@ -342,7 +342,9 @@ export type FinanceTransactionType =
   | "warehouse_sale"
   | "loot_purchase"
   | "facility_construction"
-  | "facility_upgrade";
+  | "facility_upgrade"
+  | "facility_maintenance"
+  | "guild_operating_cost";
 
 export interface FinanceTransaction {
   id: EntityId;
@@ -355,6 +357,25 @@ export interface FinanceTransaction {
   description: string;
   sourceType?: string;
   sourceId?: string;
+}
+
+export interface FacilityMaintenanceEntry {
+  facilityId: EntityId;
+  facilityName: string;
+  level: number;
+  cost: number;
+}
+
+export interface DailyOperatingCostResult {
+  date: GameDate;
+  baseOperatingCost: number;
+  facilityMaintenanceEntries: FacilityMaintenanceEntry[];
+  facilityMaintenanceTotal: number;
+  totalCost: number;
+  paidAmount: number;
+  unpaidAmount: number;
+  balanceBefore: number;
+  balanceAfter: number;
 }
 
 export interface FinanceSummary {
@@ -427,7 +448,9 @@ export type DailyReportItemKind =
   | "world_event_started"
   | "world_event_ended"
   | "reputation_changed"
-  | "reputation_tier_changed";
+  | "reputation_tier_changed"
+  | "guild_operating_cost"
+  | "operating_cost_unpaid";
 
 export interface DailyReportItem {
   kind: DailyReportItemKind;
@@ -554,6 +577,7 @@ export interface Guild {
   name: string;
   gold: number;
   reputation: number;
+  unpaidOperatingCost: number;
   facilityIds: EntityId[];
   adventurerIds: EntityId[];
   partyIds: EntityId[];
@@ -598,6 +622,7 @@ export interface DecisionReport {
 export interface GameState {
   version: number;
   currentDate: GameDate;
+  lastOperatingCostDay: number | null;
   guild: Guild;
   adventurers: Record<EntityId, Adventurer>;
   classes: Record<EntityId, AdventurerClass>;

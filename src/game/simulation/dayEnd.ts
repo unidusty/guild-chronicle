@@ -9,6 +9,7 @@ import {
   toAbsoluteDay,
 } from "./recruitment";
 import { getWorldEventDefinition, tickWorldEvents, trySpawnWorldEvent } from "./worldEvents";
+import { applyDailyOperatingCost } from "./operatingCost";
 
 export function processDayEnd(state: GameState): { newState: GameState; report: DailyReport } {
   const previousDate = state.currentDate;
@@ -57,8 +58,11 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
   // 3. Release held applicants whose hold period ended
   const afterRelease = releaseHeldApplicants(afterExpire);
 
+  // 3.5. Apply daily operating costs (before advanceDay so currentDate = previousDate)
+  const { newState: afterOpCost, result: opCostResult } = applyDailyOperatingCost(afterRelease);
+
   // 4. Advance day (quests, injuries, training, party formations, date increment)
-  const afterAdvance = advanceDay(afterRelease);
+  const afterAdvance = advanceDay(afterOpCost);
 
   // 5. Generate new applicants for the new day
   const { state: afterGenerate, newApplicants } = generateDailyApplicants(afterAdvance);
@@ -109,8 +113,29 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
 
   const newState = afterChronicle;
 
-  // 6. Collect report items (order: new → accepted → rejected → expired → facility → quest → injury → training)
+  // 6. Collect report items (order: operating cost → new → accepted → rejected → expired → facility → quest → injury → training)
   const items: DailyReportItem[] = [];
+
+  // Operating costs summary
+  if (opCostResult.totalCost > 0) {
+    const fmt = (n: number) => new Intl.NumberFormat("ko-KR").format(n);
+    const mainParts = opCostResult.facilityMaintenanceEntries.map(
+      (e) => `${e.facilityName} ${fmt(e.cost)}G`,
+    );
+    const parts = [`운영비 ${fmt(opCostResult.baseOperatingCost)}G`, ...mainParts];
+    items.push({
+      kind: "guild_operating_cost",
+      title: `오늘의 운영비 — ${fmt(opCostResult.totalCost)}G`,
+      description: parts.join(" · ") + (opCostResult.unpaidAmount > 0 ? ` / 실제 지불 ${fmt(opCostResult.paidAmount)}G` : ""),
+    });
+    if (opCostResult.unpaidAmount > 0) {
+      items.push({
+        kind: "operating_cost_unpaid",
+        title: `자금 부족 — 운영비 미납 ${fmt(opCostResult.unpaidAmount)}G`,
+        description: `자금이 부족하여 ${fmt(opCostResult.unpaidAmount)}G가 미납 처리되었습니다. 누적 미납: ${fmt(newState.guild.unpaidOperatingCost)}G`,
+      });
+    }
+  }
 
   // New applicants arrived (next day's applicants)
   if (newApplicants.length > 0) {

@@ -55,7 +55,7 @@ export function getGuildMetrics(state: GameState) {
   const successRate = resolved === 0 ? 78 : Math.round((completed / resolved) * 100);
 
   return [
-    { label: "길드 자금", value: formatGold(state.guild.gold), note: "이번 주 +2,140 G" },
+    { label: "길드 자금", value: formatGold(state.guild.gold), note: state.guild.unpaidOperatingCost > 0 ? `⚠ 미납 ${new Intl.NumberFormat("ko-KR").format(state.guild.unpaidOperatingCost)} G` : "일일 운영비 자동 처리" },
     { label: "소속 모험가", value: `${active.length}명`, note: `파견 ${dispatched} · 대기 ${waiting} · 부상 ${injured}` },
     { label: "길드 명성", value: new Intl.NumberFormat("ko-KR").format(state.guild.reputation), note: (() => { const t = getReputationTier(state.guild.reputation); return t.toNext != null ? `${t.label} · 다음까지 ${t.toNext}` : t.label; })() },
     { label: "의뢰 성공률", value: `${successRate}%`, note: "최근 30건 기준" },

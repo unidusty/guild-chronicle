@@ -4,11 +4,13 @@ import { getPortraitAvoiding } from "../game/assets/portraits";
 const _rawState: GameState = {
   version: 1,
   currentDate: { year: 317, season: "summer", day: 12 },
+  lastOperatingCostDay: null,
   guild: {
     id: "guild-westwind",
     name: "서풍 길드",
     gold: 18420,
     reputation: 1286,
+    unpaidOperatingCost: 0,
     facilityIds: ["facility-guild-hall", "facility-reception", "facility-storage", "facility-recruitment"],
     adventurerIds: ["adv-ella", "adv-lien", "adv-dorgan", "adv-marien", "adv-theo", "adv-serin", "adv-braen", "adv-vess", "adv-caelum", "adv-rina", "adv-korra", "adv-mael"],
     partyIds: ["party-silverhawk", "party-bluelantern", "party-ironforge"],

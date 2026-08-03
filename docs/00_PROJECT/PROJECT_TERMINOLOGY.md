@@ -1,6 +1,6 @@
 # Guild Chronicle — 공식 용어 사전
 
-현재 구현 기준 (0019-F) 작성.
+현재 구현 기준 (0019-G) 작성.
 
 ---
 
@@ -312,6 +312,41 @@ selector: `getReputationLog(state, limit?)`
 
 ---
 
+## 길드 운영비
+
+**상수:** `src/game/simulation/operatingCost.ts`  
+**시뮬레이션:** `src/game/simulation/operatingCost.ts`  
+**연동:** `src/game/simulation/dayEnd.ts` (step 3.5)
+
+매일 오늘 업무 종료 시 자동 처리된다. `active` 시설만 유지비 대상이다.
+
+| 항목 | 값 |
+|------|---|
+| 기본 운영비 (`BASE_DAILY_GUILD_OPERATING_COST`) | 30G/일 |
+| 길드 홀 유지비 | Lv1 20G / Lv2 40G / Lv3 70G |
+| 접수대 유지비 | Lv1 10G / Lv2 20G / Lv3 35G |
+| 창고 유지비 | Lv1 8G / Lv2 16G / Lv3 28G |
+| 가입 심사실 유지비 | Lv1 15G / Lv2 25G / Lv3 40G |
+
+### 주요 함수
+
+| 함수 | 역할 |
+|------|------|
+| `calcDailyOperatingCost(state)` | 당일 총 운영비 계산 (읽기 전용) |
+| `applyDailyOperatingCost(state)` | 비용 차감·미납 기록·Finance Transaction 생성 (단일 진입점) |
+
+### 중복 방지
+
+`GameState.lastOperatingCostDay: number | null` — 마지막 처리 절대일.  
+동일 날짜 재호출 시 no-op 반환.
+
+### 미납 처리
+
+자금 부족 시 가능한 금액까지만 차감하고 나머지를 `guild.unpaidOperatingCost`에 누적한다.  
+골드는 0 미만이 되지 않는다. 시설 정지·파산은 미구현.
+
+---
+
 ## 재정 거래 (`FinanceTransaction`)
 
 **소스:** `src/game/simulation/finance.ts`  
@@ -321,7 +356,7 @@ selector: `getReputationLog(state, limit?)`
 
 | 필드 | 설명 |
 |------|------|
-| `type` | quest_commission / warehouse_sale / loot_purchase / facility_construction / facility_upgrade |
+| `type` | quest_commission / warehouse_sale / loot_purchase / facility_construction / facility_upgrade / facility_maintenance / guild_operating_cost |
 | `direction` | income / expense |
 | `amount` | 거래 금액 (항상 양수) |
 | `balanceBefore / balanceAfter` | 거래 전후 잔액 |
@@ -698,3 +733,4 @@ selector: `getReputationLog(state, limit?)`
 | `isBasic?: boolean` (RecruitmentEventDefinition) | 폐기 — 단일 이벤트 풀로 통합 | 0019-E |
 | 일반 지원 / 특별 지원 구분 | 폐기 — 이벤트 유무로만 구분 | 0019-E |
 | `reputationTier: number` (Guild) | 폐기 — `getReputationTier(reputation)`으로 실시간 계산 | 0019-F |
+| `이번 주 +2,140 G` (길드 자금 카드 note) | 폐기 — 미납 경고 또는 "일일 운영비 자동 처리" 표시 | 0019-G |
