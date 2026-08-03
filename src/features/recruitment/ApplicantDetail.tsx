@@ -25,8 +25,14 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
   const initials = applicant.name.split(" ").map((p) => p[0]).join("").slice(0, 2);
   const template = STAT_TEMPLATES[applicant.classId];
   const primarySet = new Set<keyof Stats>(template?.primary ?? []);
-
   const isHeld = applicant.status === "held";
+
+  const ctx = applicant.recruitmentEvent;
+  const def = ctx ? RECRUITMENT_EVENT_DEFINITIONS.find((d) => d.id === ctx.eventId) : undefined;
+  const isSpecial = def ? !def.isBasic : false;
+  const relatedNames = ctx?.relatedApplicantIds
+    .map((rid) => allApplicants.find((a) => a.id === rid)?.name)
+    .filter(Boolean) as string[] ?? [];
 
   return (
     <div className="rec-detail-pane">
@@ -47,15 +53,86 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
         </div>
       </div>
 
-      {/* Personality text */}
-      <div className="rec-detail-section">
-        <p className="rec-detail-label">지원 동기</p>
-        <p className="rec-detail-text">{applicant.motivation}</p>
-      </div>
+      {/* 가입 신청 정보 — all applicants */}
+      <div className={`rec-bg-section${isSpecial ? " special" : ""}`}>
+        <div className="rec-bg-heading">
+          <span className="rec-bg-heading-text">가입 신청</span>
+          {isSpecial && <span className="rec-event-badge">특별 지원</span>}
+        </div>
 
-      <div className="rec-detail-section">
-        <p className="rec-detail-label">첫인상</p>
-        <p className="rec-detail-text">{applicant.firstImpression}</p>
+        {/* 가입 배경 */}
+        {def && (
+          <div className="rec-bg-row">
+            <span className="rec-bg-label">가입 배경</span>
+            <span className="rec-bg-value">{def.name}</span>
+          </div>
+        )}
+
+        {/* 현재 상황 */}
+        {def?.featureText && (
+          <div className="rec-bg-row">
+            <span className="rec-bg-label">현재 상황</span>
+            <span className="rec-bg-value">{def.featureText}</span>
+          </div>
+        )}
+
+        {/* 상세 배경 — special events only */}
+        {isSpecial && def?.description && (
+          <div className="rec-bg-row">
+            <span className="rec-bg-label">상세 배경</span>
+            <span className="rec-bg-value">{def.description}</span>
+          </div>
+        )}
+
+        {/* 추천인 — if present */}
+        {def?.recommenderText && (
+          <div className="rec-bg-row">
+            <span className="rec-bg-label">추천인</span>
+            <span className="rec-bg-value rec-bg-recommender">{def.recommenderText}</span>
+          </div>
+        )}
+
+        {/* 함께 지원 — siblings etc. */}
+        {relatedNames.length > 0 && (
+          <div className="rec-bg-row">
+            <span className="rec-bg-label">함께 지원</span>
+            <span className="rec-bg-value rec-bg-sibling">{relatedNames.join(", ")}</span>
+          </div>
+        )}
+
+        {/* 지원 동기 */}
+        <div className="rec-bg-row">
+          <span className="rec-bg-label">지원 동기</span>
+          <span className="rec-bg-value">{applicant.motivation}</span>
+        </div>
+
+        {/* 첫인상 */}
+        <div className="rec-bg-row">
+          <span className="rec-bg-label">첫인상</span>
+          <span className="rec-bg-value">{applicant.firstImpression}</span>
+        </div>
+
+        {/* 장점 / 단점 */}
+        {def && (
+          <>
+            <div className="rec-bg-row">
+              <span className="rec-bg-label">장점</span>
+              <span className="rec-bg-value rec-bg-adv">{def.advantageText}</span>
+            </div>
+            <div className="rec-bg-row">
+              <span className="rec-bg-label">단점</span>
+              <span className="rec-bg-value rec-bg-dis">{def.disadvantageText}</span>
+            </div>
+          </>
+        )}
+
+        {/* 특별 사정 — special events only */}
+        {isSpecial && def?.specialNote && (
+          <div className="rec-bg-row rec-bg-special-note-row">
+            <span className="rec-bg-label">특별 사정</span>
+            <span className="rec-bg-value rec-bg-special-note">{def.specialNote}</span>
+          </div>
+        )}
       </div>
 
       {/* Stats */}
@@ -77,42 +154,6 @@ export default function ApplicantDetail({ applicant, allApplicants, onAccept, on
           })}
         </div>
       </div>
-
-      {/* Recruitment Event — only shown for special (non-basic) events */}
-      {applicant.recruitmentEvent && (() => {
-        const ctx = applicant.recruitmentEvent;
-        const def = RECRUITMENT_EVENT_DEFINITIONS.find((d) => d.id === ctx.eventId);
-        if (def?.isBasic) return null;
-        const relatedNames = ctx.relatedApplicantIds
-          .map((rid) => allApplicants.find((a) => a.id === rid)?.name)
-          .filter(Boolean) as string[];
-        return (
-          <div className="rec-event-section">
-            <p className="rec-event-section-title">특별 지원</p>
-            <p className="rec-event-name">{def?.name ?? ctx.eventType}</p>
-            {def && <p className="rec-event-desc">{def.description}</p>}
-            {def && <p className="rec-event-feature">{def.featureText}</p>}
-            {def && (
-              <div className="rec-event-adv-dis">
-                <div className="rec-event-row">
-                  <span className="rec-event-row-label">장점</span>
-                  <span className="rec-event-adv">{def.advantageText}</span>
-                </div>
-                <div className="rec-event-row">
-                  <span className="rec-event-row-label">단점</span>
-                  <span className="rec-event-dis">{def.disadvantageText}</span>
-                </div>
-              </div>
-            )}
-            {relatedNames.length > 0 && (
-              <div className="rec-event-row">
-                <span className="rec-event-row-label">관계</span>
-                <span className="rec-event-sibling">{relatedNames.join(", ")} 와(과) 함께 지원</span>
-              </div>
-            )}
-          </div>
-        );
-      })()}
 
       {/* Actions */}
       <div className="rec-action-bar">

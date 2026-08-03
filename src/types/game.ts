@@ -468,6 +468,8 @@ export interface RecruitmentEventDefinition {
   weight: number;
   applicantCount: number;
   isBasic?: boolean;
+  recommenderText?: string;
+  specialNote?: string;
   conditions?: {
     minAge?: number;
     maxAge?: number;
