@@ -11,7 +11,7 @@ import {
 
 export function processDayEnd(state: GameState): { newState: GameState; report: DailyReport } {
   const previousDate = state.currentDate;
-  const prevPendingCount = state.pendingResults.length;
+  const prevReturnReportCount = state.returnReports.length;
   const todayAbsDay = toAbsoluteDay(state.currentDate);
 
   // Snapshot finishing-today items before advancing
@@ -112,12 +112,12 @@ export function processDayEnd(state: GameState): { newState: GameState; report: 
     });
   }
 
-  // Completed quests
-  for (const result of newState.pendingResults.slice(prevPendingCount)) {
+  // Newly returned quests (awaiting settlement)
+  for (const report of newState.returnReports.slice(prevReturnReportCount)) {
     items.push({
-      kind: "quest_completed",
-      title: `의뢰 완료 — ${result.questTitle}`,
-      description: `${result.partyName}이(가) 귀환했습니다. 보상: ${new Intl.NumberFormat("ko-KR").format(result.rewardGold)} G`,
+      kind: "quest_returned",
+      title: `귀환 보고 — ${report.partyNameSnapshot}`,
+      description: `${report.questTitle}이(가) 완료되었습니다. 결재 대기.`,
     });
   }
 

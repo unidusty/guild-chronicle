@@ -1,4 +1,4 @@
-import type { AdventureLogEntry, ChronicleEntry, GameDate, GameState, LootDrop, QuestCompletionResult, QuestResult } from "../../types/game";
+import type { AdventureLogEntry, ChronicleEntry, GameDate, GameState, LootDrop, QuestResult } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
 import { calcQuestStage } from "./questProgress";
 import { validateQuestCompletion } from "./questValidation";
@@ -8,6 +8,7 @@ import { deriveTags, selectEvent, buildQuestEvent } from "./eventEngine";
 import { buildQuestResult } from "./questResult";
 import { buildQuestChronicleEntry } from "./questChronicle";
 import { generateDailyLog, generateIncidentLog, generateCompletionLog, generateSupportArrivalLog } from "./adventureLog";
+import { createReturnReport } from "./returnReport";
 
 const SUPPORT_TRAVEL_DAYS = 2;
 
@@ -63,17 +64,15 @@ const DAILY_PROGRESS = 15;
 
 function updateQuests(state: GameState): GameState {
   const newEntries: ChronicleEntry[] = [];
-  const newResults: QuestCompletionResult[] = [];
   const newQuestResults: QuestResult[] = [];
   const newQuestChronicleEntries: ReturnType<typeof buildQuestChronicleEntry>[] = [];
   const newAdventureLogEntries: Record<string, AdventureLogEntry[]> = {};
+  const newReturnReports: ReturnType<typeof createReturnReport>[] = [];
   const quests        = { ...state.quests };
   const adventurers   = { ...state.adventurers };
   const parties       = { ...state.parties };
-  const warehouse     = { ...state.warehouse };
   const questProgress = { ...state.questProgress };
   const date          = state.currentDate;
-  let   goldEarned    = 0;
 
   function appendLog(questId: string, entry: AdventureLogEntry) {
     if (!newAdventureLogEntries[questId]) newAdventureLogEntries[questId] = [];
@@ -135,21 +134,33 @@ function updateQuests(state: GameState): GameState {
 
       const party = quest.assignedPartyId ? state.parties[quest.assignedPartyId] : null;
       if (party) {
+        // Generate loot for the ReturnReport
+        const loot = generateQuestLoot();
+
+        // Create ReturnReport — settlement is deferred until guild master confirms
+        if (prog && quest.assignedPartyId) {
+          const regionName = state.regions[quest.regionId]?.name ?? "";
+          const questResult = newQuestResults.find(r => r.questId === quest.id);
+          if (questResult) {
+            newReturnReports.push(createReturnReport(quest, party, questResult, loot, date, regionName));
+          }
+        }
+
+        // Party → waiting_settlement (gold/loot deferred to finalizeSettlement)
         parties[party.id] = {
           ...party,
-          status: "idle",
+          status: "waiting_settlement",
           activeQuestId: null,
           currentFormationQuestCount: party.currentFormationQuestCount + 1,
           questsCompleted: party.questsCompleted + 1,
           totalActivityDays: party.totalActivityDays + quest.durationDays,
-          totalGoldEarned: party.totalGoldEarned + quest.rewardGold,
         };
 
+        // Members: clear currentQuestId, keep status "dispatched" until settlement
         for (const memberId of party.memberIds) {
           if (adventurers[memberId]) {
             adventurers[memberId] = {
               ...adventurers[memberId],
-              status: "idle",
               currentQuestId: null,
               questsCompleted: adventurers[memberId].questsCompleted + 1,
               totalActivityDays: adventurers[memberId].totalActivityDays + quest.durationDays,
@@ -157,33 +168,13 @@ function updateQuests(state: GameState): GameState {
           }
         }
 
-        const loot = generateQuestLoot();
-        for (const { itemId, quantity } of loot) {
-          warehouse[itemId] = (warehouse[itemId] ?? 0) + quantity;
-        }
-
-        goldEarned += quest.rewardGold;
-
-        newResults.push({
-          questId:        quest.id,
-          questTitle:     quest.title,
-          grade:          quest.grade,
-          partyId:        party.id,
-          partyName:      party.name,
-          adventurerIds:  [...party.memberIds],
-          durationDays:   quest.durationDays,
-          rewardGold:     quest.rewardGold,
-          completedAt:    date,
-          loot,
-        });
-
         newEntries.push({
-          id: `chronicle-complete-${quest.id}-${date.year}-${date.season}-${String(date.day).padStart(2, "0")}`,
+          id: `chronicle-return-${quest.id}-${date.year}-${date.season}-${String(date.day).padStart(2, "0")}`,
           date,
           scope:            "guild",
           category:         "quest",
-          title:            `${quest.title} 완료`,
-          description:      `${party.name}이(가) 의뢰를 마치고 길드로 귀환했습니다.`,
+          title:            `${quest.title} 귀환 보고`,
+          description:      `${party.name}이(가) 귀환했습니다. 정산 대기 중.`,
           relatedEntityIds: [party.id, ...party.memberIds],
         });
       }
@@ -306,19 +297,21 @@ function updateQuests(state: GameState): GameState {
     }
   }
 
+  const updatedReturnReports = newReturnReports.length > 0
+    ? [...state.returnReports, ...newReturnReports]
+    : state.returnReports;
+
   return {
     ...state,
-    guild:          goldEarned > 0 ? { ...state.guild, gold: state.guild.gold + goldEarned } : state.guild,
     quests,
     adventurers,
     parties,
-    warehouse,
     questProgress,
     questResults:    updatedQuestResults,
     questChronicle:  updatedQuestChronicle,
     adventureLogs:   updatedAdventureLogs,
     chronicle:       [...newEntries, ...state.chronicle],
-    pendingResults:  [...state.pendingResults, ...newResults],
+    returnReports:   updatedReturnReports,
   };
 }
 

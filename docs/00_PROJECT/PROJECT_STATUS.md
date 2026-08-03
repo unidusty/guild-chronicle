@@ -160,9 +160,23 @@
 - 실시간 전투 텍스트 중계
 - 2D 자동 전투
 
+- 귀환 보고 및 정산 시스템 (0019-A)
+  - `ReturnReport` 타입 — 귀환 보고서 구조 (보수·수수료·전리품 포함)
+  - `SettlementResult` 타입 — 정산 결과 (길드 매입 전리품·순수입)
+  - `LootEntry` / `LootPurchaseResult` — 전리품 항목 타입
+  - `PartyStatus.waiting_settlement` — 정산 대기 상태 추가
+  - `GameState.returnReports: ReturnReport[]` — 정산 대기 보고서 목록
+  - `src/game/simulation/returnReport.ts` — `createReturnReport` / `calcSettlement` / `finalizeSettlement`
+  - `advance.ts` — 의뢰 완료 시 즉시 정산 → ReturnReport 생성 + 파티 `waiting_settlement`로 변경
+  - `dayEnd.ts` — `returnReports` 기반 일일 보고서 항목 생성 (`quest_returned`)
+  - `src/features/returnReport/ReturnReportModal.tsx` — 정산 모달 UI (보수 분배·전리품 체크박스·순수입 표시)
+  - `GuildHallPage` MASTER'S DESK에 귀환 보고 버튼 표시, 정산 완료 시 상태 반영
+  - CSS: `.rrm-*` 클래스 군 추가 (overlay·modal·header·body·section·settlement·loot·footer)
+  - 설계 문서: `docs/01_SYSTEM/GUILD_FINANCE_SYSTEM.md`, `docs/01_SYSTEM/QUEST_SETTLEMENT_SYSTEM.md`, `docs/02_DATABASE/LOOT_DATABASE.md`
+
 ## 다음 작업
 
-**0019 — 길드 재정 및 세계 이벤트 (예정)**
+**0019-B 이후 — 길드 재정 및 세계 이벤트 (예정)**
 
 
 

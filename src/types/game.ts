@@ -15,7 +15,7 @@ export type Race = "human" | "elf" | "dwarf";
 export type Gender = "male" | "female";
 export type AdventurerRank = "F" | "E" | "D" | "C" | "B" | "A" | "S";
 export type AdventurerStatus = "idle" | "dispatched" | "injured" | "training" | "recovering";
-export type PartyStatus = "idle" | "dispatched" | "returning";
+export type PartyStatus = "idle" | "dispatched" | "returning" | "waiting_settlement";
 export type QuestStatus = "available" | "assigned" | "in_progress" | "completed" | "failed" | "expired";
 export type QuestType = "normal" | "urgent" | "raid";
 export type QuestStage = "traveling" | "searching" | "executing" | "returning";
@@ -285,8 +285,56 @@ export interface Facility {
   constructionStartedDay: GameDate | null;
 }
 
+export type LootOwnership = "party" | "guild" | "quest_client";
+
+export interface LootEntry {
+  itemId: EntityId;
+  itemName: string;
+  quantity: number;
+  unitValue: number;
+}
+
+export interface LootPurchaseResult {
+  itemId: EntityId;
+  itemName: string;
+  quantity: number;
+  unitValue: number;
+  totalValue: number;
+}
+
+export interface ReturnReport {
+  id: EntityId;
+  questId: EntityId;
+  questTitle: string;
+  questCategory: QuestCategory;
+  questGrade: AdventurerRank;
+  partyId: EntityId;
+  partyNameSnapshot: string;
+  memberIdsSnapshot: EntityId[];
+  regionId: EntityId;
+  regionNameSnapshot: string;
+  durationDays: number;
+  completedAt: GameDate;
+  resultGrade: QuestResultGrade;
+  successRate: number;
+  totalRewardGold: number;
+  guildFeeGold: number;
+  partyPaymentGold: number;
+  loot: LootEntry[];
+}
+
+export interface SettlementResult {
+  reportId: EntityId;
+  guildFeeGold: number;
+  partyPaymentGold: number;
+  purchasedLoot: LootPurchaseResult[];
+  lootPurchaseTotal: number;
+  netGuildGoldChange: number;
+}
+
 export type DailyReportItemKind =
   | "quest_completed"
+  | "quest_returned"
   | "quest_progress_update"
   | "quest_event"
   | "facility_completed"
@@ -423,6 +471,7 @@ export interface GameState {
   chronicle: ChronicleEntry[];
   reports: DecisionReport[];
   pendingResults: QuestCompletionResult[];
+  returnReports: ReturnReport[];
   warehouse: Record<EntityId, number>;
   saleTransactions: SaleTransaction[];
   recruitment: RecruitmentState;

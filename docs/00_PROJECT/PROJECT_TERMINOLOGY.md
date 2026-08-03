@@ -190,15 +190,42 @@
 | 진행 중 의뢰 | `ActiveQuestsTab` | 목록 + 우측 상세 패널 |
 | 의뢰 연대기 | `QuestChronicleTab` | 완료 의뢰 기록 + 모험 기록 |
 
-### 완료 흐름
+### 완료 흐름 (0019-A 이후 — 정산 연동)
 
 1. `advanceDay` → `updateQuests` 에서 `remainingDays -= 1`
 2. `remainingDays <= 0` 시 의뢰를 `state.quests`에서 **삭제**
-3. 파티 및 멤버 상태 → `idle`
-4. 골드 보상 즉시 지급, 전리품 창고에 추가
-5. `QuestCompletionResult` → `pendingResults` (팝업 패널에 표시)
-6. 길드 연대기 기록 + 의뢰 연대기(`QuestChronicle`) 기록
-7. 모험 기록(`AdventureLog`) 완료 항목 추가
+3. `createReturnReport` → `state.returnReports` 에 추가 (정산 대기)
+4. 파티 상태 → `waiting_settlement`, 멤버 `currentQuestId: null` (status는 유지)
+5. 길드 연대기 기록 + 의뢰 연대기(`QuestChronicle`) 기록
+6. 모험 기록(`AdventureLog`) 완료 항목 추가
+7. 플레이어가 MASTER'S DESK에서 귀환 보고 열기 → 전리품 매입 선택 → 정산 완료
+8. `finalizeSettlement` → 파티·멤버 `idle`, 골드 반영, 선택된 전리품 창고 추가, ReturnReport 제거
+
+---
+
+## 귀환 보고 / 정산 (`ReturnReport`)
+
+**컴포넌트:** `ReturnReportModal`  
+**시뮬레이션:** `src/game/simulation/returnReport.ts`
+
+### 파티 상태 (`PartyStatus`)
+
+| 값 | 표시 | 설명 |
+|----|------|------|
+| `idle` | 대기 | 파견 가능 상태 |
+| `dispatched` | 의뢰 수행 중 | 의뢰 수행 중 |
+| `returning` | 귀환 중 | 의뢰 귀환 단계 |
+| `waiting_settlement` | 정산 대기 | 의뢰 완료, 길드장 정산 대기 |
+
+### 정산 흐름
+
+- 의뢰 완료 시 `ReturnReport` 생성 → `state.returnReports` 적재
+- MASTER'S DESK에서 귀환 보고 버튼 클릭 → `ReturnReportModal` 열림
+- 전리품 중 길드 매입 선택 (체크박스) → 매입가 = `unitValue × quantity`
+- 길드 수수료: `totalRewardGold × 10%` (`GUILD_FEE_RATE = 0.10`)
+- 파티 지급액: `totalRewardGold - guildFeeGold`
+- 길드 순수입: `guildFeeGold - lootPurchaseTotal`
+- 정산 완료 시 `finalizeSettlement` 호출 → 파티·멤버 `idle` 전환, 골드 반영, 창고 업데이트
 
 ---
 

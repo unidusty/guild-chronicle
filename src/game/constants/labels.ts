@@ -12,9 +12,10 @@ export const genderLabels: Record<Gender, string> = {
 };
 
 export const partyStatusLabels: Record<PartyStatus, string> = {
-  idle:       "대기",
-  dispatched: "의뢰 수행 중",
-  returning:  "귀환 중",
+  idle:                "대기",
+  dispatched:          "의뢰 수행 중",
+  returning:           "귀환 중",
+  waiting_settlement:  "정산 대기",
 };
 
 export const adventurerStatusLabels: Record<AdventurerStatus, string> = {

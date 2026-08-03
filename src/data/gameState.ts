@@ -457,6 +457,7 @@ const _rawState: GameState = {
   questChronicle: [],
   adventureLogs: {},
   pendingResults: [],
+  returnReports: [],
   warehouse: {},
   saleTransactions: [],
   recruitment: {

@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { GameState } from "../../types/game";
+import type { GameState, ReturnReport } from "../../types/game";
 import {
   formatGameDate,
   formatShortGameDate,
@@ -10,6 +10,7 @@ import {
 import { questStageLabels } from "../../game/constants/labels";
 import FacilitiesPage from "../facilities/FacilitiesPage";
 import RecruitmentTab from "../recruitment/RecruitmentTab";
+import ReturnReportModal from "../returnReport/ReturnReportModal";
 import { playHover, playSelect } from "../../lib/audio";
 
 type GuildTab = "dashboard" | "facilities" | "recruitment";
@@ -28,6 +29,7 @@ const reportPresentation = {
 
 export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props) {
   const [tab, setTab] = useState<GuildTab>("dashboard");
+  const [activeReport, setActiveReport] = useState<ReturnReport | null>(null);
 
   const metrics      = getGuildMetrics(state);
   const roster       = getRosterRows(state);
@@ -171,9 +173,24 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
                   <p className="eyebrow">MASTER'S DESK</p>
                   <h2>결재 대기</h2>
                 </div>
-                <span className="count">{state.reports.length + (pendingApplicantCount > 0 ? 1 : 0)}</span>
+                <span className="count">{state.reports.length + state.returnReports.length + (pendingApplicantCount > 0 ? 1 : 0)}</span>
               </div>
               <div className="report-list">
+                {state.returnReports.map((rr) => (
+                  <button
+                    className="report"
+                    key={rr.id}
+                    onMouseEnter={playHover}
+                    onClick={() => { playSelect(); setActiveReport(rr); }}
+                  >
+                    <span className="report-icon gold">귀</span>
+                    <span>
+                      <strong>귀환 보고 — {rr.partyNameSnapshot}</strong>
+                      <small>{rr.questTitle} · 정산 대기</small>
+                    </span>
+                    <b>›</b>
+                  </button>
+                ))}
                 {pendingApplicantCount > 0 && (
                   <button
                     className="report"
@@ -292,6 +309,19 @@ export default function GuildHallPage({ state, onStateChange, onDayEnd }: Props)
       {/* Recruitment tab */}
       {tab === "recruitment" && (
         <RecruitmentTab state={state} onStateChange={onStateChange} />
+      )}
+
+      {/* Return Report modal */}
+      {activeReport && (
+        <ReturnReportModal
+          report={activeReport}
+          state={state}
+          onClose={() => setActiveReport(null)}
+          onSettle={(newState) => {
+            onStateChange(newState);
+            setActiveReport(null);
+          }}
+        />
       )}
     </div>
   );
