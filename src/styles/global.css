@@ -291,6 +291,8 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 
 /* Party list cards */
 .party-card-list { display: flex; flex-direction: column; gap: 8px; }
+/* Grid variant — used when detail panel is not open */
+.party-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(220px * var(--ui-scale)), 1fr)); gap: calc(8px * var(--ui-scale)); }
 .party-card { width: 100%; padding: calc(14px * var(--ui-scale)); border: 1px solid #2a322c; background: #181f1a; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: calc(9px * var(--ui-scale)); transition: background .1s, border-color .1s; }
 .party-card:hover { background: #1c2620; border-color: #3a4a3c; }
 .party-card.selected { background: #1c2a1f; border-color: #4a6040; }
@@ -507,6 +509,10 @@ td { padding: calc(12px * var(--ui-scale)) 10px; border-bottom: 1px solid #292f2
 /* Controls row */
 .wh-controls { display: flex; align-items: center; justify-content: space-between; padding: calc(8px * var(--ui-scale)) calc(24px * var(--ui-scale)); flex-shrink: 0; border-bottom: 1px solid #161e18; min-height: calc(36px * var(--ui-scale)); }
 .wh-tab-info { font-size: var(--font-xsmall); color: #4a5e4c; }
+.wh-controls-right { display: flex; align-items: center; gap: calc(12px * var(--ui-scale)); }
+.wh-batch-sell-btn { padding: calc(3px * var(--ui-scale)) calc(11px * var(--ui-scale)); border: 1px solid #3a5040; background: rgba(30,50,34,.5); color: #7a9e80; font-size: var(--font-xsmall); cursor: pointer; letter-spacing: .02em; transition: border-color .1s, color .1s, background .1s; white-space: nowrap; }
+.wh-batch-sell-btn:hover { border-color: #5a7860; color: #a0c8a4; background: rgba(40,70,44,.4); }
+.wh-batch-warn { font-size: var(--font-xsmall); color: #6a7060; border-top: 1px solid #1c2820; padding-top: calc(10px * var(--ui-scale)); }
 .wh-sort { display: flex; gap: calc(3px * var(--ui-scale)); }
 .wh-sort-btn { background: none; border: 1px solid transparent; padding: calc(3px * var(--ui-scale)) calc(9px * var(--ui-scale)); font-size: var(--font-xsmall); color: #5a6e5c; cursor: pointer; letter-spacing: .02em; transition: color .1s, border-color .1s; }
 .wh-sort-btn:hover { color: #8aaa8e; border-color: #283828; }

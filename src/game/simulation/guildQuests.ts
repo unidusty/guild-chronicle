@@ -2,6 +2,8 @@ import type { EntityId, GameDate, GameState, GuildQuestDraft, Quest } from "../.
 import { getWorldEventDefinitionById } from "../../data/worldEventData";
 
 const DRAFT_EXPIRY_DAYS = 7;
+const DRAFT_COOLDOWN_DAYS = 14;
+const PERIODIC_EXPLORATION_INTERVAL = 30;
 const DANGEROUS_EVENT_TYPES = new Set(["monster_surge", "bandit_surge", "war", "border_conflict"]);
 
 function toAbsoluteDay(date: GameDate): number {
@@ -11,6 +13,12 @@ function toAbsoluteDay(date: GameDate): number {
 
 function makeDraftId(needType: string, day: number): EntityId {
   return `gqd-${needType}-${day}`;
+}
+
+function isCoolingDown(cooldowns: Partial<Record<string, number>>, needType: string, todayAbsDay: number): boolean {
+  const lastDay = cooldowns[needType];
+  if (lastDay === undefined) return false;
+  return todayAbsDay - lastDay < DRAFT_COOLDOWN_DAYS;
 }
 
 function createResourceGatheringDraft(state: GameState, todayAbsDay: number): GuildQuestDraft {
@@ -30,10 +38,17 @@ function createResourceGatheringDraft(state: GameState, todayAbsDay: number): Gu
     durationDays: 3,
     dangerLevel: 1,
     recommendedPartySize: 2,
+    enemyHint: null,
+    riskTags: ["수집 작업", "소동물"],
   };
 }
 
-function createThreatEliminationDraft(state: GameState, todayAbsDay: number, eventName: string): GuildQuestDraft {
+function createThreatEliminationDraft(
+  state: GameState,
+  todayAbsDay: number,
+  eventName: string,
+  sourceEventId: EntityId,
+): GuildQuestDraft {
   return {
     id: makeDraftId("dangerous_world_event", todayAbsDay),
     needType: "dangerous_world_event",
@@ -50,6 +65,9 @@ function createThreatEliminationDraft(state: GameState, todayAbsDay: number, eve
     durationDays: 4,
     dangerLevel: 3,
     recommendedPartySize: 3,
+    enemyHint: "위협 세력",
+    riskTags: ["전투 위험", "무장 적대세력"],
+    sourceEventId,
   };
 }
 
@@ -70,6 +88,8 @@ function createExplorationDraft(state: GameState, todayAbsDay: number): GuildQue
     durationDays: 4,
     dangerLevel: 2,
     recommendedPartySize: 2,
+    enemyHint: null,
+    riskTags: ["미지 지형", "함정"],
   };
 }
 
@@ -80,20 +100,36 @@ export function detectAndCreateDrafts(
   let s = state;
   const created: GuildQuestDraft[] = [];
   const existingNeedTypes = new Set(s.pendingGuildQuestDrafts.map(d => d.needType));
+  const cooldowns = s.guildQuestDraftCooldowns;
 
-  if (!existingNeedTypes.has("low_gold") && state.guild.gold < 300) {
+  if (
+    !existingNeedTypes.has("low_gold") &&
+    !isCoolingDown(cooldowns, "low_gold", todayAbsDay) &&
+    state.guild.gold < 300
+  ) {
     const draft = createResourceGatheringDraft(state, todayAbsDay);
-    s = { ...s, pendingGuildQuestDrafts: [...s.pendingGuildQuestDrafts, draft] };
+    s = {
+      ...s,
+      pendingGuildQuestDrafts: [...s.pendingGuildQuestDrafts, draft],
+      guildQuestDraftCooldowns: { ...s.guildQuestDraftCooldowns, low_gold: todayAbsDay },
+    };
     existingNeedTypes.add("low_gold");
     created.push(draft);
   }
 
-  if (!existingNeedTypes.has("dangerous_world_event")) {
+  if (
+    !existingNeedTypes.has("dangerous_world_event") &&
+    !isCoolingDown(cooldowns, "dangerous_world_event", todayAbsDay)
+  ) {
     for (const event of state.activeWorldEvents) {
       const def = getWorldEventDefinitionById(event.definitionId);
       if (def && DANGEROUS_EVENT_TYPES.has(def.type)) {
-        const draft = createThreatEliminationDraft(state, todayAbsDay, def.name);
-        s = { ...s, pendingGuildQuestDrafts: [...s.pendingGuildQuestDrafts, draft] };
+        const draft = createThreatEliminationDraft(state, todayAbsDay, def.name, event.definitionId);
+        s = {
+          ...s,
+          pendingGuildQuestDrafts: [...s.pendingGuildQuestDrafts, draft],
+          guildQuestDraftCooldowns: { ...s.guildQuestDraftCooldowns, dangerous_world_event: todayAbsDay },
+        };
         existingNeedTypes.add("dangerous_world_event");
         created.push(draft);
         break;
@@ -101,9 +137,17 @@ export function detectAndCreateDrafts(
     }
   }
 
-  if (!existingNeedTypes.has("periodic_exploration") && todayAbsDay % 20 === 0) {
+  if (
+    !existingNeedTypes.has("periodic_exploration") &&
+    !isCoolingDown(cooldowns, "periodic_exploration", todayAbsDay) &&
+    todayAbsDay % PERIODIC_EXPLORATION_INTERVAL === 0
+  ) {
     const draft = createExplorationDraft(state, todayAbsDay);
-    s = { ...s, pendingGuildQuestDrafts: [...s.pendingGuildQuestDrafts, draft] };
+    s = {
+      ...s,
+      pendingGuildQuestDrafts: [...s.pendingGuildQuestDrafts, draft],
+      guildQuestDraftCooldowns: { ...s.guildQuestDraftCooldowns, periodic_exploration: todayAbsDay },
+    };
     created.push(draft);
   }
 
@@ -116,8 +160,17 @@ export function expireGuildQuestDrafts(
 ): { newState: GameState; expired: GuildQuestDraft[] } {
   const expired = state.pendingGuildQuestDrafts.filter(d => d.expiresDay <= todayAbsDay);
   if (expired.length === 0) return { newState: state, expired: [] };
+
   const remaining = state.pendingGuildQuestDrafts.filter(d => d.expiresDay > todayAbsDay);
-  return { newState: { ...state, pendingGuildQuestDrafts: remaining }, expired };
+  const newCooldowns = { ...state.guildQuestDraftCooldowns };
+  for (const d of expired) {
+    newCooldowns[d.needType] = todayAbsDay;
+  }
+
+  return {
+    newState: { ...state, pendingGuildQuestDrafts: remaining, guildQuestDraftCooldowns: newCooldowns },
+    expired,
+  };
 }
 
 export function approveGuildQuestDraft(
@@ -149,7 +202,8 @@ export function approveGuildQuestDraft(
     progress: 0,
     assignedPartyId: null,
     expectedReturnAt: null,
-    riskTags: [],
+    riskTags: draft.riskTags ?? [],
+    enemyHint: draft.enemyHint ?? null,
     issuer: "guild",
   };
 

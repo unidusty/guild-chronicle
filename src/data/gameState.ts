@@ -372,6 +372,22 @@ const _rawState: GameState = {
       assignedPartyId: null, expectedReturnAt: null, riskTags: ["왕실 의전", "극한 지형", "고위험"], enemyHint: null,
       reputationCondition: { minReputation: 3500 },
     },
+    "quest-delivery-herb": {
+      id: "quest-delivery-herb", title: "약재 긴급 배송", grade: "F", regionId: "region-westfield",
+      type: "delivery", questType: "normal", status: "available",
+      description: "서쪽 들판 마을 의원에서 급하게 필요한 약재를 왕도 약재 조합에서 수령하여 배달해 주십시오. 이틀 안에 도착해야 합니다.",
+      clientName: "서쪽 들판 마을 의원", dangerLevel: 1, recommendedPartySize: 1, expiresInDays: 6,
+      rewardGold: 180, durationDays: 2, remainingDays: 2, progress: 0,
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["시간 제한"], enemyHint: null,
+    },
+    "quest-delivery-relic": {
+      id: "quest-delivery-relic", title: "유물 수송 의뢰", grade: "C", regionId: "region-ancientruins",
+      type: "delivery", questType: "normal", status: "available",
+      description: "고대 유적에서 회수된 소형 유물을 왕립 고고학회 본부로 안전하게 운반해 주십시오. 유물의 특성상 마법 방어구 착용 권장.",
+      clientName: "왕립 고고학회 현장 책임자", dangerLevel: 3, recommendedPartySize: 3, expiresInDays: 18,
+      rewardGold: 1100, durationDays: 5, remainingDays: 5, progress: 0,
+      assignedPartyId: null, expectedReturnAt: null, riskTags: ["유물 파손 위험", "추격 위험"], enemyHint: null,
+    },
   },
   regions: {
     "region-grayridge":     { id: "region-grayridge",     name: "회색등성이",   danger: 54, control: "contested" },
@@ -527,6 +543,7 @@ const _rawState: GameState = {
   reputationChanges: [],
   pendingReputationEvents: [],
   pendingGuildQuestDrafts: [],
+  guildQuestDraftCooldowns: {},
 };
 
 export const initialGameState: GameState = (() => {

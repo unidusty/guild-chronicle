@@ -508,6 +508,9 @@ export interface GuildQuestDraft {
   durationDays: number;
   dangerLevel: number;
   recommendedPartySize: number;
+  enemyHint?: string | null;
+  riskTags?: string[];
+  sourceEventId?: EntityId;
 }
 
 // ── World Events ─────────────────────────────────────────────────────────────
@@ -888,4 +891,5 @@ export interface GameState {
   reputationChanges: ReputationChange[];
   pendingReputationEvents: Array<{ id: EntityId; day: number }>;
   pendingGuildQuestDrafts: GuildQuestDraft[];
+  guildQuestDraftCooldowns: Partial<Record<string, number>>;
 }

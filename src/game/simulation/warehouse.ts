@@ -3,6 +3,16 @@ import { LOOT_TABLE } from "../../data/lootData";
 import { applyFinanceIncome } from "./finance";
 import { getWarehouseSaleModifier } from "./worldEvents";
 
+export function sellAllWarehouseItems(state: GameState, itemIds: string[]): GameState {
+  let s = state;
+  for (const itemId of itemIds) {
+    const qty = s.warehouse[itemId];
+    if (!qty || qty < 1) continue;
+    s = sellWarehouseItem(s, itemId, qty);
+  }
+  return s;
+}
+
 export function sellWarehouseItem(state: GameState, itemId: string, quantity: number): GameState {
   const item = LOOT_TABLE[itemId];
   if (!item) return state;

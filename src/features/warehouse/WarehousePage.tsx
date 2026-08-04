@@ -1,7 +1,7 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import type { GameState } from "../../types/game";
 import { LOOT_TABLE } from "../../data/lootData";
-import { sellWarehouseItem } from "../../game/simulation/warehouse";
+import { sellWarehouseItem, sellAllWarehouseItems } from "../../game/simulation/warehouse";
 import { playHover, playSelect } from "../../lib/audio";
 
 interface Props {
@@ -54,6 +54,7 @@ export default function WarehousePage({ state, onStateChange }: Props) {
   const [selling, setSelling] = useState<WarehouseEntry | null>(null);
   const [saleQty, setSaleQty] = useState(1);
   const [toast, setToast] = useState<string | null>(null);
+  const [batchConfirm, setBatchConfirm] = useState(false);
 
   useEffect(() => {
     if (!toast) return;
@@ -130,6 +131,15 @@ export default function WarehousePage({ state, onStateChange }: Props) {
     setSaleQty(1);
   }
 
+  function confirmBatchSell() {
+    const ids = sorted.filter(e => e.defined).map(e => e.itemId);
+    if (ids.length === 0) return;
+    const total = sorted.filter(e => e.defined).reduce((s, e) => s + e.totalValue, 0);
+    onStateChange((s) => sellAllWarehouseItems(s, ids));
+    setToast(`${fmt(ids.length)}종 전리품을 판매하여 ${fmt(total)}G를 획득했습니다.`);
+    setBatchConfirm(false);
+  }
+
   const clampedQty = selling ? Math.min(Math.max(1, saleQty), selling.quantity) : 1;
   const estimatedPrice = selling ? selling.baseValue * clampedQty : 0;
   const canConfirm = selling !== null && clampedQty >= 1 && estimatedPrice > 0;
@@ -178,6 +188,16 @@ export default function WarehousePage({ state, onStateChange }: Props) {
               ? `${CATEGORY_LABELS[category]} · ${fmt(filtered.length)}종 · ${fmt(tabQty)}개 · ${fmt(tabVal)} G`
               : null}
           </span>
+          <div className="wh-controls-right">
+            {sorted.some(e => e.defined) && (
+              <button
+                className="wh-batch-sell-btn"
+                onMouseEnter={playHover}
+                onClick={() => { playSelect(); setBatchConfirm(true); }}
+              >
+                {category === "all" ? "전체 판매" : `${CATEGORY_LABELS[category] ?? ""} 전체 판매`}
+              </button>
+            )}
           <div className="wh-sort">
             {SORT_OPTIONS.map((opt) => (
               <button
@@ -189,6 +209,7 @@ export default function WarehousePage({ state, onStateChange }: Props) {
                 {opt.label}
               </button>
             ))}
+          </div>
           </div>
         </div>
 
@@ -233,6 +254,33 @@ export default function WarehousePage({ state, onStateChange }: Props) {
           </div>
         )}
       </div>
+
+      {/* Batch sell confirm */}
+      {batchConfirm && (
+        <div className="sell-overlay" onClick={() => setBatchConfirm(false)}>
+          <div className="sell-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="sell-modal-head">
+              <p className="eyebrow">WAREHOUSE · BATCH SELL</p>
+              <h3 className="sell-modal-title">일괄 판매 확인</h3>
+            </div>
+            <div className="sell-info">
+              <div className="sell-info-row">
+                <label>판매 항목</label>
+                <span>{fmt(sorted.filter(e => e.defined).length)}종 · {fmt(sorted.filter(e => e.defined).reduce((s, e) => s + e.quantity, 0))}개</span>
+              </div>
+              <div className="sell-info-row">
+                <label>예상 수입</label>
+                <strong>{fmt(sorted.filter(e => e.defined).reduce((s, e) => s + e.totalValue, 0))} G</strong>
+              </div>
+            </div>
+            <p className="wh-batch-warn">현재 탭의 판매 가능한 전리품 전량을 판매합니다.</p>
+            <div className="sell-actions">
+              <button className="sell-cancel-btn" onMouseEnter={playHover} onClick={() => setBatchConfirm(false)}>취소</button>
+              <button className="sell-confirm-btn" onMouseEnter={playHover} onClick={confirmBatchSell}>전량 판매</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sell modal */}
       {selling && (

@@ -116,49 +116,6 @@ function generateHiddenTraits(rng: () => number): string[] {
   return traits;
 }
 
-// ── Core applicant generation ────────────────────────────────────────────────
-
-function generateSingleApplicant(
-  appliedAt: GameDate,
-  usedPaths: Set<string>,
-  existingNames: Set<string>,
-  rng: () => number,
-): RecruitmentApplicant {
-  const race = pickWeighted(RACE_WEIGHTS.map(({ race, weight }) => ({ value: race, weight })), rng);
-  const gender = rng() < 0.5 ? "male" : "female";
-  const classId = pickRandom(CLASS_IDS, rng) as string;
-  const { min, max } = AGE_RANGES[race];
-  const age = randInt(min, max, rng);
-
-  const name = generateName(race, gender, existingNames, rng);
-  const portrait = getPortraitAvoiding(race, gender as "male" | "female", classId, usedPaths);
-  const stats = generateStats(classId, rng);
-  const appliedDay = toAbsoluteDay(appliedAt);
-
-  return {
-    id: `applicant-${Math.random().toString(36).slice(2, 9)}`,
-    name,
-    race,
-    gender: gender as "male" | "female",
-    age,
-    classId: classId as EntityId,
-    portrait,
-    stats,
-    personalityLabel: pickRandom(PERSONALITY_LABELS, rng),
-    motivation:       pickRandom(MOTIVATIONS, rng),
-    firstImpression:  pickRandom(FIRST_IMPRESSIONS, rng),
-    hiddenPotential:        generateHiddenPotential(rng),
-    hiddenTraits:           generateHiddenTraits(rng),
-    hiddenGrowthType:       pickRandom(HIDDEN_GROWTH_TYPES, rng),
-    hiddenLoyaltyTendency:  randInt(10, 90, rng),
-    status: "pending",
-    appliedAt,
-    appliedDay,
-    expiresDay: appliedDay + EXPIRY_DAYS,
-    holdUntilDay: null,
-  };
-}
-
 // ── Recruitment event generation ─────────────────────────────────────────────
 
 function pickEventDefinition(rng: () => number): RecruitmentEventDefinition {
@@ -294,7 +251,7 @@ function generateEventApplicants(
     "re-famous-apprentice":   "유명 모험가의 제자",
     "re-orphan":              "고아 출신",
     "re-rival":               "라이벌이 찾아왔습니다",
-    "re-mentor":              "베테랑 모험가의 복귀",
+    "re-mentor":              "스승의 귀환",
     "re-apprentice":          "스승을 잃은 제자",
     "re-lover":               "연인을 따라 지원한 모험가",
     "re-noble-family":        "귀족 가문 출신의 지원자",
